@@ -1,0 +1,6 @@
+lib
+clojure.jar
+clojure-contrib.jar
+clojure-src.jar
+clojure-contrib-src.jar
+
