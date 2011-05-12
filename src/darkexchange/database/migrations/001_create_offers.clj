@@ -7,7 +7,7 @@
   (create-table :offers
     (id)
     (date-time :created-at)
-    (string :acceptor-name)
+    (belongs-to :acceptor) ; The id of the identity of the acceptor. Nil until the offer is accepted.
     (integer :accept-confirm)))
   
 (defn
