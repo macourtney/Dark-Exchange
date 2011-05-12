@@ -1,13 +1,11 @@
 # darkexchange
 
-FIXME: write description
+Dark Exchange is a distributed p2p exchange for bitcoin.
 
 ## Usage
 
-FIXME: write
+Dark Exchange is currently under development and cannot be run yet.
 
 ## License
 
-Copyright (C) 2011 FIXME
-
-Distributed under the Eclipse Public License, the same as Clojure.
+Copyright © 2011 Matthew Courtney and released under the Apache 2.0 license.
