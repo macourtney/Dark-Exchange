@@ -4,6 +4,11 @@
                  [com.h2database/h2 "1.2.137"]
                  [drift "1.2.0"]
                  [log4j/log4j "1.2.16"]
+                 [org.clojars.macourtney/i2p "0.8.5-0"]
+                 [org.clojars.macourtney/mstreaming "0.8.5-0"]
+                 [org.clojars.macourtney/streaming "0.8.5-0"]
                  [org.clojure/clojure "1.2.1"]
-                 [org.clojure/clojure-contrib "1.2.0"]]
-  :dev-dependencies [[drift "1.2.0"]])
+                 [org.clojure/clojure-contrib "1.2.0"]
+                 [seesaw "1.0.0"]]
+  :dev-dependencies [[drift "1.2.0"]]
+  :main darkexchange.main)

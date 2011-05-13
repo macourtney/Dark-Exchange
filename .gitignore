@@ -6,4 +6,5 @@ clojure-contrib-src.jar
 darkexchange-*.jar
 log
 db
+classes
 pom.xml
