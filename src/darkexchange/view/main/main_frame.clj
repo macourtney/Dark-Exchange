@@ -4,5 +4,4 @@
             [darkexchange.view.main.main-menu-bar :as main-menu-bar]))
 
 (defn show []
-  (seesaw-core/invoke-later
-    (seesaw-core/frame :title (terms/dark-exchange) :menubar (main-menu-bar/create) :content "Hello World" :on-close :exit)))
+  (seesaw-core/frame :title (terms/dark-exchange) :menubar (main-menu-bar/create) :content "Hello World" :on-close :exit))
