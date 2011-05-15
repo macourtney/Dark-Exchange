@@ -5,12 +5,10 @@
             [seesaw.core :as seesaw-core])
   (:import [javax.swing JTabbedPane]))
 
-(defn add-tabs [tabbed-pane]
-  (.addTab tabbed-pane home-tab/tab-name (home-tab/create))
-  (.addTab tabbed-pane peer-tab/tab-name (peer-tab/create)))
+(defn create-tabs []
+  [ { :title home-tab/tab-name :content (home-tab/create) }
+    { :title peer-tab/tab-name :content (peer-tab/create) } ])
 
 (defn create []
-  (let [tabbed-pane (new JTabbedPane)]
-    (seesaw-core/config! tabbed-pane :id :main-tabbed-pane)
-    (add-tabs tabbed-pane)
-    tabbed-pane))
+  (seesaw-core/tabbed-panel :id :main-tabbed-pane
+    :tabs (create-tabs)))
