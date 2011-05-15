@@ -6,7 +6,9 @@
   up []
   (create-table :peers
     (id)
-    (string :destination)))
+    (string :destination)
+    (date-time :created-at)
+    (date-time :updated-at)))
   
 (defn
 #^{:doc "Drops the peers table in the database."}

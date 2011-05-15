@@ -7,4 +7,6 @@ darkexchange-*.jar
 log
 db
 classes
+logs
+private_key.dat
 pom.xml

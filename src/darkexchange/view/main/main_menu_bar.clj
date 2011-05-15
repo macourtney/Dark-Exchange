@@ -1,14 +1,17 @@
 (ns darkexchange.view.main.main-menu-bar
-  (:require [seesaw.core :as seesaw-core]
-            [darkexchange.model.terms :as terms]))
+  (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.util :as view-util]
+            [seesaw.core :as seesaw-core]))
 
 (defn exit []
-  (seesaw-core/menu-item :id :exit-menu-item :text (terms/exit)))
+  (view-util/make-widget (seesaw-core/menu-item :id :exit-menu-item :text (terms/exit))))
 
 (defn file []
-  (seesaw-core/menu :text (terms/file) :items 
-    [(exit)]))
+  (let [exit-menu (exit)]
+    (view-util/make-widget (seesaw-core/menu :text (terms/file) :items [(view-util/get-widget exit-menu)])
+      :exit exit-menu)))
 
 (defn create []
-  (seesaw-core/menubar :items
-    [(file)]))
+  (let [file-menu (file)]
+    (view-util/make-widget (seesaw-core/menubar :items [(view-util/get-widget file-menu)])
+      :file file-menu)))
