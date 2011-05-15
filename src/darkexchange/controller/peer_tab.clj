@@ -1,5 +1,6 @@
 (ns darkexchange.controller.peer-tab
   (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.add-destination.add-destination :as add-destination]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.peer :as peers-model]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
@@ -39,6 +40,15 @@
   (let [peer-table (find-peer-table main-frame)]
     (.setModel peer-table (create-peer-table-model))))
 
+(defn find-add-button [main-frame]
+  (seesaw-core/select main-frame ["#add-button"]))
+
+(defn attach-listener-to-add-button [main-frame]
+  (seesaw-core/listen (find-add-button main-frame) :action
+    (fn [e]
+      (add-destination/show))))
+
 (defn attach [main-frame]
   (load-destination main-frame)
-  (load-peer-table main-frame))
+  (load-peer-table main-frame)
+  (attach-listener-to-add-button main-frame))

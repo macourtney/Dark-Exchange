@@ -27,7 +27,8 @@
 
 (defn create-peer-list-header-panel []
   (seesaw-core/border-panel
-    :west (terms/peers)))
+    :west (terms/peers)
+    :east (seesaw-core/button :id :add-button :text (terms/add))))
 
 (defn create-table-column [model-index header-text]
   (let [table-column (TableColumn. model-index)]
