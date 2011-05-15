@@ -2,7 +2,6 @@
   (:require [darkexchange.model.terms :as terms]
             [darkexchange.view.main.main-menu-bar :as main-menu-bar]
             [darkexchange.view.main.tabbed-pane :as tabbed-pane]
-            [darkexchange.view.util :as view-util]
             [seesaw.core :as seesaw-core]))
 
 (defn show []

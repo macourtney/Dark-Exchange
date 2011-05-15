@@ -1,8 +1,8 @@
 (ns darkexchange.controller.peer-tab
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.i2p-server :as i2p-server]
+            [darkexchange.model.peers :as peers-model]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
-            [darkexchange.view.util :as view-util]
             [seesaw.core :as seesaw-core]))
 
 (defn destination-text [main-frame]

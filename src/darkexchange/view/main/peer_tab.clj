@@ -1,7 +1,6 @@
 (ns darkexchange.view.main.peer-tab
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.terms :as terms]
-            [darkexchange.view.util :as view-util]
             [seesaw.core :as seesaw-core]))
 
 (def tab-name (terms/peer))

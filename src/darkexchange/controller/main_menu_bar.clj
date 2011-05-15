@@ -1,6 +1,5 @@
 (ns darkexchange.controller.main-menu-bar
   (:require [clojure.contrib.logging :as logging]
-            [darkexchange.view.util :as view-util]
             [seesaw.core :as seesaw-core])
   (:import [javax.swing JMenuItem JMenu]))
 

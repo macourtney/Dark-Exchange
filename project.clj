@@ -4,6 +4,7 @@
                  [com.h2database/h2 "1.2.137"]
                  [drift "1.2.0"]
                  [log4j/log4j "1.2.16"]
+                 [org.clojars.macourtney/clj-record "1.0.1"]
                  [org.clojars.macourtney/i2p "0.8.5-0"]
                  [org.clojars.macourtney/mstreaming "0.8.5-0"]
                  [org.clojars.macourtney/streaming "0.8.5-0"]
