@@ -6,6 +6,6 @@
             [clojure.contrib.logging :as logging]))
 
 (defn show []
-  (let [main-frame-map (view-main-frame/show)]
-    (controller-main-menu-bar/attach-main-menu-actions main-frame-map)
-    (peer-tab/load-destination (view-util/get-widget main-frame-map))))
+  (let [main-frame (view-main-frame/show)]
+    (controller-main-menu-bar/attach-main-menu-actions main-frame)
+    (peer-tab/load-destination main-frame)))

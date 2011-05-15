@@ -5,14 +5,9 @@
             [darkexchange.view.util :as view-util]
             [seesaw.core :as seesaw-core]))
 
-
-
 (defn show []
-  (let [menu-bar-map (main-menu-bar/create)]
-    (view-util/make-widget
-      (seesaw-core/frame
-        :title (terms/dark-exchange)
-        :menubar (view-util/get-widget menu-bar-map)
-        :content (tabbed-pane/create)
-        :on-close :exit)
-      :menubar menu-bar-map)))
+  (seesaw-core/frame
+    :title (terms/dark-exchange)
+    :menubar (main-menu-bar/create)
+    :content (tabbed-pane/create)
+    :on-close :exit))
