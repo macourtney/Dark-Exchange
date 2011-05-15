@@ -85,12 +85,7 @@ any keyword into a string, and replaces dashes with underscores."}
   
         ;; A datasource for the database.
         :datasource (create-datasource (format "jdbc:%s:%s" subprotocol subname))
-
-        ;; The user name to use when connecting to the database.
-        :username username
-
-        ;; The password to use when connecting to the database.
-        :password password }))
+}))
   
   (execute-query [flavor sql-vector]
     (do

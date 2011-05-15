@@ -11,4 +11,7 @@
         (.dispose frame)))))
 
 (defn attach-main-menu-actions [main-frame]
-  (attach-exit-action (seesaw-core/select main-frame [:#exit-menu-item])))
+  (attach-exit-action (seesaw-core/select main-frame ["#exit-menu-item"])))
+
+(defn attach [main-frame]
+  (attach-main-menu-actions main-frame))
