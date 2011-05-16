@@ -25,10 +25,16 @@
     :id :north-panel 
     :items [(terms/destination-address) [:fill-v 3] (create-destination-text)]))
 
+(defn create-peer-list-buttons []
+  (seesaw-core/horizontal-panel :items 
+    [ (seesaw-core/button :id :test-button :text (terms/test))
+      [:fill-h 3]
+      (seesaw-core/button :id :add-button :text (terms/add)) ]))
+
 (defn create-peer-list-header-panel []
   (seesaw-core/border-panel
     :west (terms/peers)
-    :east (seesaw-core/button :id :add-button :text (terms/add))))
+    :east (create-peer-list-buttons)))
 
 (defn create-table-column [model-index header-text]
   (let [table-column (TableColumn. model-index)]

@@ -53,7 +53,16 @@
     (fn [e]
       (add-destination/show #(reload-table-data main-frame)))))
 
+(defn find-test-button [main-frame]
+  (seesaw-core/select main-frame ["#test-button"]))
+
+(defn attach-listener-to-test-button [main-frame]
+  (seesaw-core/listen (find-test-button main-frame) :action
+    (fn [e]
+      (i2p-server/send-message (i2p-server/current-destination) "ping"))))
+
 (defn attach [main-frame]
   (load-destination main-frame)
   (load-peer-table main-frame)
-  (attach-listener-to-add-button main-frame))
+  (attach-listener-to-add-button main-frame)
+  (attach-listener-to-test-button main-frame))
