@@ -33,12 +33,17 @@
 (defn create-peer-table-model []
   (let [table-model (new DefaultTableModel)]
     (.setColumnIdentifiers table-model (into-array Object peer-tab-view/peer-table-headers))
-    (add-rows table-model (peers-model/all-table-row-peers))
     table-model))
+
+(defn reload-table-data [main-frame]
+  (let [peer-table-model (.getModel (find-peer-table main-frame))]
+    (.setRowCount peer-table-model 0)
+    (add-rows peer-table-model (peers-model/all-table-row-peers))))
 
 (defn load-peer-table [main-frame]
   (let [peer-table (find-peer-table main-frame)]
-    (.setModel peer-table (create-peer-table-model))))
+    (.setModel peer-table (create-peer-table-model))
+    (reload-table-data main-frame)))
 
 (defn find-add-button [main-frame]
   (seesaw-core/select main-frame ["#add-button"]))
@@ -46,7 +51,7 @@
 (defn attach-listener-to-add-button [main-frame]
   (seesaw-core/listen (find-add-button main-frame) :action
     (fn [e]
-      (add-destination/show))))
+      (add-destination/show #(reload-table-data main-frame)))))
 
 (defn attach [main-frame]
   (load-destination main-frame)

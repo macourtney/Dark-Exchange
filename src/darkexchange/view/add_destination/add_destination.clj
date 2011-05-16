@@ -8,7 +8,7 @@
                     :multi-line? true
                     :preferred-size [400 :by 60])]
     (.setLineWrap text-area true)
-    text-area))
+    (seesaw-core/scrollable text-area)))
 
 (defn create-center-panel []
   (seesaw-core/border-panel

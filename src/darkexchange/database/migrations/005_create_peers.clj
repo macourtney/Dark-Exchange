@@ -6,7 +6,7 @@
   up []
   (create-table :peers
     (id)
-    (string :destination)
+    (text :destination)
     (date-time :created-at)
     (date-time :updated-at)))
   
