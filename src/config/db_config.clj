@@ -3,8 +3,7 @@
 (ns config.db-config
   (:require [clojure.contrib.java-utils :as java-utils]
             [config.environment :as environment]
-            [darkexchange.database.h2 :as h2])
-  (:import [darkexchange.database.h2 H2Flavor]))
+            [darkexchange.database.h2 :as h2]))
 
 (defn dbname [environment]
   (cond
