@@ -65,12 +65,14 @@ any keyword into a string, and replaces dashes with underscores."}
   column-name [column]
   (conjure-loading-utils/dashes-to-underscores (conjure-string-utils/str-keyword column)))
 
-(deftype H2Flavor [username password dbname]
+(deftype H2Flavor [dbname db-dir]
   Flavor
   (db-map [flavor]
     (let [subprotocol "h2"
+          
+          db-directory (or db-dir "db/data/")
 
-          subname (str "db/data/" dbname)]
+          subname (str db-directory dbname)]
   
       { :flavor flavor
 
@@ -181,3 +183,7 @@ any keyword into a string, and replaces dashes with underscores."}
 
   (format-time [flavor date]
     (. (new SimpleDateFormat "HH:mm:ss") format date)))
+
+(defn flavor 
+  ([dbname] (flavor dbname "db/data/"))
+  ([dbname db-dir] (H2Flavor. dbname db-dir)))
