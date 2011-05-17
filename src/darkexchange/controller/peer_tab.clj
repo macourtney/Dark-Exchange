@@ -30,19 +30,16 @@
   (doseq [row table-rows]
     (.addRow table-model row)))
 
-(defn create-peer-table-model []
-  (let [table-model (new DefaultTableModel)]
-    (.setColumnIdentifiers table-model (into-array Object peer-tab-view/peer-table-headers))
-    table-model))
-
 (defn reload-table-data [main-frame]
-  (let [peer-table-model (.getModel (find-peer-table main-frame))]
+  (let [peer-table (find-peer-table main-frame)
+        peer-table-model (.getModel peer-table)]
     (.setRowCount peer-table-model 0)
-    (add-rows peer-table-model (peers-model/all-table-row-peers))))
+    ;(add-rows peer-table-model (peers-model/all-table-row-peers))
+    (seesaw-core/config! peer-table :model [:columns peer-tab-view/peer-table-columns
+                                            :rows (peers-model/all-peers)])))
 
 (defn load-peer-table [main-frame]
   (let [peer-table (find-peer-table main-frame)]
-    (.setModel peer-table (create-peer-table-model))
     (reload-table-data main-frame)))
 
 (defn find-add-button [main-frame]

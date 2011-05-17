@@ -8,6 +8,11 @@
 
 (def peer-table-headers [(terms/id) (terms/destination) (terms/created-on) (terms/last-updated-at)])
 
+(def peer-table-columns [ { :key :id :text (terms/id) }
+                          { :key :destination :text (terms/destination) }
+                          { :key :created_at :text (terms/created-on) }
+                          { :key :updated_at :text (terms/last-updated-at) }])
+
 (defn create-destination-text-area []
   (let [text-area (seesaw-core/text
                     :id :destination-text
@@ -36,14 +41,10 @@
     :west (terms/peers)
     :east (create-peer-list-buttons)))
 
-(defn create-table-column [model-index header-text]
-  (let [table-column (TableColumn. model-index)]
-    (.setHeaderValue table-column header-text)
-    table-column))
-
 (defn create-peer-list-table []
   (seesaw-core/scrollable
-    (seesaw-core/table :id :peer-table :preferred-size [600 :by 300])))
+    (seesaw-core/table :id :peer-table :preferred-size [600 :by 300]
+      :model [ :columns peer-table-columns ])))
 
 (defn create-peer-list-panel []
   (seesaw-core/vertical-panel
