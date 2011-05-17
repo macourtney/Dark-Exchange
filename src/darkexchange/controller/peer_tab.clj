@@ -26,21 +26,13 @@
 (defn find-peer-table [main-frame]
   (seesaw-core/select main-frame ["#peer-table"]))
 
-(defn add-rows [table-model table-rows]
-  (doseq [row table-rows]
-    (.addRow table-model row)))
-
 (defn reload-table-data [main-frame]
-  (let [peer-table (find-peer-table main-frame)
-        peer-table-model (.getModel peer-table)]
-    (.setRowCount peer-table-model 0)
-    ;(add-rows peer-table-model (peers-model/all-table-row-peers))
-    (seesaw-core/config! peer-table :model [:columns peer-tab-view/peer-table-columns
-                                            :rows (peers-model/all-peers)])))
+  (seesaw-core/config! (find-peer-table main-frame)
+    :model [:columns peer-tab-view/peer-table-columns
+            :rows (peers-model/all-peers)]))
 
 (defn load-peer-table [main-frame]
-  (let [peer-table (find-peer-table main-frame)]
-    (reload-table-data main-frame)))
+  (reload-table-data main-frame))
 
 (defn find-add-button [main-frame]
   (seesaw-core/select main-frame ["#add-button"]))
