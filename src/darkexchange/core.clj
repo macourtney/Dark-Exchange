@@ -2,7 +2,7 @@
   (:require [clojure.tools.string-utils :as conjure-str-utils]
             [config.environment :as environment]
             [darkexchange.database.util :as database-util]
-            [darkexchange.model.i2p-server :as i2p-server]))
+            [darkexchange.model.server :as server]))
 
 (def initialized? (atom false))
 
@@ -12,7 +12,7 @@
   init-promise-fn []
   (environment/require-environment)
   (database-util/init-database)
-  (i2p-server/init)
+  (server/init )
   ;((:init session-config/session-store))
   ;(logging/info "Server Initialized.")
   ;(logging/info "Initializing plugins...")

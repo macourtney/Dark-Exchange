@@ -1,8 +1,10 @@
 (ns darkexchange.controller.peer-tab
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.add-destination.add-destination :as add-destination]
+            [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.peer :as peers-model]
+            [darkexchange.model.server :as server]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
             [seesaw.core :as seesaw-core])
   (:import [javax.swing.table DefaultTableModel]))
@@ -48,10 +50,16 @@
 (defn attach-listener-to-test-button [main-frame]
   (seesaw-core/listen (find-test-button main-frame) :action
     (fn [e]
-      (i2p-server/send-message (i2p-server/current-destination) "ping"))))
+      (client/send-message (i2p-server/current-destination) :echo "ping\nping\nping"))))
 
 (defn attach [main-frame]
   (load-destination main-frame)
   (load-peer-table main-frame)
   (attach-listener-to-add-button main-frame)
   (attach-listener-to-test-button main-frame))
+
+(defn echo-action [data]
+  (println "Received from Client:" data)
+  data)
+
+(server/add-action :echo echo-action)
