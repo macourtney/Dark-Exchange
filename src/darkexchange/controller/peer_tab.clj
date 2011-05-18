@@ -50,16 +50,21 @@
 (defn attach-listener-to-test-button [main-frame]
   (seesaw-core/listen (find-test-button main-frame) :action
     (fn [e]
-      (client/send-message (i2p-server/current-destination) :echo "ping\nping\nping"))))
+      (if-let [current-destination (i2p-server/current-destination)]
+        (do
+          (logging/debug (str "Sending notification."))
+          (logging/debug (str (peers-model/notify-destination current-destination))))
+        (logging/debug "Current destination not set yet.")))))
+
+(defn create-peer-listener [main-frame]
+  (fn [_] (reload-table-data main-frame)))
+
+(defn attach-peer-listener [main-frame]
+  (peers-model/add-peer-update-listener (create-peer-listener main-frame)))
 
 (defn attach [main-frame]
   (load-destination main-frame)
   (load-peer-table main-frame)
   (attach-listener-to-add-button main-frame)
-  (attach-listener-to-test-button main-frame))
-
-(defn echo-action [data]
-  (println "Received from Client:" data)
-  data)
-
-(server/add-action :echo echo-action)
+  (attach-listener-to-test-button main-frame)
+  (attach-peer-listener main-frame))

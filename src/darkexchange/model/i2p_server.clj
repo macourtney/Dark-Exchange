@@ -87,10 +87,14 @@
     (.flush writer)))
 
 (defn read-json [socket]
-  (json/read-json (read-socket socket)))
+  (let [json-string (read-socket socket)]
+    (logging/debug (str "received: " json-string))
+    (json/read-json json-string)))
 
 (defn write-json [socket json-data]
-  (write-socket socket (json/json-str json-data)))
+  (let [json-str (json/json-str json-data)]
+    (logging/debug (str "sending: " json-str))
+    (write-socket socket json-str)))
 
 (defn start-client-handler [client-handler]
   (let [server-socket (get-server-socket @manager)
@@ -121,6 +125,6 @@
     (Destination. (str destination))))
 
 (defn send-message [destination data]
-  (let [socket (.connect @manager (as-destination destination))]
+  (with-open [socket (.connect @manager (as-destination destination))]
     (write-json socket data)
     (read-json socket)))

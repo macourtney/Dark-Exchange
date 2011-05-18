@@ -1,18 +1,28 @@
 (ns darkexchange.core
   (:require [clojure.tools.string-utils :as conjure-str-utils]
             [config.environment :as environment]
-            [darkexchange.database.util :as database-util]
-            [darkexchange.model.server :as server]))
+            [darkexchange.database.util :as database-util]))
 
 (def initialized? (atom false))
 
 (def init? (promise))
 
+(defn resolve-fn [ns-symbol fn-symbol]
+  (require ns-symbol)
+  (ns-resolve (find-ns ns-symbol) fn-symbol))
+
+(defn run-fn [ns-symbol fn-symbol]
+  ((resolve-fn ns-symbol fn-symbol)))
+
 (defn
   init-promise-fn []
   (environment/require-environment)
   (database-util/init-database)
-  (server/init )
+
+  ; Lazy load the following to make sure everything is initialized first.
+  (run-fn 'darkexchange.model.server 'init)
+  (run-fn 'darkexchange.model.actions.action-init 'init)
+
   ;((:init session-config/session-store))
   ;(logging/info "Server Initialized.")
   ;(logging/info "Initializing plugins...")
