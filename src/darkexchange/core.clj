@@ -1,7 +1,8 @@
 (ns darkexchange.core
   (:require [clojure.tools.string-utils :as conjure-str-utils]
             [config.environment :as environment]
-            [darkexchange.database.util :as database-util]))
+            [darkexchange.database.util :as database-util]
+            [drift.runner :as drift-runner]))
 
 (def initialized? (atom false))
 
@@ -18,6 +19,7 @@
   init-promise-fn []
   (environment/require-environment)
   (database-util/init-database)
+  (drift-runner/update-to-version Integer/MAX_VALUE)
 
   ; Lazy load the following to make sure everything is initialized first.
   (run-fn 'darkexchange.model.server 'init)
