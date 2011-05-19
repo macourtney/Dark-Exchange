@@ -53,7 +53,7 @@
       (if-let [current-destination (i2p-server/current-destination)]
         (do
           (logging/debug (str "Sending notification."))
-          (logging/debug (str (peers-model/notify-destination current-destination))))
+          (logging/debug (str (:data (peers-model/notify-destination current-destination)))))
         (logging/debug "Current destination not set yet.")))))
 
 (defn create-peer-listener [main-frame]

@@ -91,10 +91,8 @@
 
 (defn write-json [socket json-data]
   (let [socket-writer (PrintWriter. (.getOutputStream socket))]
-    (logging/debug (str "sending: " json-data))
     (json/write-json json-data socket-writer)
-    (.flush socket-writer)
-    (logging/debug "finshed sending json string.")))
+    (.flush socket-writer)))
 
 (defn start-client-handler [client-handler]
   (let [server-socket (get-server-socket @manager)
