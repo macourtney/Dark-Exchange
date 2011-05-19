@@ -51,7 +51,7 @@
 
 (defn client-handler [server-socket]
   (while true
-    (with-open [socket (.accept server-socket)]
+    (let [socket (.accept server-socket)]
       (when socket
         (perform-action socket)))))
 

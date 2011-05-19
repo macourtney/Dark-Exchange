@@ -4,7 +4,7 @@
             [clojure.java.io :as java-io]
             [clojure.java.javadoc :as javadoc]
             [clojure.string :as clj-string])
-  (:import [java.io BufferedInputStream BufferedReader BufferedWriter ByteArrayInputStream File FileInputStream InputStreamReader OutputStreamWriter]
+  (:import [java.io BufferedInputStream BufferedReader BufferedWriter ByteArrayInputStream File FileInputStream InputStreamReader OutputStreamWriter PrintWriter]
            [net.i2p.client.streaming I2PSocketManagerFactory]
            [net.i2p.data Destination PrivateKey PrivateKeyFile]
            [net.i2p.util I2PThread]))
@@ -78,23 +78,23 @@
       (throw (RuntimeException. "Could not connect to i2p router. Please make sure the i2p router is running." e)))))
 
 (defn read-socket [socket]
-  (with-open [reader (java-io/reader (.getInputStream socket))]
+  (let [reader (java-io/reader (.getInputStream socket))]
     (clj-string/join "\n" (take-while identity (repeatedly #(.readLine reader))))))
 
 (defn write-socket [socket data]
-  (with-open [writer (java-io/writer (.getOutputStream socket))]
+  (let [writer (java-io/writer (.getOutputStream socket))]
     (.write writer data)
     (.flush writer)))
 
 (defn read-json [socket]
-  (let [json-string (read-socket socket)]
-    (logging/debug (str "received: " json-string))
-    (json/read-json json-string)))
+  (json/read-json (java-io/reader (.getInputStream socket))))
 
 (defn write-json [socket json-data]
-  (let [json-str (json/json-str json-data)]
-    (logging/debug (str "sending: " json-str))
-    (write-socket socket json-str)))
+  (let [socket-writer (PrintWriter. (.getOutputStream socket))]
+    (logging/debug (str "sending: " json-data))
+    (json/write-json json-data socket-writer)
+    (.flush socket-writer)
+    (logging/debug "finshed sending json string.")))
 
 (defn start-client-handler [client-handler]
   (let [server-socket (get-server-socket @manager)
@@ -125,6 +125,6 @@
     (Destination. (str destination))))
 
 (defn send-message [destination data]
-  (with-open [socket (.connect @manager (as-destination destination))]
+  (let [socket (.connect @manager (as-destination destination))]
     (write-json socket data)
     (read-json socket)))
