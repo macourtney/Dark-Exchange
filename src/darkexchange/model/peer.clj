@@ -50,11 +50,7 @@
 
 (defn update-destination [destination]
   (if-let [peer (find-peer destination)]
-    (logging/debug (str "Destination " destination " already in database."))
-    ;(let [current-date (new Date)
-    ;      current-date-str (.format (SimpleDateFormat. "yyyy-MM-dd HH:mm:ss") current-date)]
-    ;  (logging/debug (str "current-date-str: " current-date-str))
-    ;  (update { :id peer :updated_at current-date-str }))
+    (update { :id (:id peer) :updated_at (new Date) })
     (add-destination destination)))
 
 (def notify-action-key :notify)
