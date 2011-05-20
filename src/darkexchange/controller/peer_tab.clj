@@ -1,5 +1,6 @@
 (ns darkexchange.controller.peer-tab
   (:require [clojure.contrib.logging :as logging]
+            [clojure.string :as clj-string]
             [darkexchange.controller.add-destination.add-destination :as add-destination]
             [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
@@ -51,9 +52,7 @@
   (seesaw-core/listen (find-test-button main-frame) :action
     (fn [e]
       (if-let [current-destination (i2p-server/current-destination)]
-        (do
-          (logging/debug (str "Sending notification."))
-          (logging/debug (str (:data (peers-model/notify-destination current-destination)))))
+        (logging/debug (str "Notification status: \n" (clj-string/join "\n" (:data (peers-model/get-peers-from current-destination)))))
         (logging/debug "Current destination not set yet.")))))
 
 (defn create-peer-listener [main-frame]
