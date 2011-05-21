@@ -5,6 +5,7 @@
             [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.peer :as peers-model]
+            [darkexchange.model.property :as property]
             [darkexchange.model.server :as server]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
             [seesaw.core :as seesaw-core])
@@ -30,9 +31,10 @@
   (seesaw-core/select main-frame ["#peer-table"]))
 
 (defn reload-table-data [main-frame]
-  (seesaw-core/config! (find-peer-table main-frame)
-    :model [:columns peer-tab-view/peer-table-columns
-            :rows (peers-model/all-peers)]))
+  (when-let [peers (peers-model/all-peers)]
+    (seesaw-core/config! (find-peer-table main-frame)
+      :model [:columns peer-tab-view/peer-table-columns
+              :rows peers])))
 
 (defn load-peer-table [main-frame]
   (reload-table-data main-frame))
@@ -52,7 +54,11 @@
   (seesaw-core/listen (find-test-button main-frame) :action
     (fn [e]
       (if-let [current-destination (i2p-server/current-destination)]
-        (logging/debug (str "Notification status: \n" (clj-string/join "\n" (:data (peers-model/get-peers-from current-destination)))))
+        (do
+          (logging/debug (str "Notify status: " (:data (peers-model/notify-destination current-destination))))
+          (peers-model/download-peers)
+          (property/reset-peers-downloaded?)
+          )
         (logging/debug "Current destination not set yet.")))))
 
 (defn create-peer-listener [main-frame]

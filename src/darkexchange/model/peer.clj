@@ -2,7 +2,8 @@
   (:require [clojure.contrib.logging :as logging]
             [clj-record.boot :as clj-record-boot]
             [darkexchange.model.client :as client]
-            [darkexchange.model.i2p-server :as i2p-server])
+            [darkexchange.model.i2p-server :as i2p-server]
+            [darkexchange.model.property :as property])
   (:use darkexchange.model.base)
   (:import [java.sql Clob]
            [java.text SimpleDateFormat]
@@ -47,10 +48,10 @@
 
 (defn add-destination [destination]
   (when destination
-    (insert { :destination destination :created_at (new Date) :updated_at (new Date) })))
+    (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date) })))
 
 (defn find-peer [destination]
-  (find-record { :destination destination }))
+  (find-record { :destination (i2p-server/as-destination-str destination) }))
 
 (defn update-destination [destination]
   (if-let [peer (find-peer destination)]
@@ -62,10 +63,48 @@
   "ok")
 
 (defn notify-destination [destination]
-  (client/send-message destination notify-action-key { :destination (client/base-64-destination) }))
+  (try
+    (let [response (client/send-message (i2p-server/as-destination destination) notify-action-key
+      { :destination (client/base-64-destination) })]
+      (update (merge (find-peer (i2p-server/as-destination-str destination)) { :notified true :updated_at (new Date) }))
+      response)
+    (catch Exception e
+      (logging/error (str "e: " e))
+      nil)))
 
 (defn get-peers-from [destination]
   (client/send-message destination get-peers-action-key { :type :all }))
 
 (defn get-peers-action [data]
   (map :destination (all-peers)))
+
+(defn last-updated-peer []
+  (first (find-by-sql ["SELECT * FROM peers ORDER BY updated_at DESC LIMIT 1"])))
+
+(defn add-destination-if-missing [destination]
+  (let [peer (find-peer destination)]
+    (when-not peer
+      (add-destination destination))))
+
+(defn all-unnotified-peers []
+  (find-by-sql ["SELECT * FROM peers WHERE notified IS NULL"]))
+
+(defn download-peers-background []
+  (when-not (property/test-peers-downloaded?)
+    (try
+      (let [destinations (:data (get-peers-from (:destination (last-updated-peer))))]
+        (logging/debug (str "destinations: " (count destinations)))
+        (if (and destinations (not-empty destinations))
+          (do
+            (doseq [destination destinations]
+              (add-destination-if-missing destination))
+            (doseq [peer (all-unnotified-peers)]
+              (notify-destination (:destination peer))))
+          (property/reset-peers-downloaded?)))
+      (catch Exception e
+        (logging/debug "An exception occured while downloading the peers.")
+        (property/reset-peers-downloaded?)
+        (throw e)))))
+
+(defn download-peers []
+  (.start (Thread. download-peers-background)))

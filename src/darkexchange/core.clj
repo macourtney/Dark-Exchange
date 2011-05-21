@@ -15,29 +15,19 @@
 (defn run-fn [ns-symbol fn-symbol]
   ((resolve-fn ns-symbol fn-symbol)))
 
+(defn environment-init []
+  (environment/require-environment)
+  (database-util/init-database))
+
 (defn
   init-promise-fn []
-  (environment/require-environment)
-  (database-util/init-database)
+  (environment-init)
   (drift-runner/update-to-version Integer/MAX_VALUE)
 
   ; Lazy load the following to make sure everything is initialized first.
   (run-fn 'darkexchange.model.server 'init)
+  (run-fn 'darkexchange.model.model-init 'init)
   (run-fn 'darkexchange.model.actions.action-init 'init)
-
-  ;((:init session-config/session-store))
-  ;(logging/info "Server Initialized.")
-  ;(logging/info "Initializing plugins...")
-  ;(plugin-util/initialize-all-plugins)
-  ;(logging/info "Plugins initialized.")
-  ;(logging/info "Initializing app controller...")
-  ;(try
-  ;  (require 'controllers.app)
-  ;  (logging/info "App controller initialized.")
-  ;  (deliver init? true)
-  ;(catch Throwable t
-  ;  (logging/error "Failed to initialize app controller." t)
-  ;  (deliver init? false)))
   (deliver init? true))
 
 (defn

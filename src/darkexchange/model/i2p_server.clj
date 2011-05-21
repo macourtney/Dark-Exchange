@@ -122,6 +122,11 @@
     destination
     (Destination. (str destination))))
 
+(defn as-destination-str [destination]
+  (if (instance? Destination destination)
+    (.toBase64 destination)
+    destination))
+
 (defn send-message [destination data]
   (let [socket (.connect @manager (as-destination destination))]
     (write-json socket data)

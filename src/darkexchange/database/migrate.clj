@@ -16,7 +16,7 @@
       remaining]
   
     (core/set-mode mode)
-    (core/init)))
+    (core/environment-init)))
 
 (defn
   version-table-is-empty []

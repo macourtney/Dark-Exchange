@@ -4,6 +4,6 @@
             [darkexchange.model.peer :as peer-model]))
 
 (defn init []
-  (logging/debug (str "Adding notify action."))
+  (logging/info (str "Adding notify actions."))
   (server/add-action peer-model/notify-action-key peer-model/notify-action)
   (server/add-action peer-model/get-peers-action-key peer-model/get-peers-action))

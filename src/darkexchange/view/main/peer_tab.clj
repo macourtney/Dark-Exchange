@@ -11,7 +11,8 @@
 (def peer-table-columns [ { :key :id :text (terms/id) }
                           { :key :destination :text (terms/destination) }
                           { :key :created_at :text (terms/created-on) }
-                          { :key :updated_at :text (terms/last-updated-at) }])
+                          { :key :updated_at :text (terms/last-updated-at) }
+                          { :key :notified :text (terms/notified) }])
 
 (defn create-destination-text-area []
   (let [text-area (seesaw-core/text
