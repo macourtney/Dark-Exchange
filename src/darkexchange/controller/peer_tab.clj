@@ -56,7 +56,6 @@
       (if-let [current-destination (i2p-server/current-destination)]
         (do
           (logging/debug (str "Notify status: " (:data (peers-model/notify-destination current-destination))))
-          (peers-model/download-peers)
           (property/reset-peers-downloaded?)
           )
         (logging/debug "Current destination not set yet.")))))

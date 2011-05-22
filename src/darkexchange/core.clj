@@ -27,7 +27,6 @@
   ; Lazy load the following to make sure everything is initialized first.
   (run-fn 'darkexchange.model.server 'init)
   (run-fn 'darkexchange.model.model-init 'init)
-  (run-fn 'darkexchange.model.actions.action-init 'init)
   (deliver init? true))
 
 (defn

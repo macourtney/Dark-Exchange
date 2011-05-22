@@ -48,8 +48,10 @@
       :model [ :columns peer-table-columns ])))
 
 (defn create-peer-list-panel []
-  (seesaw-core/vertical-panel
-    :items [(create-peer-list-header-panel) [:fill-v 3] (create-peer-list-table)]))
+  (seesaw-core/border-panel
+    :vgap 3
+    :north (create-peer-list-header-panel)
+    :center (create-peer-list-table)))
 
 (defn create []
   (seesaw-core/border-panel
