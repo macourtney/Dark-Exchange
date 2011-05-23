@@ -1,15 +1,16 @@
-(ns darkexchange.model.currency)
+(ns darkexchange.model.currency
+  (:require [darkexchange.model.terms :as terms]))
 
-(def currencies [{ :code "USD" :name "US Dollar" }
-                  { :code "CAD" :name "Canadian Dollar" }
-                  { :code "EUR" :name "Euro" }
-                  { :code "GBP" :name "Great British Pound" }
-                  { :code "AUD" :name "Austrailian Dollar" }
-                  { :code "CHF" :name "Swis Franc" }])
+(def currencies [{ :code "USD" :name (terms/us-dollar) }
+                  { :code "CAD" :name (terms/canadian-dollar) }
+                  { :code "EUR" :name (terms/euro) }
+                  { :code "GBP" :name (terms/great-british-pound) }
+                  { :code "AUD" :name (terms/austrailian-dollar) }
+                  { :code "CHF" :name (terms/swiss-franc) }])
 
-(def payment-types [{ :code "CAM" :name "Cash in Mail" :currency-types :all }
-                     { :code "CHM" :name "Check or Money Order in Mail" :currency-types :all }
-                     { :code "DWOLLA" :name "Dwolla" :currency-types ["USD"] }])
+(def payment-types [{ :code "CAM" :name (terms/cash-by-mail) :currency-types :all }
+                     { :code "CHM" :name (terms/check-or-money-order-by-mail) :currency-types :all }
+                     { :code "DWOLLA" :name (terms/dwolla) :currency-types ["USD"] }])
 
 (defn currencies-to-map []
   (reduce #(assoc %1 (:code %2) %2) {} currencies ))
