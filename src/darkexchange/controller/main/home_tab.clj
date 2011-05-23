@@ -13,4 +13,4 @@
               :rows open-offers])))
 
 (defn attach [main-frame]
-  (load-open-offer-table))
+  (load-open-offer-table main-frame))

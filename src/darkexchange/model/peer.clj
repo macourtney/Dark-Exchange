@@ -73,7 +73,8 @@
       nil)))
 
 (defn get-peers-from [destination]
-  (client/send-message destination get-peers-action-key { :type :all }))
+  (when destination
+    (client/send-message destination get-peers-action-key { :type :all })))
 
 (defn get-peers-action [data]
   (map :destination (all-peers)))

@@ -12,11 +12,11 @@
                      { :code "DWOLLA" :name "Dwolla" :currency-types ["USD"] }])
 
 (defn currencies-to-map []
-  (reduce currencies {} #(assoc %1 (:code %2) %2)))
+  (reduce #(assoc %1 (:code %2) %2) {} currencies ))
 
 (def currency-map (currencies-to-map))
 
-(def find-currency [code]
+(defn find-currency [code]
   (get currency-map code))
 
 (defn currencies-for [payment-type]
