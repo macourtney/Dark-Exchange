@@ -7,7 +7,8 @@
   (create-table :has-offers
     (id)
     (integer :amount)
-    (integer :currency)
+    (string :currency) ; Currency code.
+    (string :payment-type) ; Payment type code.
     (belongs-to :offer)))
   
 (defn
