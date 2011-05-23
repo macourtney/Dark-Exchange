@@ -26,8 +26,9 @@
 
 (defn create-table []
   (seesaw-core/scrollable
-    (seesaw-core/table :id :open-offer-table :preferred-size [600 :by 300]
-      :model [ :columns open-offer-table-columns ])))
+    (seesaw-core/table :id :open-offer-table
+      :model [ :columns open-offer-table-columns ])
+    :preferred-size [600 :by 300]))
 
 (defn create []
   (seesaw-core/border-panel
