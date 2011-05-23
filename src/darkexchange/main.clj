@@ -5,5 +5,6 @@
 (defn -main
   [& args]
   (core/init)
-  (require 'darkexchange.controller.main-frame)
-  ((ns-resolve (find-ns 'darkexchange.controller.main-frame) 'show)))
+  (let [main-frame-ns 'darkexchange.controller.main.main-frame]
+    (require main-frame-ns)
+    ((ns-resolve (find-ns main-frame-ns) 'show))))

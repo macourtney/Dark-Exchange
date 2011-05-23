@@ -1,4 +1,4 @@
-(ns darkexchange.controller.main-menu-bar
+(ns darkexchange.controller.main.main-menu-bar
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.window-actions :as window-actions]
             [seesaw.core :as seesaw-core])

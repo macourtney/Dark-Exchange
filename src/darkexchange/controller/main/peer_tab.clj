@@ -1,4 +1,4 @@
-(ns darkexchange.controller.peer-tab
+(ns darkexchange.controller.main.peer-tab
   (:require [clojure.contrib.logging :as logging]
             [clojure.string :as clj-string]
             [darkexchange.controller.add-destination.add-destination :as add-destination]
