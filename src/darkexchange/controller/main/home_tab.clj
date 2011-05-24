@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.home-tab
-  (:require [darkexchange.model.offer :as offer-model]
+  (:require [darkexchange.controller.offer.new-offer :as new-offer]
+            [darkexchange.model.offer :as offer-model]
             [darkexchange.view.main.home.open-offer-panel :as open-offer-panel]
             [seesaw.core :as seesaw-core]))
 
@@ -12,5 +13,16 @@
       :model [:columns open-offer-panel/open-offer-table-columns
               :rows open-offers])))
 
+(defn find-new-open-offer-button [main-frame]
+  (seesaw-core/select main-frame ["#new-open-offer-button"]))
+
+(defn attach-add-offer-action [main-frame call-back]
+  (seesaw-core/listen (find-new-open-offer-button main-frame)
+    :action (fn [e] (new-offer/show call-back))))
+
+(defn add-offer-call-back []
+  )
+
 (defn attach [main-frame]
-  (load-open-offer-table main-frame))
+  (load-open-offer-table main-frame)
+  (attach-add-offer-action main-frame add-offer-call-back))
