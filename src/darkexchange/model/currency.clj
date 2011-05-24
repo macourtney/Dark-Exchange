@@ -8,10 +8,6 @@
                   { :code "AUD" :name (terms/austrailian-dollar) }
                   { :code "CHF" :name (terms/swiss-franc) }])
 
-(def payment-types [{ :code "CAM" :name (terms/cash-by-mail) :currency-types :all }
-                     { :code "CHM" :name (terms/check-or-money-order-by-mail) :currency-types :all }
-                     { :code "DWOLLA" :name (terms/dwolla) :currency-types ["USD"] }])
-
 (defn currencies-to-map []
   (reduce #(assoc %1 (:code %2) %2) {} currencies ))
 
@@ -26,8 +22,10 @@
 (defn currency-str [currency]
   (:name currency))
 
-(defn payment-type-str [payment-type]
-  (:name payment-type))
+; Simply allows the given currency to be displayed in a combobox or such.
+(defrecord CurrencyDisplayAdaptor [currency]
+  Object
+  (toString [this] (currency-str (:currency this))))
 
-(defn currency-and-payment-type-str [currency payment-type]
-  (str (currency-str currency) " by " (payment-type-str payment-type)))
+(defn currency-adaptors []
+  (map #(CurrencyDisplayAdaptor. %) currencies))

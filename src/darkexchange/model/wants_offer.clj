@@ -1,5 +1,5 @@
 (ns darkexchange.model.wants-offer
-  (:require [darkexchange.model.currency :as currency-model])
+  (:require [darkexchange.model.payment-type :as payment-type])
   (:use darkexchange.model.base))
 
 (clj-record.core/init-model
@@ -12,4 +12,4 @@
   (:payment-type wants-offer))
 
 (defn currency-str [wants-offer]
-  (currency-model/currency-and-payment-type-str (currency wants-offer) (payment-type wants-offer)))
+  (payment-type/currency-and-payment-type-str (currency wants-offer) (payment-type wants-offer)))
