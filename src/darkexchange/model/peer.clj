@@ -21,10 +21,6 @@
   (doseq [listener @peer-update-listeners]
     (listener peer)))
 
-(defn load-clob [clob]
-  (let [clob-str (.toString clob)]
-    (.substring clob-str (inc (.indexOf clob-str "'")) (dec (.length clob-str)))))
-
 (defn peer-clean-up [peer]
   (if-let [destination-clob (:destination peer)]
     (if (instance? Clob destination-clob)
