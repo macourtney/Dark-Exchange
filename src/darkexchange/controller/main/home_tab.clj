@@ -28,6 +28,20 @@
   (seesaw-core/listen (find-new-open-offer-button main-frame)
     :action (fn [e] (new-offer/show (create-add-offer-call-back main-frame)))))
 
+(defn find-delete-open-offer-button [main-frame]
+  (seesaw-core/select main-frame ["#delete-open-offer-button"]))
+
+(defn delete-selected-offer [main-frame]
+  (let [open-offer-table (find-open-offer-table main-frame)
+        selected-row-index (.getSelectedRow open-offer-table)]
+    (offer-model/delete-offer (:id (seesaw-table/value-at open-offer-table selected-row-index)))
+    (seesaw-table/remove-at! open-offer-table selected-row-index)))
+
+(defn attach-delete-offer-action [main-frame]
+  (seesaw-core/listen (find-delete-open-offer-button main-frame)
+    :action (fn [_] (delete-selected-offer main-frame))))
+
 (defn attach [main-frame]
   (load-open-offer-table main-frame)
-  (attach-add-offer-action main-frame))
+  (attach-add-offer-action main-frame)
+  (attach-delete-offer-action main-frame))

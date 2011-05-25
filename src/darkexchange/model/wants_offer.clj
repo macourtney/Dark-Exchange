@@ -17,3 +17,7 @@
 
 (defn currency-str [wants-offer]
   (payment-type/payment-type-str (payment-type wants-offer)))
+
+(defn delete-wants-offers-for [offer-id]
+  (doseq [wants-offer (find-records { :offer_id offer-id })]
+    (destroy-record wants-offer)))

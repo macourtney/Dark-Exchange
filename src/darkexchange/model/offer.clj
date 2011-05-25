@@ -1,5 +1,6 @@
 (ns darkexchange.model.offer
-  (:require [darkexchange.model.has-offer :as has-offer-model]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.model.has-offer :as has-offer-model]
             [darkexchange.model.wants-offer :as wants-offer-model])
   (:use darkexchange.model.base))
 
@@ -12,12 +13,18 @@
   (doseq [listener @offer-add-listeners]
     (listener new-offer)))
 
+(defn cleanup [deleted-offer]
+  (let [offer-id (:id deleted-offer)]
+    (has-offer-model/delete-has-offers-for offer-id)
+    (wants-offer-model/delete-wants-offers-for offer-id)))
+
 (clj-record.core/init-model
   (:associations
     ;(belongs-to identity :fk acceptor)
     (has-many wants-offers)
     (has-many has-offers))
-  (:callbacks (:after-insert offer-add)))
+  (:callbacks (:after-insert offer-add)
+              (:after-destroy cleanup)))
 
 (defn all-offers []
   (find-records [true]))
@@ -47,3 +54,6 @@
 
 (defn table-open-offers []
   (map convert-to-table-offer (open-offers)))
+
+(defn delete-offer [offer-id]
+  (destroy-record { :id offer-id }))
