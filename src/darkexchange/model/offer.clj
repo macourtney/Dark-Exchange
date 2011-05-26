@@ -1,5 +1,6 @@
 (ns darkexchange.model.offer
-  (:require [clojure.contrib.logging :as logging]
+  (:require [clj-record.boot :as clj-record-boot]
+            [clojure.contrib.logging :as logging]
             [darkexchange.model.has-offer :as has-offer-model]
             [darkexchange.model.wants-offer :as wants-offer-model])
   (:use darkexchange.model.base))

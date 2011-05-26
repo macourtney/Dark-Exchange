@@ -1,4 +1,5 @@
 (ns darkexchange.model.user
+  (:require [clj-record.boot :as clj-record-boot])
   (:use darkexchange.model.base))
 
 (defn clob-clean-up 

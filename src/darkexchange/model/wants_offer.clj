@@ -1,5 +1,6 @@
 (ns darkexchange.model.wants-offer
-  (:require [darkexchange.model.currency :as currency]
+  (:require [clj-record.boot :as clj-record-boot]
+            [darkexchange.model.currency :as currency]
             [darkexchange.model.payment-type :as payment-type])
   (:use darkexchange.model.base))
 
