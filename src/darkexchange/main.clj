@@ -4,7 +4,7 @@
 
 (defn -main
   [& args]
-  (core/init)
-  (let [main-frame-ns 'darkexchange.controller.main.main-frame]
-    (require main-frame-ns)
-    ((ns-resolve (find-ns main-frame-ns) 'show))))
+  (core/database-init)
+  (let [login-frame-ns 'darkexchange.controller.login.login]
+    (require login-frame-ns)
+    ((ns-resolve (find-ns login-frame-ns) 'show))))

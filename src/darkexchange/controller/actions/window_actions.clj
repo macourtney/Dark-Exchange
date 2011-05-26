@@ -5,3 +5,7 @@
   (let [frame (seesaw-core/to-frame e)]
     (.hide frame)
     (.dispose frame)))
+
+(defn close-window-and-exit [e]
+  (close-window e)
+  (System/exit 0))

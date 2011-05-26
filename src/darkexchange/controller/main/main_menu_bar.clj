@@ -5,7 +5,7 @@
   (:import [javax.swing JMenuItem JMenu]))
 
 (defn attach-exit-action [menu]
-  (seesaw-core/listen menu :action window-actions/close-window))
+  (seesaw-core/listen menu :action window-actions/close-window-and-exit))
 
 (defn attach-main-menu-actions [main-frame]
   (attach-exit-action (seesaw-core/select main-frame ["#exit-menu-item"])))
