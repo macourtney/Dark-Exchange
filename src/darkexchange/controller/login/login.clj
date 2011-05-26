@@ -1,5 +1,6 @@
 (ns darkexchange.controller.login.login
-  (:require [darkexchange.controller.actions.window-actions :as window-actions]
+  (:require [darkexchange.controller.actions.utils :as actions-utils]
+            [darkexchange.controller.login.create-user :as create-user]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.login :as login-view]
             [seesaw.core :as seesaw-core]))
@@ -13,15 +14,15 @@
 (defn load-data [login-frame]
   (reload-user-name-combobox login-frame))
 
-(defn find-cancel-button [login-frame]
-  (seesaw-core/select login-frame ["#cancel-button"]))
+(defn attach-new-user-action [login-frame]
+  (actions-utils/attach-listener login-frame "#new-user-button" (fn [_]  (create-user/show))))
 
 (defn attach-cancel-action [login-frame]
-  (seesaw-core/listen (find-cancel-button login-frame)
-    :action window-actions/close-window-and-exit))
+  (actions-utils/attach-window-close-and-exit-listener login-frame "#cancel-button"))
 
 (defn attach [login-frame]
-  (attach-cancel-action login-frame))
+  (attach-cancel-action login-frame)
+  (attach-new-user-action login-frame))
 
 (defn show []
   (let [login-frame (login-view/show)]
