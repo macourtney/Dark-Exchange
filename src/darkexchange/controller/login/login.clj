@@ -1,5 +1,6 @@
 (ns darkexchange.controller.login.login
-  (:require [darkexchange.controller.actions.utils :as actions-utils]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.login.create-user :as create-user]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.login :as login-view]

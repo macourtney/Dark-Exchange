@@ -1,5 +1,6 @@
 (ns darkexchange.model.user
   (:require [clj-record.boot :as clj-record-boot]
+            [clojure.contrib.logging :as logging]
             [darkexchange.model.security :as security])
   (:use darkexchange.model.base)
   (:import [java.sql Clob]))
@@ -16,17 +17,17 @@
         (assoc user key (load-clob clob))
         user)))
   ([user key & keys]
-    (reduce #(clob-clean-up user %) (conj keys key))))
+    (reduce #(clob-clean-up %1 %2) user (conj keys key))))
 
 (defn user-clean-up [user]
   (clob-clean-up user :public_key :private_key))
 
 (defn encrypt-password [user]
   (let [salt (security/create-salt)]
-    (merge user { :encrypted-password (security/encrypt-password-string (:password user) salt) :salt (str salt)})))
+    (merge user { :encrypted_password (security/encrypt-password-string (:password user) salt) :salt (str salt)})))
 
 (defn generate-fields [user]
-  (select-keys (encrypt-password user) [:name :encrypted-password :salt :public-key :private-key]))
+  (select-keys (encrypt-password user) [:name :encrypted_password :salt :public_key :private_key]))
 
 (defn call-user-add-listeners [user]
   (doseq [user-add-listener @user-add-listeners]
@@ -52,7 +53,7 @@
 
 (defn char-arrays-equals? [array1 array2]
   (and (= (count array1) (count array2))
-    (some #(not (= (first %1) (second %1))) (map #(list %1 %2) array1 array2))))
+    (nil? (some #(not %1) (map #(= %1 %2) array1 array2)))))
 
 (defn validate-passwords [password1 password2]
   (when (char-arrays-equals? password1 password2)
