@@ -1,5 +1,9 @@
 (ns darkexchange.model.security
-  (:import [java.security KeyPairGenerator]))
+  (:import [org.apache.commons.codec.binary Base64]
+           [java.security KeyPair KeyPairGenerator MessageDigest]
+           [java.util Random]
+           [javax.crypto Cipher SecretKeyFactory]
+           [javax.crypto.spec DESKeySpec]))
 
 (def des-algorithm "DES")
 
@@ -87,4 +91,4 @@
   (let [message-digest (MessageDigest/getInstance "SHA-1")
         password-and-salt (str password salt)]
     (.update message-digest (.getBytes password-and-salt "iso-8859-1"))
-    (convert-to-hex (.digest message-digest))))
+    (Base64/encodeBase64String (.digest message-digest))))

@@ -20,9 +20,17 @@
 (defn attach-cancel-action [login-frame]
   (actions-utils/attach-window-close-and-exit-listener login-frame "#cancel-button"))
 
+(defn create-user-add-listener [login-frame]
+  (fn [_]
+    (reload-user-name-combobox login-frame)))
+
+(defn attach-user-add-listener [login-frame]
+  (user-model/add-user-add-listener (create-user-add-listener login-frame)))
+
 (defn attach [login-frame]
   (attach-cancel-action login-frame)
-  (attach-new-user-action login-frame))
+  (attach-new-user-action login-frame)
+  (attach-user-add-listener login-frame))
 
 (defn show []
   (let [login-frame (login-view/show)]

@@ -2,6 +2,7 @@
   :description "Dark Exchange is a distributed p2p exchange for bitcoin."
   :dependencies [[clojure-tools "1.0.0"]
                  [com.h2database/h2 "1.2.137"]
+                 [commons-codec/commons-codec "1.5"]
                  [drift "1.2.1-SNAPSHOT"]
                  [log4j/log4j "1.2.16"]
                  [org.clojars.macourtney/clj-record "1.0.1"]
