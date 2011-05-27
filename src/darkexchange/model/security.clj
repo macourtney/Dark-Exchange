@@ -1,4 +1,5 @@
 (ns darkexchange.model.security
+  (:require [clojure.contrib.logging :as logging])
   (:import [org.apache.commons.codec.binary Base64]
            [java.security KeyPair KeyPairGenerator MessageDigest]
            [java.util Random]

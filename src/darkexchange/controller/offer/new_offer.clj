@@ -1,6 +1,6 @@
 (ns darkexchange.controller.offer.new-offer
   (:require [clojure.contrib.logging :as logging]
-            [darkexchange.controller.actions.window-actions :as window-actions]
+            [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.model.currency :as currency-model]
             [darkexchange.model.has-offer :as has-offer-model]
             [darkexchange.model.offer :as offer-model]
@@ -15,7 +15,7 @@
 
 (defn attach-cancel-action [new-offer-view]
   (seesaw-core/listen (find-cancel-button new-offer-view)
-    :action window-actions/close-window))
+    :action actions-utils/close-window))
 
 (defn find-create-offer-button [new-offer-view]
   (seesaw-core/select new-offer-view ["#create-offer-button"]))
@@ -82,7 +82,7 @@
 
 (defn attach-create-offer-action [new-offer-view call-back]
   (seesaw-core/listen (find-create-offer-button new-offer-view)
-    :action (fn [e] (call-back (scrape-offer new-offer-view)) (window-actions/close-window e))))
+    :action (fn [e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window e))))
 
 (defn attach [new-offer-view call-back]
   (attach-cancel-action new-offer-view)

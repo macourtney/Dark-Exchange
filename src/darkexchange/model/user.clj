@@ -5,6 +5,8 @@
   (:use darkexchange.model.base)
   (:import [java.sql Clob]))
 
+(def current-user (atom nil))
+
 (def user-add-listeners (atom []))
 
 (defn add-user-add-listener [user-add-listener]
@@ -22,9 +24,16 @@
 (defn user-clean-up [user]
   (clob-clean-up user :public_key :private_key))
 
+(defn password-str [password]
+  (if (string? password)
+    password
+    (String. password)))
+
 (defn encrypt-password [user]
   (let [salt (security/create-salt)]
-    (merge user { :encrypted_password (security/encrypt-password-string (:password user) salt) :salt (str salt)})))
+    (merge user
+      { :encrypted_password (security/encrypt-password-string (password-str (:password user)) salt)
+        :salt (str salt) })))
 
 (defn generate-fields [user]
   (select-keys (encrypt-password user) [:name :encrypted_password :salt :public_key :private_key]))
@@ -58,3 +67,9 @@
 (defn validate-passwords [password1 password2]
   (when (char-arrays-equals? password1 password2)
     password1))
+
+(defn login [user-name password]
+  (when-let [user (find-user-by-name user-name)]
+    (when (= (:encrypted_password user) (security/encrypt-password-string (password-str password) (:salt user)))
+      (reset! current-user user)
+      user)))

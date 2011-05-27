@@ -1,6 +1,6 @@
 (ns darkexchange.controller.add-destination.add-destination
   (:require [clojure.contrib.logging :as logging]
-            [darkexchange.controller.actions.window-actions :as window-actions]
+            [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.model.peer :as peer-model]
             [darkexchange.model.terms :as terms]
             [darkexchange.view.add-destination.add-destination :as add-destination-view]
@@ -17,7 +17,7 @@
 
 (defn attach-cancel-action [add-destination-frame]
   (seesaw-core/listen (find-cancel-button add-destination-frame)
-    :action window-actions/close-window))
+    :action actions-utils/close-window))
 
 (defn add-action [add-destination-frame call-back]
   (peer-model/add-destination (.getText (find-destination-text add-destination-frame)))
