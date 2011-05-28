@@ -33,7 +33,7 @@
 
 (deftest test-create-user
   (let [test-user-name "blah"
-        user-id (create-user test-user-name (.getBytes "password" "UTF-8"))]
+        user-id (create-user test-user-name (.toCharArray "password"))]
     (is user-id "User id not returned.")
     (let [user (get-record user-id)]
       (is user (str "User with the id: " user-id " could not be found."))
@@ -52,9 +52,9 @@
   (is (nil? (current-user)) "Started test with a logged in user.") 
   (let [test-user-name "blah"
         test-password "password"
-        test-password-bytes (.getBytes test-password "UTF-8")
-        user-id (create-user test-user-name test-password-bytes)]
-    (is (login test-user-name test-password-bytes) "The user failed to log in.")
+        test-password-chars (.toCharArray "password")
+        user-id (create-user test-user-name test-password-chars)]
+    (is (login test-user-name test-password-chars) "The user failed to log in.")
     (let [test-current-user (current-user)]
       (is test-current-user "The user was not logged in.")
       (is (= (:name test-current-user) "blah") "The wrong user was logged in.")

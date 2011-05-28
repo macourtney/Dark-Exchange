@@ -47,11 +47,14 @@
   (actions-utils/close-window login-frame))
 
 (defn login [login-frame]
-  (if-let [user-name (seesaw-core/selection (find-user-name-combobox login-frame))]
-    (if (user-model/login user-name (password login-frame))
-      (login-success login-frame)
-      (login-fail login-frame))
-    (seesaw-core/alert "You must select a user name. If no user exists, please create one.")))
+  (try
+    (if-let [user-name (seesaw-core/selection (find-user-name-combobox login-frame))]
+      (if (user-model/login user-name (password login-frame))
+        (login-success login-frame)
+        (login-fail login-frame))
+      (seesaw-core/alert "You must select a user name. If no user exists, please create one."))
+    (catch Throwable t
+      (logging/error "An error occurred while logging in." t))))
 
 (defn attach-login-action [login-frame]
   (actions-utils/attach-listener login-frame "#login-button" (fn [_]  (login login-frame))))

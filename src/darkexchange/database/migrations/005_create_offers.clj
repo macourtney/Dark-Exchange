@@ -8,6 +8,7 @@
     (id)
     (date-time :created-at)
     (belongs-to :acceptor) ; The id of the identity of the acceptor. Nil until the offer is accepted.
+    (belongs-to :user)
     (integer :accept-confirm)))
   
 (defn

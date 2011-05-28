@@ -36,12 +36,16 @@
       { :encrypted_password (security/encrypt-password-string (password-str (:password user)) salt)
         :salt (str salt) })))
 
+(defn char-array-to-bytes [char-array-data]
+  (byte-array (flatten (map #(seq (.getBytes (Character/toString %1) "UTF-8")) char-array-data))))
+
 (defn generate-keys [user]
   (let [key-pair (security/generate-key-pair)
         key-pair-map (security/get-key-pair-map key-pair)]
     (merge user { :public_key (Base64/encodeBase64String (:bytes (:public-key key-pair-map)))
                   :public_key_algorithm (:algorithm (:public-key key-pair-map))
-                  :private_key (security/password-encrypt (:password user) (:bytes (:private-key key-pair-map)))
+                  :private_key (security/password-encrypt (char-array-to-bytes (:password user))
+                                 (:bytes (:private-key key-pair-map)))
                   :private_key_algorithm (:algorithm (:private-key key-pair-map)) })))
 
 (defn generate-fields [user]

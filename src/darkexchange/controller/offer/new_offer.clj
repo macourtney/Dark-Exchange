@@ -7,8 +7,7 @@
             [darkexchange.model.payment-type :as payment-type]
             [darkexchange.model.wants-offer :as wants-offer-model]
             [darkexchange.view.offer.new-offer :as new-offer-view]
-            [seesaw.core :as seesaw-core])
-  (:import [java.util Date]))
+            [seesaw.core :as seesaw-core]))
 
 (defn find-cancel-button [new-offer-view]
   (seesaw-core/select new-offer-view ["#cancel-button"]))
@@ -75,7 +74,7 @@
   (wants-offer-model/insert (wants-offer new-offer-view offer-id)))
 
 (defn scrape-offer [new-offer-view]
-  (let [offer-id (offer-model/insert { :created_at (new Date) })]
+  (let [offer-id (offer-model/create-new-offer)]
     (scrape-has-offer new-offer-view offer-id)
     (scrape-wants-offer new-offer-view offer-id)
     offer-id))
