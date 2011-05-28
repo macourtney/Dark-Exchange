@@ -1,8 +1,8 @@
-(ns darkexchange.database.migrations.002-create-wants-offers
+(ns darkexchange.database.migrations.007-create-wants-offers
   (:use darkexchange.database.util))
 
 (defn
-#^{:doc "Migrates the database up to version 2."}
+#^{:doc "Creates the wants_offers table."}
   up []
   (create-table :wants-offers
     (id)
@@ -12,6 +12,6 @@
     (belongs-to :offer)))
   
 (defn
-#^{:doc "Migrates the database down from version 2."}
+#^{:doc "Drops the wants_offers table."}
   down []
   (drop-table :wants-offers))

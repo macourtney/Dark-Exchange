@@ -45,7 +45,7 @@
   (when-let [user-name (user-name create-user-frame)]
     (when-let [password (password create-user-frame)]
       (try
-        (user-model/insert { :name user-name :password password })
+        (user-model/create-user user-name password)
         (actions-utils/close-window create-user-frame)
         (catch Throwable t
           (logging/error "" t))))))

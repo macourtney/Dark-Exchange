@@ -1,4 +1,4 @@
-(ns darkexchange.database.migrations.006-create-identities
+(ns darkexchange.database.migrations.004-create-identities
   (:use darkexchange.database.util))
 
 (defn

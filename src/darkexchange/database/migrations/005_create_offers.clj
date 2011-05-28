@@ -1,4 +1,4 @@
-(ns darkexchange.database.migrations.001-create-offers
+(ns darkexchange.database.migrations.005-create-offers
   (:use darkexchange.database.util))
 
 (defn

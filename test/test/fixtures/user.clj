@@ -15,4 +15,4 @@
 (defn fixture [function]
   (apply insert-into :users records)
   (function)
-  (delete :users [ "true" ]))
+  (delete :users ["true"]))

@@ -3,9 +3,10 @@
             [clojure.contrib.logging :as logging]
             [darkexchange.model.security :as security])
   (:use darkexchange.model.base)
-  (:import [java.sql Clob]))
+  (:import [java.sql Clob]
+           [org.apache.commons.codec.binary Base64]))
 
-(def current-user (atom nil))
+(def saved-current-user (atom nil))
 
 (def user-add-listeners (atom []))
 
@@ -35,8 +36,17 @@
       { :encrypted_password (security/encrypt-password-string (password-str (:password user)) salt)
         :salt (str salt) })))
 
+(defn generate-keys [user]
+  (let [key-pair (security/generate-key-pair)
+        key-pair-map (security/get-key-pair-map key-pair)]
+    (merge user { :public_key (Base64/encodeBase64String (:bytes (:public-key key-pair-map)))
+                  :public_key_algorithm (:algorithm (:public-key key-pair-map))
+                  :private_key (security/password-encrypt (:password user) (:bytes (:private-key key-pair-map)))
+                  :private_key_algorithm (:algorithm (:private-key key-pair-map)) })))
+
 (defn generate-fields [user]
-  (select-keys (encrypt-password user) [:name :encrypted_password :salt :public_key :private_key]))
+  (select-keys (generate-keys (encrypt-password user))
+    [:name :encrypted_password :salt :public_key :public_key_algorithm :private_key :private_key_algorithm]))
 
 (defn call-user-add-listeners [user]
   (doseq [user-add-listener @user-add-listeners]
@@ -68,8 +78,17 @@
   (when (char-arrays-equals? password1 password2)
     password1))
 
+(defn create-user [user-name password]
+  (insert { :name user-name :password password }))
+
 (defn login [user-name password]
   (when-let [user (find-user-by-name user-name)]
     (when (= (:encrypted_password user) (security/encrypt-password-string (password-str password) (:salt user)))
-      (reset! current-user user)
-      user)))
+      (reset! saved-current-user (assoc user :password password))
+      @saved-current-user)))
+
+(defn logout []
+  (reset! saved-current-user nil))
+
+(defn current-user []
+  @saved-current-user)

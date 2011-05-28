@@ -1,8 +1,8 @@
-(ns darkexchange.database.migrations.004-create-trades
+(ns darkexchange.database.migrations.008-create-trades
   (:use darkexchange.database.util))
 
 (defn
-#^{:doc "Migrates the database up to version 4."}
+#^{:doc "Creates the trades table in the database."}
   up []
   (create-table :trades
     (id)
@@ -14,6 +14,6 @@
     (integer :has-received))) ; Set to true when the has is received.
   
 (defn
-#^{:doc "Migrates the database down from version 4."}
+#^{:doc "Drops the trades table in the database."}
   down []
   (drop-table :trades))

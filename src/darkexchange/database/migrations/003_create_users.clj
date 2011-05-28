@@ -1,4 +1,4 @@
-(ns darkexchange.database.migrations.008-create-users
+(ns darkexchange.database.migrations.003-create-users
   (:use darkexchange.database.util))
 
 (defn
@@ -7,10 +7,12 @@
   (create-table :users
     (id)
     (string :name)
-    (string :encrypted-password)
+    (string :encrypted_password)
     (string :salt)
     (text :public-key)
-    (text :private-key)))
+    (string :public_key_algorithm)
+    (text :private_key)
+    (string :private_key_algorithm)))
   
 (defn
 #^{:doc "Drops the users table in the database."}

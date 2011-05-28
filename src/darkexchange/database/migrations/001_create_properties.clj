@@ -1,8 +1,8 @@
-(ns darkexchange.database.migrations.007-create-properties
+(ns darkexchange.database.migrations.001-create-properties
   (:use darkexchange.database.util))
 
 (defn
-#^{:doc "Migrates the database up to version 7."}
+#^{:doc "Creates the properties table."}
   up []
   (create-table :properties
     (id)
@@ -10,6 +10,6 @@
     (string :value)))
   
 (defn
-#^{:doc "Migrates the database down from version 7."}
+#^{:doc "Drops the properties table."}
   down []
   (drop-table :properties))

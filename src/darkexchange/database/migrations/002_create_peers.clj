@@ -1,4 +1,4 @@
-(ns darkexchange.database.migrations.005-create-peers
+(ns darkexchange.database.migrations.002-create-peers
   (:use darkexchange.database.util))
 
 (defn
