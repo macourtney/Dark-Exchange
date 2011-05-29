@@ -109,7 +109,6 @@
   (let [new-manager (load-manager)
         session (.getSession new-manager)]
     (set-destination (.getMyDestination session))
-    (println (str "Destination: " (base-64-destination)))
     (start-client-handler client-handler)
     (save-private-key session)
     (notify-destination-listeners)))

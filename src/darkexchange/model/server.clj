@@ -1,5 +1,6 @@
 (ns darkexchange.model.server
-  (:require [darkexchange.model.i2p-server :as i2p-server]))
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.model.i2p-server :as i2p-server]))
 
 (def server-receive-interceptors (atom []))
 
@@ -62,6 +63,7 @@
         (perform-action socket)))))
 
 (defn init []
+  (logging/info "Initializing server.")
   (i2p-server/init client-handler))
 
 (defn header-reply-interceptor [response-map]

@@ -6,10 +6,10 @@
   up []
   (create-table :offers
     (id)
-    (date-time :created-at)
+    (date-time :created_at)
     (belongs-to :acceptor) ; The id of the identity of the acceptor. Nil until the offer is accepted.
     (belongs-to :user)
-    (integer :accept-confirm)))
+    (integer :accept_confirm)))
   
 (defn
 #^{:doc "Deletes the offers table."}

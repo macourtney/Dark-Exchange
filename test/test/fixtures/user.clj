@@ -5,12 +5,16 @@
 (def records [
   { :id 1
     :name "test-user"
-    :encrypted_password ""
-    :salt ""
+    :encrypted_password "nTsg+WsHHNURODpaVcbK1Ip8UHY=" ; the test password is "password"
+    :salt "197849973"
     :public_key ""
     :private_key "" }])
 
+(def fixture-table-name :users)
+
 (defn fixture [function]
-  (apply insert-into :users records)
-  (function)
-  (delete :users ["true"]))
+  (try
+    (apply insert-into fixture-table-name records)
+    (function)
+    (finally
+      (delete fixture-table-name ["true"]))))

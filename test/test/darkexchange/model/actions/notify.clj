@@ -1,5 +1,6 @@
 (ns test.darkexchange.model.actions.notify
   (:require [test.fixtures.peer :as peer-fixture]
+            [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.peer :as peer-model]) 
   (:use clojure.test
         darkexchange.model.actions.notify))
@@ -16,3 +17,6 @@
       (is peer "The destination was not updated in the database")
       (peer-model/destroy-record peer)
       (is (nil? (peer-model/find-record { :id (:id peer) })) "Clean up failed."))))
+
+(deftest test-action-key
+  (is (= action-key action-keys/notify-action-key)))

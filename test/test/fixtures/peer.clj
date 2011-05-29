@@ -10,7 +10,11 @@
     :updated_at (new Date)
     :notified nil }])
 
+(def fixture-table-name :peers)
+
 (defn fixture [function]
-  (apply insert-into :peers records)
-  (function)
-  (delete :peers ["true"]))
+  (try
+    (apply insert-into fixture-table-name records)
+    (function)
+    (finally 
+      (delete fixture-table-name ["true"]))))

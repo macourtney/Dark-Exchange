@@ -81,7 +81,6 @@
   (when-not (property/test-peers-downloaded?)
     (try
       (let [destinations (:data (get-peers-from (:destination (last-updated-peer))))]
-        (logging/debug (str "destinations: " (count destinations)))
         (if (and destinations (not-empty destinations))
           (do
             (doseq [destination destinations]
