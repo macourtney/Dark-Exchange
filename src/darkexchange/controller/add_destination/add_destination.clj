@@ -21,6 +21,7 @@
 
 (defn add-action [add-destination-frame call-back]
   (peer-model/add-destination (.getText (find-destination-text add-destination-frame)))
+  (peer-model/download-peers)
   (call-back)
   (.hide add-destination-frame)
   (.dispose add-destination-frame))

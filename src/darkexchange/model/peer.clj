@@ -77,16 +77,21 @@
 (defn all-unnotified-peers []
   (find-by-sql ["SELECT * FROM peers WHERE notified IS NULL"]))
 
+(defn notify-all-peers []
+  (doseq [peer (all-unnotified-peers)]
+    (notify-destination (:destination peer))))
+
+(defn add-destinations [destinations]
+  (doseq [destination destinations]
+    (add-destination-if-missing destination))
+  (notify-all-peers))
+
 (defn download-peers-background []
   (when-not (property/test-peers-downloaded?)
     (try
       (let [destinations (:data (get-peers-from (:destination (last-updated-peer))))]
         (if (and destinations (not-empty destinations))
-          (do
-            (doseq [destination destinations]
-              (add-destination-if-missing destination))
-            (doseq [peer (all-unnotified-peers)]
-              (notify-destination (:destination peer))))
+          (add-destinations destinations)
           (property/reset-peers-downloaded?)))
       (catch Exception e
         (logging/debug "An exception occured while downloading the peers.")

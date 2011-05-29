@@ -31,7 +31,8 @@
   @destination)
 
 (defn base-64-destination []
-  (.toBase64 (current-destination)))
+  (when-let [destination (current-destination)]
+    (.toBase64 destination)))
 
 (defn private-key-file-exists? []
   (.exists private-key-file))
