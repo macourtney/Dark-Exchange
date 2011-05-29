@@ -81,6 +81,14 @@
   (doseq [peer (all-unnotified-peers)]
     (notify-destination (:destination peer))))
 
+(defn notified? [peer]
+  (and peer (:notified peer)))
+
+(defn notify-peer-if-necessary [destination]
+  (when-let [peer (find-peer destination)]
+    (when-not (notified? peer)
+      (notify-destination destination))))
+
 (defn add-destinations [destinations]
   (doseq [destination destinations]
     (add-destination-if-missing destination))

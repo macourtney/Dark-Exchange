@@ -20,7 +20,9 @@
     :action actions-utils/close-window))
 
 (defn add-action [add-destination-frame call-back]
-  (peer-model/add-destination (.getText (find-destination-text add-destination-frame)))
+  (let [destination (.getText (find-destination-text add-destination-frame))]
+    (peer-model/add-destination destination)
+    (peer-model/notify-peer-if-necessary destination))
   (peer-model/download-peers)
   (call-back)
   (.hide add-destination-frame)
