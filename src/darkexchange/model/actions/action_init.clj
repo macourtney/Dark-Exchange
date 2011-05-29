@@ -1,9 +1,10 @@
 (ns darkexchange.model.actions.action-init
   (:require [clojure.contrib.logging :as logging]
-            [darkexchange.model.server :as server]
-            [darkexchange.model.peer :as peer-model]))
+            [darkexchange.model.actions.get-peers :as get-peers]
+            [darkexchange.model.actions.notify :as notify]
+            [darkexchange.model.server :as server-model]))
 
 (defn init []
-  (logging/info (str "Adding notify actions."))
-  (server/add-action peer-model/notify-action-key peer-model/notify-action)
-  (server/add-action peer-model/get-peers-action-key peer-model/get-peers-action))
+  (logging/info (str "Adding actions."))
+  (server-model/add-action notify/action-key notify/action)
+  (server-model/add-action get-peers/action-key get-peers/action))

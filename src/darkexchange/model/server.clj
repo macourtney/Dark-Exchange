@@ -27,8 +27,14 @@
 (defn run-server-reply-interceptors [response-map]
   (run-interceptors @server-reply-interceptors response-map))
 
+(defn action-map []
+  @actions)
+
+(defn reset-actions! []
+  (reset! actions {}))
+
 (defn find-action [action-key]
-  (get @actions action-key))
+  (get (action-map) action-key))
 
 (defn get-action-key [request-map]
   (when-let [action-key (:action request-map)]
@@ -36,8 +42,8 @@
 
 (defn run-action [request-map]
   (let [action-key (get-action-key request-map)]
-    (if-let [action-fn (get @actions action-key)]
-      { :action action-key :data (action-fn (:data request-map)) }
+    (if-let [action-fn (find-action action-key)]
+      { :action action-key :data (action-fn request-map) }
       { :data nil :type :action-not-found :action action-key })))
 
 (defn build-request [socket]

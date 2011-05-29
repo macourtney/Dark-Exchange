@@ -2,8 +2,6 @@
   (:use darkexchange.database.util)
   (:require [test.init :as test-init]))
 
-(test-init/init-tests)
-
 (def records [
   { :id 1
     :name "test-user"

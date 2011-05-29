@@ -1,6 +1,7 @@
 (ns darkexchange.model.peer
   (:require [clojure.contrib.logging :as logging]
             [clj-record.boot :as clj-record-boot]
+            [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.property :as property])
@@ -8,9 +9,6 @@
   (:import [java.sql Clob]
            [java.text SimpleDateFormat]
            [java.util Date]))
-
-(def notify-action-key :notify)
-(def get-peers-action-key :get-peers)
 
 (def peer-update-listeners (atom []))
 
@@ -54,13 +52,9 @@
     (update { :id (:id peer) :updated_at (new Date) })
     (add-destination destination)))
 
-(defn notify-action [data]
-  (update-destination (:destination data))
-  "ok")
-
 (defn notify-destination [destination]
   (try
-    (let [response (client/send-message (i2p-server/as-destination destination) notify-action-key
+    (let [response (client/send-message (i2p-server/as-destination destination) action-keys/notify-action-key
       { :destination (client/base-64-destination) })]
       (update (merge (find-peer (i2p-server/as-destination-str destination)) { :notified true :updated_at (new Date) }))
       response)
@@ -70,10 +64,7 @@
 
 (defn get-peers-from [destination]
   (when destination
-    (client/send-message destination get-peers-action-key { :type :all })))
-
-(defn get-peers-action [data]
-  (map :destination (all-peers)))
+    (client/send-message destination action-keys/get-peers-action-key { :type :all })))
 
 (defn last-updated-peer []
   (first (find-by-sql ["SELECT * FROM peers ORDER BY updated_at DESC LIMIT 1"])))

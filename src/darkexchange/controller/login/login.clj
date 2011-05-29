@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.login.create-user :as create-user]
             [darkexchange.controller.main.main-frame :as main-frame]
+            [darkexchange.core :as core]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.login :as login-view]
             [seesaw.core :as seesaw-core]))
@@ -43,6 +44,7 @@
   (reset-password login-frame))
 
 (defn login-success [login-frame]
+  (core/init)
   (main-frame/show)
   (actions-utils/close-window login-frame))
 

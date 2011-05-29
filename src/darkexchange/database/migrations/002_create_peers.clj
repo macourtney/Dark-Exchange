@@ -7,8 +7,8 @@
   (create-table :peers
     (id)
     (text :destination)
-    (date-time :created-at)
-    (date-time :updated-at)
+    (date-time :created_at)
+    (date-time :updated_at)
     (integer :notified)))
   
 (defn
