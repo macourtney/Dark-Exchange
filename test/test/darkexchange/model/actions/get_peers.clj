@@ -11,7 +11,7 @@
   (let [response-map (action {})
         destinations (:data response-map)]
     (is destinations "There are no destinations in the system.")
-    (is (= 1 (count destinations)) "Expected only one destination in the system.")
+    (is (= (count peer-fixture/records) (count destinations)) (str "Expected only " (count peer-fixture/records) " destinations in the system."))
     (is (= (:destination (first peer-fixture/records)) (first destinations)) "Unexpected destination returned.")))
 
 (deftest test-action-key

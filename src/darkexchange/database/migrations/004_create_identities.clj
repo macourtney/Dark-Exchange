@@ -7,7 +7,7 @@
   (create-table :identities
     (id)
     (string :name)
-    (string :public-key)
+    (string :public_key)
     (belongs-to :peer)))
   
 (defn
