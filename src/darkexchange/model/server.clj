@@ -1,6 +1,8 @@
 (ns darkexchange.model.server
   (:require [clojure.contrib.logging :as logging]
-            [darkexchange.model.i2p-server :as i2p-server]))
+            [darkexchange.model.i2p-server :as i2p-server]
+            [darkexchange.model.user :as user-model]
+            [darkexchange.model.util :as model-util]))
 
 (def server-receive-interceptors (atom []))
 
@@ -17,16 +19,11 @@
 (defn add-action [action-key action-fn]
   (swap! actions assoc action-key action-fn))
 
-(defn run-interceptors [interceptors arg]
-  (if (empty? interceptors)
-    arg
-    ((apply comp interceptors) arg)))
-
 (defn run-server-receive-interceptors [request-map]
-  (run-interceptors @server-receive-interceptors request-map))
+  (model-util/run-interceptors @server-receive-interceptors request-map))
 
 (defn run-server-reply-interceptors [response-map]
-  (run-interceptors @server-reply-interceptors response-map))
+  (model-util/run-interceptors @server-reply-interceptors response-map))
 
 (defn action-map []
   @actions)
@@ -66,7 +63,14 @@
   (logging/info "Initializing server.")
   (i2p-server/init client-handler))
 
+(defn response-map-user []
+  (let [user (user-model/current-user)]
+    { :name (:name user) :public-key (:public_key user) }))
+
+(defn response-map-from []
+  { :destination (i2p-server/base-64-destination) :user (response-map-user) })
+
 (defn header-reply-interceptor [response-map]
-  (merge { :destination (i2p-server/base-64-destination) :type :ok } response-map))
+  (merge { :from (response-map-from) :type :ok } response-map))
 
 (add-server-reply-interceptor header-reply-interceptor)
