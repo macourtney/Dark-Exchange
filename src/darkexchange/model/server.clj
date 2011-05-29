@@ -43,7 +43,7 @@
 (defn run-action [request-map]
   (let [action-key (get-action-key request-map)]
     (if-let [action-fn (find-action action-key)]
-      { :action action-key :data (action-fn request-map) }
+      (assoc (action-fn request-map) :action action-key)
       { :data nil :type :action-not-found :action action-key })))
 
 (defn build-request [socket]

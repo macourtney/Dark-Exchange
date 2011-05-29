@@ -5,4 +5,4 @@
 (def action-key action-keys/notify-action-key)
 
 (defn action [request-map]
-  (map :destination (peer-model/all-peers)))
+  { :data (map :destination (peer-model/all-peers)) })

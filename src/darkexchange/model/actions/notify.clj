@@ -6,4 +6,4 @@
 
 (defn action [request-map]
   (peer-model/update-destination (:destination (:data request-map)))
-  "ok")
+  { :data "ok" })
