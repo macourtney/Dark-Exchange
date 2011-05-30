@@ -6,8 +6,6 @@
 
 (def tab-name (terms/peer))
 
-(def peer-table-headers [(terms/id) (terms/destination) (terms/created-on) (terms/last-updated-at)])
-
 (def peer-table-columns [ { :key :id :text (terms/id) }
                           { :key :destination :text (terms/destination) }
                           { :key :created_at :text (terms/created-on) }
@@ -55,7 +53,7 @@
 
 (defn create []
   (seesaw-core/border-panel
-      :border 5
-      :vgap 5
-      :north (create-destination-panel)
-      :center (create-peer-list-panel)))
+    :border 5
+    :vgap 5
+    :north (create-destination-panel)
+    :center (create-peer-list-panel)))
