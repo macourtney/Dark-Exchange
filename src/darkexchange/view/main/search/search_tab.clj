@@ -6,11 +6,11 @@
 
 (def tab-name (terms/search))
 
-(def table-columns [ { :key :id :text (terms/id) }
-                          { :key :destination :text (terms/destination) }
-                          { :key :created_at :text (terms/created-on) }
-                          { :key :updated_at :text (terms/last-updated-at) }
-                          { :key :notified :text (terms/notified) }])
+(def table-columns [ { :key :name :text (terms/name) }
+                     { :key :has :text (terms/has) }
+                     { :key :to_send_by :text (terms/to-send-by) }
+                     { :key :wants :text (terms/wants) }
+                     { :key :to_receive_by :text (terms/to-receive-by) }])
 
 (defn create-criteria-panel []
   (seesaw-core/horizontal-panel

@@ -23,7 +23,7 @@
 
 (clj-record.core/init-model
   (:associations
-    ;(belongs-to identity :fk acceptor)
+    (belongs-to identity)
     (belongs-to user)
     (has-many wants-offers)
     (has-many has-offers))
@@ -37,11 +37,11 @@
   (find-records [true]))
 
 (defn open-offer? [offer]
-  (nil? (:acceptor-id offer)))
+  (nil? (:identity_id offer)))
 
 (defn open-offers
   ([] (open-offers (user/current-user)))
-  ([user] (find-records ["acceptor_id IS NULL AND user_id = ?" (:id user)])))
+  ([user] (find-records ["identity_id IS NULL AND user_id = ?" (:id user)])))
 
 (defn attach-has-offers [offer]
   (assoc offer :has-offer (first (find-has-offers offer))))
@@ -65,3 +65,6 @@
 
 (defn delete-offer [offer-id]
   (destroy-record { :id offer-id }))
+
+(defn search-offers [search-args]
+  { })
