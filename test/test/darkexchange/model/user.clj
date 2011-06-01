@@ -1,11 +1,12 @@
 (ns test.darkexchange.model.user
+  (:require [test.fixtures.util :as fixtures-util]) 
   (:use clojure.contrib.test-is
         test.fixtures.user
         darkexchange.model.user))
 
 (def model "user")
 
-(use-fixtures :once fixture)
+(fixtures-util/use-fixture-maps :once fixture-map)
 
 (deftest test-first-record
   (is (get-record 1)))

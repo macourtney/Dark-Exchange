@@ -1,11 +1,12 @@
 (ns test.darkexchange.model.actions.notify
-  (:require [test.fixtures.peer :as peer-fixture]
-            [darkexchange.model.actions.action-keys :as action-keys]
-            [darkexchange.model.peer :as peer-model]) 
+  (:require [darkexchange.model.actions.action-keys :as action-keys]
+            [darkexchange.model.peer :as peer-model]
+            [test.fixtures.peer :as peer-fixture]
+            [test.fixtures.util :as fixtures-util]) 
   (:use clojure.test
         darkexchange.model.actions.notify))
 
-(use-fixtures :once peer-fixture/fixture)
+(fixtures-util/use-fixture-maps :once peer-fixture/fixture-map)
 
 (deftest test-action
   (let [test-destination "E2gmNv6IjYPmSlosy10GZ50T634nPc5M8ZHgJ6DNhg262GECdwgQXE4GkWDqB6Q6yYib9l88HlyWQVM5qaWIh71XqnMCFwq2yzO5pCnzaRVGYSxM7rdV-dChvNEfVLrDajd~sbz~OYinY8NB26-NItSPHw0gKqdDAfO7OuAd6Es57RROi4W8hU~tg4m9Z0Xr-a76mB9uqVynMRAUt~AhyD4OJ5uo6WL5wa3D6XJ2cuIC4rqT87h7ayk3ZOEhewc9L~aUyXtqC2UzitjV1BnONL6zpPQ0dwS-Snuak0C~NBaFNf6ooZF19vPSuXcnB6t6~ezy3P2IqBxdzrJuN1MxNHIHOmGtpsxgjZZkZvBOdrjm-II9~9D7AnG-LwZ1RkPge6bTnyoqex1rEm~~jywxwirEjcl6TOuJ7JIv2iOaU8imU6CpRwrxCGB1yjA1pcGFv841AvdUo7-Tpy1wtyIBi-n~5iNq6PNGwhUBYsQKmBBSolHrW72gCqeOmg88XyTaAAAA"]

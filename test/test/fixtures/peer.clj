@@ -17,9 +17,4 @@
 
 (def fixture-table-name :peers)
 
-(defn fixture [function]
-  (try
-    (apply insert-into fixture-table-name records)
-    (function)
-    (finally 
-      (delete fixture-table-name ["true"]))))
+(def fixture-map { :table fixture-table-name :records records })

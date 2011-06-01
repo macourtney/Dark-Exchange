@@ -1,6 +1,7 @@
 (ns test.fixtures.user
   (:use darkexchange.database.util)
-  (:require [test.init :as test-init]))
+  (:require [test.init :as test-init]
+            [test.fixtures.util :as fixtures-util]))
 
 (def records [
   { :id 1
@@ -12,9 +13,4 @@
 
 (def fixture-table-name :users)
 
-(defn fixture [function]
-  (try
-    (apply insert-into fixture-table-name records)
-    (function)
-    (finally
-      (delete fixture-table-name ["true"]))))
+(def fixture-map { :table fixture-table-name :records records })

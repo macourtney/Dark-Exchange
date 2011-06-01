@@ -1,11 +1,12 @@
 (ns test.darkexchange.model.client
-  (:require [test.fixtures.user :as user-fixture]
+  (:require [darkexchange.model.user :as user-model]
             [test.darkexchange.util :as test-util]
-            [darkexchange.model.user :as user-model]) 
+            [test.fixtures.user :as user-fixture]
+            [test.fixtures.util :as fixtures-util]) 
   (:use clojure.contrib.test-is
         darkexchange.model.client))
 
-(use-fixtures :once user-fixture/fixture)
+(fixtures-util/use-fixture-maps :once user-fixture/fixture-map)
 
 (defn create-user-map []
   (let [user (user-model/current-user)]

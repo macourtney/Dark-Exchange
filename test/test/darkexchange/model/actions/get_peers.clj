@@ -1,11 +1,12 @@
 (ns test.darkexchange.model.actions.get-peers
-  (:require [test.fixtures.peer :as peer-fixture]
-            [darkexchange.model.actions.action-keys :as action-keys] 
-            [darkexchange.model.peer :as peer-model]) 
+  (:require [darkexchange.model.actions.action-keys :as action-keys] 
+            [darkexchange.model.peer :as peer-model]
+            [test.fixtures.peer :as peer-fixture]
+            [test.fixtures.util :as fixtures-util]) 
   (:use clojure.test
         darkexchange.model.actions.get-peers))
 
-(use-fixtures :once peer-fixture/fixture)
+(fixtures-util/use-fixture-maps :once peer-fixture/fixture-map)
 
 (deftest test-action
   (let [response-map (action {})

@@ -11,5 +11,4 @@
 
 (def fixture-table-name :identities)
 
-(defn fixture [function]
-  (peer-fixture/fixture #(fixtures-util/run-fixture fixture-table-name records function)))
+(def fixture-map { :table fixture-table-name :records records :required-fixtures [peer-fixture/fixture-map] })

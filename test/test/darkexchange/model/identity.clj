@@ -1,10 +1,11 @@
 (ns test.darkexchange.model.identity
   (:require [test.fixtures.identity :as identity-fixture]
-            [test.fixtures.peer :as peer-fixture]) 
+            [test.fixtures.peer :as peer-fixture]
+            [test.fixtures.util :as fixtures-util]) 
   (:use clojure.contrib.test-is
         darkexchange.model.identity))
 
-(use-fixtures :once identity-fixture/fixture)
+(fixtures-util/use-fixture-maps :once identity-fixture/fixture-map)
 
 (deftest test-add-identity
   (let [identity-name "add-identity"
