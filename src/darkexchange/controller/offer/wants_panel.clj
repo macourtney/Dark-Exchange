@@ -23,9 +23,9 @@
   (:payment-type (seesaw-core/selection (find-i-want-payment-type-combobox parent-component))))
 
 (defn wants-offer [parent-component]
-  { :amount (i-want-amount parent-component)
-    :currency (:code (i-want-currency parent-component))
-    :payment_type (:code (i-want-payment-type parent-component)) })
+  { :wants_amount (i-want-amount parent-component)
+    :wants_currency (:code (i-want-currency parent-component))
+    :wants_payment_type (:code (i-want-payment-type parent-component)) })
 
 (defn load-currencies [parent-component]
   (offer-widgets/load-combobox (find-i-want-currency-combobox parent-component) (currency-model/currency-adaptors)))

@@ -22,10 +22,10 @@
 (defn i-have-payment-type [parent-component]
   (:payment-type (seesaw-core/selection (find-i-have-payment-type-combobox parent-component))))
 
-(defn has-offer [parent-component offer-id]
-  { :amount (i-have-amount parent-component)
-    :currency (:code (i-have-currency parent-component))
-    :payment_type (:code (i-have-payment-type parent-component)) })
+(defn has-offer [parent-component]
+  { :has_amount (i-have-amount parent-component)
+    :has_currency (:code (i-have-currency parent-component))
+    :has_payment_type (:code (i-have-payment-type parent-component)) })
 
 (defn load-currencies [parent-component]
   (offer-widgets/load-combobox (find-i-have-currency-combobox parent-component) (currency-model/currency-adaptors)))

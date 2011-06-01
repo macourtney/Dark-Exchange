@@ -1,5 +1,6 @@
 (ns test.darkexchange.util
-  (:require [darkexchange.model.user :as user-model]))
+  (:require [test.init :as test-init]
+            [darkexchange.model.user :as user-model]))
 
 (defn login []
   (when-not (user-model/login "test-user" (.toCharArray "password"))

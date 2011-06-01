@@ -1,4 +1,4 @@
-(ns darkexchange.database.migrations.008-create-trades
+(ns darkexchange.database.migrations.006-create-trades
   (:use darkexchange.database.util))
 
 (defn

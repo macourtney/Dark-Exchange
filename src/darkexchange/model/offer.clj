@@ -1,8 +1,8 @@
 (ns darkexchange.model.offer
   (:require [clj-record.boot :as clj-record-boot]
             [clojure.contrib.logging :as logging]
-            [darkexchange.model.has-offer :as has-offer]
-            [darkexchange.model.wants-offer :as wants-offer]
+            [darkexchange.model.currency :as currency]
+            [darkexchange.model.payment-type :as payment-type]
             [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
   (:import [java.util Date]))
@@ -16,22 +16,18 @@
   (doseq [listener @offer-add-listeners]
     (listener new-offer)))
 
-(defn cleanup [deleted-offer]
-  (let [offer-id (:id deleted-offer)]
-    (has-offer/delete-has-offers-for offer-id)
-    (wants-offer/delete-wants-offers-for offer-id)))
-
 (clj-record.core/init-model
   (:associations
     (belongs-to identity)
     (belongs-to user)
     (has-many wants-offers)
     (has-many has-offers))
-  (:callbacks (:after-insert offer-add)
-              (:after-destroy cleanup)))
+  (:callbacks (:after-insert offer-add)))
 
-(defn create-new-offer []
-  (insert { :created_at (new Date) :user_id (:id (user/current-user)) }))
+(defn create-new-offer [offer-data]
+  (insert (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
+            (select-keys offer-data [:has_amount :has_currency :has_payment_type :wants_amount :wants_currency
+                                     :wants_payment_type]))))
 
 (defn all-offers []
   (find-records [true]))
@@ -43,22 +39,48 @@
   ([] (open-offers (user/current-user)))
   ([user] (find-records ["identity_id IS NULL AND user_id = ?" (:id user)])))
 
-(defn attach-has-offers [offer]
-  (assoc offer :has-offer (first (find-has-offers offer))))
+(defn currency [offer currency-key]
+  (currency/get-currency (currency-key offer)))
 
-(defn attach-wants-offers [offer]
-  (assoc offer :wants-offer (first (find-wants-offers offer))))
+(defn amount-str [offer amount-key currency-key]
+  (str (amount-key offer) " " (currency/currency-str (currency offer currency-key))))
 
-(defn attach-has-and-wants-offers [offer]
-  (attach-wants-offers (attach-has-offers offer)))
+(defn payment-type [offer payment-key]
+  (payment-type/get-payment (payment-key offer)))
+
+(defn currency-str [offer payment-key]
+  (payment-type/payment-type-str (payment-type offer payment-key)))
+
+(defn has-currency [offer]
+  (currency offer :has_currency))
+
+(defn has-amount-str [offer]
+  (amount-str offer :has_amount :has_currency))
+
+(defn has-payment-type [offer]
+  (payment-type offer :has_payment_type))
+
+(defn has-currency-str [offer]
+  (currency-str offer :has_payment_type))
+
+(defn wants-currency [offer]
+  (currency offer :wants_currency))
+
+(defn wants-amount-str [offer]
+  (amount-str offer :want_amount :wants_currency))
+
+(defn wants_payment-type [offer]
+  (payment-type offer :wants_payment_type))
+
+(defn wants-currency-str [offer]
+  (currency-str offer :wants_payment_type))
 
 (defn convert-to-table-offer [offer]
-  (let [offer (attach-has-and-wants-offers offer)]
-    { :id (:id offer)
-      :i-have-amount (has-offer/amount-str (:has-offer offer))
-      :i-want-to-send-by (has-offer/currency-str (:has-offer offer))
-      :i-want-amount (wants-offer/amount-str (:wants-offer offer))
-      :i-want-to-receive-by (wants-offer/currency-str (:wants-offer offer)) }))
+  { :id (:id offer)
+    :i-have-amount (has-amount-str offer)
+    :i-want-to-send-by (has-currency-str offer)
+    :i-want-amount (wants-amount-str offer)
+    :i-want-to-receive-by (wants-currency-str offer) })
 
 (defn table-open-offers []
   (map convert-to-table-offer (open-offers)))
@@ -67,6 +89,6 @@
   (destroy-record { :id offer-id }))
 
 (defn search-offers [search-args]
-  (find-by-sql ["SELECT offers.id FROM offers AS offers LEFT JOIN has_offers AS has_offers ON has_offers.offer_id = offers.id LEFT JOIN wants_offers AS wants_offers ON wants_offers.offer_id = offers.id WHERE has_offers.currency = ? AND has_offers.payment_type = ? AND wants_offers.currency = ? AND wants_offers.payment_type = ?"
-                (:i-want-currency search-args) (:i-want-payment-type search-args) (:i-have-currency search-args)
-                (:i-have-payment-type search-args)]))
+  (find-by-sql ["SELECT * FROM offers WHERE identity_id IS NULL AND user_id = ? AND has_currency = ? AND has_payment_type = ? AND wants_currency = ? AND wants_payment_type = ?"
+                (:id (user/current-user)) (:i-want-currency search-args) (:i-want-payment-type search-args)
+                (:i-have-currency search-args) (:i-have-payment-type search-args)]))

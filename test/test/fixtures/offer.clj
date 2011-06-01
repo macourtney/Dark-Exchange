@@ -10,7 +10,13 @@
     :created_at (new Date)
     :identity_id nil
     :user_id 1
-    :accept_confirm 0 }])
+    :accept_confirm 0
+    :has_amount 1
+    :has_currency "BITCOIN"
+    :has_payment_type "BITCOIN"
+    :wants_amount 1
+    :wants_currency "USD"
+    :wants_payment_type "CAM" }])
 
 (def fixture-table-name :offers)
 
