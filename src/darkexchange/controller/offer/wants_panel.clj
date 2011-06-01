@@ -14,13 +14,13 @@
   (seesaw-core/select parent-component ["#i-want-payment-type"]))
 
 (defn i-want-amount [parent-component]
-  (Integer/parseInt (.getText (find-i-want-amount parent-component))))
+  (Integer/parseInt (seesaw-core/text (find-i-want-amount parent-component))))
 
 (defn i-want-currency [parent-component]
-  (:currency (.getSelectedItem (find-i-want-currency-combobox parent-component))))
+  (:currency (seesaw-core/selection (find-i-want-currency-combobox parent-component))))
 
 (defn i-want-payment-type [parent-component]
-  (:payment-type (.getSelectedItem (find-i-want-payment-type-combobox parent-component))))
+  (:payment-type (seesaw-core/selection (find-i-want-payment-type-combobox parent-component))))
 
 (defn wants-offer [parent-component]
   { :amount (i-want-amount parent-component)

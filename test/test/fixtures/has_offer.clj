@@ -1,4 +1,4 @@
-(ns test.fixtures.has_offer
+(ns test.fixtures.has-offer
   (:use darkexchange.database.util)
   (:require [test.init :as test-init]
             [test.fixtures.offer :as offer-fixture])
@@ -7,8 +7,8 @@
 (def records [
   { :id 1
     :amount 1
-    :currency "USD"
-    :payment-type "CAM"
+    :currency "BITCOIN"
+    :payment_type "BITCOIN"
     :offer_id 1 }])
 
 (def fixture-table-name :has-offers)

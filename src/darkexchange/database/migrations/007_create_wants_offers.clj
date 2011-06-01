@@ -8,7 +8,7 @@
     (id)
     (integer :amount)
     (string :currency) ; Currency code.
-    (string :payment-type) ; Payment type code.
+    (string :payment_type) ; Payment type code.
     (belongs-to :offer)))
   
 (defn

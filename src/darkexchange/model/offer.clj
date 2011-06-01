@@ -67,6 +67,6 @@
   (destroy-record { :id offer-id }))
 
 (defn search-offers [search-args]
-  (find-by-sql ["SELECT * FROM offers AS offers LEFT JOIN has_offers AS has_offers ON has_offers.offer_id = offers.id LEFT JOIN wants_offers AS wants_offers ON wants_offers.offer_id = offers.id WHERE has_offers.currency = ? AND has_offers.payment-type = ? AND wants_offers.currency = ? AND wants_offers.payment-type = ?"
+  (find-by-sql ["SELECT offers.id FROM offers AS offers LEFT JOIN has_offers AS has_offers ON has_offers.offer_id = offers.id LEFT JOIN wants_offers AS wants_offers ON wants_offers.offer_id = offers.id WHERE has_offers.currency = ? AND has_offers.payment_type = ? AND wants_offers.currency = ? AND wants_offers.payment_type = ?"
                 (:i-want-currency search-args) (:i-want-payment-type search-args) (:i-have-currency search-args)
                 (:i-have-payment-type search-args)]))

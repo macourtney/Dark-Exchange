@@ -9,7 +9,7 @@
     (string :name)
     (string :encrypted_password)
     (string :salt)
-    (text :public-key)
+    (text :public_key)
     (string :public_key_algorithm)
     (text :private_key)
     (string :private_key_algorithm)))
