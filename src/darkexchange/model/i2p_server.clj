@@ -128,7 +128,7 @@
 
 (defn send-message [destination data]
   (let [destination-obj (as-destination destination)]
-    (when (.ping @manager destination-obj 30000)
+    (when (and @manager (.ping @manager destination-obj 30000))
       (let [socket (.connect @manager destination-obj)]
         (write-json socket data)
         (read-json socket)))))

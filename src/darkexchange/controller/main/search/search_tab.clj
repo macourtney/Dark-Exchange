@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.search.search-tab
-  (:require [darkexchange.controller.actions.utils :as action-utils]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.offer.has-panel :as offer-has-panel]
             [darkexchange.controller.offer.wants-panel :as offer-wants-panel]
             [darkexchange.model.calls.search-offers :as search-offers-call]
@@ -16,12 +17,12 @@
 
 (defn insert-offer-into-table [parent-component offer]
   (let [search-offer-table (find-search-offer-table parent-component)]
-      (seesaw-table/insert-at! search-offer-table (seesaw-table/row-count search-offer-table) offer)))
+    (seesaw-table/insert-at! search-offer-table (seesaw-table/row-count search-offer-table) offer)))
 
 (defn load-search-offer-table [parent-component offers]
   (when offers
     (doseq [offer offers]
-      (insert-offer-into-table parent-component offer))))
+      (seesaw.core/invoke-later (insert-offer-into-table parent-component offer)))))
 
 (defn convert-offer [offer]
   { :name (:name offer)
@@ -32,7 +33,8 @@
 
 (defn search-call-back [parent-component found-offers]
   (when found-offers
-    (load-search-offer-table parent-component (map convert-offer found-offers))))
+    (let [converted-offers (map convert-offer found-offers)]
+      (load-search-offer-table parent-component converted-offers))))
 
 (defn run-search [parent-component]
   (search-offers-call/call

@@ -67,7 +67,7 @@
   (currency offer :wants_currency))
 
 (defn wants-amount-str [offer]
-  (amount-str offer :want_amount :wants_currency))
+  (amount-str offer :wants_amount :wants_currency))
 
 (defn wants_payment-type [offer]
   (payment-type offer :wants_payment_type))
