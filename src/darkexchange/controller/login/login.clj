@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.login.create-user :as create-user]
             [darkexchange.controller.main.main-frame :as main-frame]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.core :as core]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.login :as login-view]
@@ -12,23 +13,21 @@
   (seesaw-core/select login-frame ["#user-name-combobox"]))
 
 (defn reload-user-name-combobox [login-frame]
-  (seesaw-core/config! (find-user-name-combobox login-frame) :model (user-model/all-user-names)))
+  (seesaw-core/config! (find-user-name-combobox login-frame) :model (user-model/all-user-names))
+  login-frame)
 
 (defn load-data [login-frame]
   (reload-user-name-combobox login-frame))
 
 (defn attach-new-user-action [login-frame]
-  (actions-utils/attach-listener login-frame "#new-user-button" (fn [_]  (create-user/show))))
+  (actions-utils/attach-listener login-frame "#new-user-button" (fn [_] (create-user/show))))
 
 (defn attach-cancel-action [login-frame]
   (actions-utils/attach-window-close-and-exit-listener login-frame "#cancel-button"))
 
-(defn create-user-add-listener [login-frame]
-  (fn [_]
-    (reload-user-name-combobox login-frame)))
-
 (defn attach-user-add-listener [login-frame]
-  (user-model/add-user-add-listener (create-user-add-listener login-frame)))
+  (user-model/add-user-add-listener (fn [_] (reload-user-name-combobox login-frame)))
+  login-frame)
 
 (defn find-password-field [login-frame]
   (seesaw-core/select login-frame ["#password-field"]))
@@ -59,15 +58,10 @@
       (logging/error "An error occurred while logging in." t))))
 
 (defn attach-login-action [login-frame]
-  (actions-utils/attach-listener login-frame "#login-button" (fn [_]  (login login-frame))))
+  (actions-utils/attach-listener login-frame "#login-button" (fn [_] (login login-frame))))
 
 (defn attach [login-frame]
-  (attach-user-add-listener login-frame)
-  (attach-new-user-action login-frame)
-  (attach-login-action login-frame)
-  (attach-cancel-action login-frame))
+  (attach-cancel-action (attach-login-action (attach-new-user-action (attach-user-add-listener login-frame)))))
 
 (defn show []
-  (let [login-frame (login-view/show)]
-    (load-data login-frame)
-    (attach login-frame)))
+  (controller-utils/show (attach (load-data (login-view/create)))))

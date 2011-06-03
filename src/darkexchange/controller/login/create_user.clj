@@ -1,6 +1,7 @@
 (ns darkexchange.controller.login.create-user
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as actions-utils]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.create-user :as create-user-view]
             [seesaw.core :as seesaw-core]))
@@ -54,9 +55,7 @@
   (actions-utils/attach-listener create-user-frame "#register-button" (fn [_] (create-user create-user-frame))))
 
 (defn attach [create-user-frame]
-  (attach-cancel-action create-user-frame)
-  (attach-register-action create-user-frame))
+  (attach-register-action (attach-cancel-action create-user-frame)))
 
 (defn show []
-  (let [create-user-frame (create-user-view/show)]
-    (attach create-user-frame)))
+  (controller-utils/show (attach (create-user-view/create))))

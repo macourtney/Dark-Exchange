@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.search.search-tab
-  (:require [darkexchange.controller.offer.has-panel :as offer-has-panel]
+  (:require [darkexchange.controller.actions.utils :as action-utils]
+            [darkexchange.controller.offer.has-panel :as offer-has-panel]
             [darkexchange.controller.offer.wants-panel :as offer-wants-panel]
             [darkexchange.model.calls.search-offers :as search-offers-call]
             [darkexchange.model.offer :as offer-model]
@@ -42,10 +43,14 @@
     #(search-call-back parent-component %)))
 
 (defn attach-search-action [parent-component]
-  (seesaw-core/listen (find-search-button parent-component)
-    :action (fn [e] (run-search parent-component))))
+  (action-utils/attach-listener parent-component "#search-button"
+    (fn [e] (run-search parent-component))))
+
+(defn load-data [main-frame]
+  (offer-wants-panel/load-data (offer-has-panel/load-data main-frame)))
 
 (defn attach [main-frame]
-  (offer-has-panel/load-data main-frame)
-  (offer-wants-panel/load-data main-frame)
   (attach-search-action main-frame))
+
+(defn init [main-frame]
+  (attach (load-data main-frame)))

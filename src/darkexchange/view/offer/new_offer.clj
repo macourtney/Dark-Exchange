@@ -16,8 +16,9 @@
     :border 5
     :items [(has-panel/create) [:fill-v 5] (wants-panel/create) [:fill-v 5] (create-button-panel)]))
 
-(defn show []
+(defn create []
   (seesaw-core/frame
     :title (terms/new-offer)
     :content (create-content)
-    :on-close :dispose))
+    :on-close :dispose
+    :visible? false))

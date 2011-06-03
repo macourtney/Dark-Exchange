@@ -7,7 +7,8 @@
 
 (defn attach-listener [parent-component id listener]
   (seesaw-core/listen (find-component parent-component id)
-    :action listener))
+    :action listener)
+  parent-component)
 
 (defn close-window [e]
   (let [frame (seesaw-core/to-frame e)]

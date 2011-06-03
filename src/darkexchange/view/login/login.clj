@@ -35,7 +35,8 @@
     :border 5
     :items [(create-user-name-panel) [:fill-v 3] (create-password-panel) [:fill-v 5] (create-button-panel)]))
 
-(defn show []
+(defn create []
   (seesaw-core/frame
     :title (terms/dark-exchange-login)
-    :content (create-content)))
+    :content (create-content)
+    :visible? false))

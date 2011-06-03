@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.home-tab
   (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.offer.new-offer :as new-offer]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.view.main.home.open-offer-panel :as open-offer-panel]
@@ -13,10 +14,8 @@
   (when-let [open-offers (offer-model/table-open-offers)]
     (seesaw-core/config! (find-open-offer-table main-frame)
       :model [:columns open-offer-panel/open-offer-table-columns
-              :rows open-offers])))
-
-(defn find-new-open-offer-button [main-frame]
-  (seesaw-core/select main-frame ["#new-open-offer-button"]))
+              :rows open-offers]))
+  main-frame)
 
 (defn create-add-offer-call-back [main-frame]
   (fn [offer-id]
@@ -25,11 +24,8 @@
         (seesaw-table/insert-at! (find-open-offer-table main-frame) 0 (offer-model/convert-to-table-offer offer))))))
 
 (defn attach-add-offer-action [main-frame]
-  (seesaw-core/listen (find-new-open-offer-button main-frame)
-    :action (fn [e] (new-offer/show (create-add-offer-call-back main-frame)))))
-
-(defn find-delete-open-offer-button [main-frame]
-  (seesaw-core/select main-frame ["#delete-open-offer-button"]))
+  (action-utils/attach-listener main-frame "#new-open-offer-button"
+    (fn [e] (new-offer/show (create-add-offer-call-back main-frame)))))
 
 (defn delete-selected-offer [main-frame]
   (let [open-offer-table (find-open-offer-table main-frame)
@@ -38,10 +34,14 @@
     (seesaw-table/remove-at! open-offer-table selected-row-index)))
 
 (defn attach-delete-offer-action [main-frame]
-  (seesaw-core/listen (find-delete-open-offer-button main-frame)
-    :action (fn [_] (delete-selected-offer main-frame))))
+  (action-utils/attach-listener main-frame "#delete-open-offer-button"
+    (fn [_] (delete-selected-offer main-frame))))
+
+(defn load-data [main-frame]
+  (load-open-offer-table main-frame))
 
 (defn attach [main-frame]
-  (load-open-offer-table main-frame)
-  (attach-add-offer-action main-frame)
-  (attach-delete-offer-action main-frame))
+  (attach-delete-offer-action (attach-add-offer-action main-frame)))
+
+(defn init [main-frame]
+  (attach (load-data main-frame)))

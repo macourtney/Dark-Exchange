@@ -1,23 +1,17 @@
 (ns darkexchange.controller.add-destination.add-destination
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as actions-utils]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.peer :as peer-model]
             [darkexchange.model.terms :as terms]
             [darkexchange.view.add-destination.add-destination :as add-destination-view]
             [seesaw.core :as seesaw-core]))
 
-(defn find-cancel-button [add-destination-frame]
-  (seesaw-core/select add-destination-frame ["#cancel-button"]))
-
-(defn find-add-button [add-destination-frame]
-  (seesaw-core/select add-destination-frame ["#add-button"]))
-
 (defn find-destination-text [add-destination-frame]
   (seesaw-core/select add-destination-frame ["#destination-text"]))
 
 (defn attach-cancel-action [add-destination-frame]
-  (seesaw-core/listen (find-cancel-button add-destination-frame)
-    :action actions-utils/close-window))
+  (actions-utils/attach-window-close-listener add-destination-frame "#cancel-button"))
 
 (defn add-action [add-destination-frame call-back]
   (let [destination (.getText (find-destination-text add-destination-frame))]
@@ -29,12 +23,11 @@
   (.dispose add-destination-frame))
 
 (defn attach-add-action [add-destination-frame call-back]
-  (seesaw-core/listen (find-add-button add-destination-frame)
-    :action (fn [e] (add-action add-destination-frame call-back))))
+  (actions-utils/attach-listener add-destination-frame "#add-button"
+    (fn [e] (add-action add-destination-frame call-back))))
 
 (defn attach [add-destination-frame call-back]
-  (attach-add-action add-destination-frame call-back)
-  (attach-cancel-action add-destination-frame))
+  (attach-add-action (attach-cancel-action add-destination-frame) call-back))
 
 (defn show [call-back]
-  (attach (add-destination-view/show) call-back))
+  (controller-utils/show (attach (add-destination-view/create) call-back)))

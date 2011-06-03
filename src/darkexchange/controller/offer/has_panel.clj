@@ -28,12 +28,13 @@
     :has_payment_type (:code (i-have-payment-type parent-component)) })
 
 (defn load-currencies [parent-component]
-  (offer-widgets/load-combobox (find-i-have-currency-combobox parent-component) (currency-model/currency-adaptors)))
+  (offer-widgets/load-combobox (find-i-have-currency-combobox parent-component) (currency-model/currency-adaptors))
+  parent-component)
 
 (defn load-payment-types [parent-component]
   (offer-widgets/load-combobox (find-i-have-payment-type-combobox parent-component)
-    (payment-type-model/payment-type-adaptors)))
+    (payment-type-model/payment-type-adaptors))
+  parent-component)
 
 (defn load-data [parent-component]
-  (load-currencies parent-component)
-  (load-payment-types parent-component))
+  (load-payment-types (load-currencies parent-component)))

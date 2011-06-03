@@ -31,9 +31,7 @@
 
 (defn create-peer-list-buttons []
   (seesaw-core/horizontal-panel :items 
-    [ (seesaw-core/button :id :test-button :text (terms/test))
-      [:fill-h 3]
-      (seesaw-core/button :id :add-button :text (terms/add)) ]))
+    [ (seesaw-core/button :id :add-button :text (terms/add)) ]))
 
 (defn create-peer-list-header-panel []
   (seesaw-core/border-panel

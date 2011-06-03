@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.offer.has-panel :as has-panel]
             [darkexchange.controller.offer.wants-panel :as wants-panel]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.currency :as currency-model]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.payment-type :as payment-type]
@@ -13,8 +14,7 @@
   (seesaw-core/select new-offer-view ["#cancel-button"]))
 
 (defn attach-cancel-action [new-offer-view]
-  (seesaw-core/listen (find-cancel-button new-offer-view)
-    :action actions-utils/close-window))
+  (actions-utils/attach-window-close-listener new-offer-view "#cancel-button"))
 
 (defn find-create-offer-button [new-offer-view]
   (seesaw-core/select new-offer-view ["#create-offer-button"]))
@@ -29,18 +29,14 @@
   (offer-model/create-new-offer (merge (has-offer new-offer-view) (wants-offer new-offer-view))))
 
 (defn attach-create-offer-action [new-offer-view call-back]
-  (seesaw-core/listen (find-create-offer-button new-offer-view)
-    :action (fn [e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window e))))
+  (actions-utils/attach-listener new-offer-view "#create-offer-button"
+    (fn [e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window e))))
 
 (defn attach [new-offer-view call-back]
-  (attach-cancel-action new-offer-view)
-  (attach-create-offer-action new-offer-view call-back))
+  (attach-create-offer-action (attach-cancel-action new-offer-view) call-back))
 
 (defn load-data [new-offer-view]
-  (has-panel/load-data new-offer-view)
-  (wants-panel/load-data new-offer-view))
+  (wants-panel/load-data (has-panel/load-data new-offer-view)))
 
 (defn show [call-back]
-  (let [new-offer-view (new-offer-view/show)]
-    (load-data new-offer-view)
-    (attach new-offer-view call-back)))
+  (controller-utils/show (attach (load-data (new-offer-view/create)) call-back)))

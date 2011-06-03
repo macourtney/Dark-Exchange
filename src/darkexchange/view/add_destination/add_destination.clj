@@ -32,8 +32,9 @@
       :center (create-center-panel)
       :south (create-button-panel)))
 
-(defn show []
+(defn create []
   (seesaw-core/frame
     :title (terms/add-destination)
     :content (create-content)
-    :on-close :dispose))
+    :on-close :dispose
+    :visible? false))

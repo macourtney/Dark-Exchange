@@ -4,9 +4,10 @@
             [darkexchange.view.main.tabbed-pane :as tabbed-pane]
             [seesaw.core :as seesaw-core]))
 
-(defn show []
+(defn create []
   (seesaw-core/frame
     :title (terms/dark-exchange)
     :menubar (main-menu-bar/create)
     :content (tabbed-pane/create)
-    :on-close :exit))
+    :on-close :exit
+    :visible? false))
