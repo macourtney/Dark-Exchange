@@ -45,15 +45,14 @@
     private-key))
 
 (defn create-manager-from-saved-key []
-  (let [manager (I2PSocketManagerFactory/createManager (ByteArrayInputStream. (.getData (load-private-key))))]
-      (if manager
-        manager
-        (do
-          (logging/info "Could not create socket manager from saved private key.")
-          (I2PSocketManagerFactory/createManager)))))
+  (if-let [manager (I2PSocketManagerFactory/createManager (ByteArrayInputStream. (.getData (load-private-key))))]
+      manager
+      (do
+        (logging/info "Could not create socket manager from saved private key.")
+        (I2PSocketManagerFactory/createManager))))
 
 (defn create-new-manager []
-  (swap! save-private-key? (fn [_] true))
+  (reset! save-private-key? true)
   (I2PSocketManagerFactory/createManager))
 
 (defn create-manager []
@@ -63,7 +62,7 @@
 
 (defn load-manager []
   (let [new-manager (create-manager)]
-    (swap! manager (fn [_] new-manager))
+    (reset! manager new-manager)
     new-manager))
 
 (defn save-private-key [session]
@@ -128,6 +127,8 @@
     destination))
 
 (defn send-message [destination data]
-  (let [socket (.connect @manager (as-destination destination))]
-    (write-json socket data)
-    (read-json socket)))
+  (let [destination-obj (as-destination destination)]
+    (when (.ping @manager destination-obj 30000)
+      (let [socket (.connect @manager destination-obj)]
+        (write-json socket data)
+        (read-json socket)))))

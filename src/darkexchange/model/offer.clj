@@ -48,7 +48,7 @@
 (defn payment-type [offer payment-key]
   (payment-type/get-payment (payment-key offer)))
 
-(defn currency-str [offer payment-key]
+(defn payment-type-str [offer payment-key]
   (payment-type/payment-type-str (payment-type offer payment-key)))
 
 (defn has-currency [offer]
@@ -60,8 +60,8 @@
 (defn has-payment-type [offer]
   (payment-type offer :has_payment_type))
 
-(defn has-currency-str [offer]
-  (currency-str offer :has_payment_type))
+(defn has-payment-type-str [offer]
+  (payment-type-str offer :has_payment_type))
 
 (defn wants-currency [offer]
   (currency offer :wants_currency))
@@ -72,15 +72,15 @@
 (defn wants_payment-type [offer]
   (payment-type offer :wants_payment_type))
 
-(defn wants-currency-str [offer]
-  (currency-str offer :wants_payment_type))
+(defn wants-payment-type-str [offer]
+  (payment-type-str offer :wants_payment_type))
 
 (defn convert-to-table-offer [offer]
   { :id (:id offer)
     :i-have-amount (has-amount-str offer)
-    :i-want-to-send-by (has-currency-str offer)
+    :i-want-to-send-by (has-payment-type-str offer)
     :i-want-amount (wants-amount-str offer)
-    :i-want-to-receive-by (wants-currency-str offer) })
+    :i-want-to-receive-by (wants-payment-type-str offer) })
 
 (defn table-open-offers []
   (map convert-to-table-offer (open-offers)))

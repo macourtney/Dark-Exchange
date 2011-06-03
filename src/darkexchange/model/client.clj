@@ -29,3 +29,7 @@
 
 (defn send-message [destination action data]
   (run-response-interceptors (i2p-server-model/send-message destination (create-request-map action data))))
+
+(defn send-messages [destinations action data call-back]
+  (doseq [destination destinations]
+    (.start (Thread. #(call-back (send-message destination action data))))))

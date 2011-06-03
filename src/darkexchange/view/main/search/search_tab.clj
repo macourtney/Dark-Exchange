@@ -7,10 +7,10 @@
 (def tab-name (terms/search))
 
 (def table-columns [ { :key :name :text (terms/name) }
-                     { :key :has :text (terms/has) }
-                     { :key :to_send_by :text (terms/to-send-by) }
                      { :key :wants :text (terms/wants) }
-                     { :key :to_receive_by :text (terms/to-receive-by) }])
+                     { :key :to_receive_by :text (terms/to-receive-by) }
+                     { :key :has :text (terms/has) }
+                     { :key :to_send_by :text (terms/to-send-by) } ])
 
 (defn create-criteria-panel []
   (seesaw-core/horizontal-panel

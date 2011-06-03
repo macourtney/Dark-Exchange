@@ -108,3 +108,6 @@
 
 (defn download-peers []
   (.start (Thread. download-peers-background)))
+
+(defn send-messages [action data call-back]
+  (client/send-messages (map :destination (all-peers)) action data call-back))
