@@ -24,7 +24,9 @@
     (h2/flavor
 
       ;; Calculates the database to use.
-      (dbname environment))))
+      (dbname environment)
+      
+      "data/db/")))
             
 (defn
   load-config []

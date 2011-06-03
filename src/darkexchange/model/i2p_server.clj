@@ -17,11 +17,11 @@
 
 (def send-message-fail-listeners (atom []))
 
-(def save-private-key? (atom false))
-
 (def private-key-file-name "private_key.dat")
 
-(def private-key-file (File. private-key-file-name))
+(def private-key-directory-name "data")
+
+(def private-key-file (File. private-key-directory-name private-key-file-name))
 
 (defn add-destination-listener [listener]
   (swap! destination-listeners conj listener))
@@ -49,32 +49,22 @@
       (.readBytes private-key key-buffer-input-stream))
     private-key))
 
-(defn create-manager-from-saved-key []
-  (if-let [manager (I2PSocketManagerFactory/createManager (ByteArrayInputStream. (.getData (load-private-key))))]
-      manager
-      (do
-        (logging/info "Could not create socket manager from saved private key.")
-        (I2PSocketManagerFactory/createManager))))
+(defn save-private-key []
+  (when (not (private-key-file-exists?))
+    (logging/debug (str "Creating and saving the private key."))
+    (PrivateKeyFile/main (into-array String (list (.getPath private-key-file))))))
 
 (defn create-new-manager []
-  (reset! save-private-key? true)
-  (I2PSocketManagerFactory/createManager))
+  (I2PSocketManagerFactory/createManager (java-io/input-stream private-key-file)))
 
 (defn create-manager []
-  (if (private-key-file-exists?)
-    (create-manager-from-saved-key)
-    (create-new-manager)))
+  (save-private-key)
+  (create-new-manager))
 
 (defn load-manager []
   (let [new-manager (create-manager)]
     (reset! manager new-manager)
     new-manager))
-
-(defn save-private-key [session]
-  (when @save-private-key?
-    (logging/debug (str "Saving the private key."))
-    (with-open [private-key-output-stream (java-io/make-output-stream private-key-file nil)]
-      (.writeBytes (.getDecryptionKey session) private-key-output-stream))))
 
 (defn get-server-socket [manager]
   (try
@@ -115,7 +105,6 @@
         session (.getSession new-manager)]
     (set-destination (.getMyDestination session))
     (start-client-handler client-handler)
-    (save-private-key session)
     (notify-destination-listeners)))
 
 (defn init [client-handler]
