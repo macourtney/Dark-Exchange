@@ -15,6 +15,8 @@
 
 (def destination-listeners (atom []))
 
+(def send-message-fail-listeners (atom []))
+
 (def save-private-key? (atom false))
 
 (def private-key-file-name "private_key.dat")
@@ -23,6 +25,9 @@
 
 (defn add-destination-listener [listener]
   (swap! destination-listeners conj listener))
+
+(defn add-send-message-fail-listener [listener]
+  (swap! send-message-fail-listeners conj listener))
 
 (defn set-destination [destination-obj]
   (swap! destination (fn [_] destination-obj)))
@@ -126,9 +131,16 @@
     (.toBase64 destination)
     destination))
 
+(defn notify-send-message-fail [destination data]
+  (let [destination-obj (as-destination destination)]
+    (doseq [send-message-fail-listener @send-message-fail-listeners]
+      (send-message-fail-listener destination data))))
+
 (defn send-message [destination data]
   (let [destination-obj (as-destination destination)]
-    (when (and @manager (.ping @manager destination-obj 30000))
-      (let [socket (.connect @manager destination-obj)]
-        (write-json socket data)
-        (read-json socket)))))
+    (when @manager
+      (if (.ping @manager destination-obj 30000)
+        (let [socket (.connect @manager destination-obj)]
+          (write-json socket data)
+          (read-json socket))
+        (notify-send-message-fail destination-obj data)))))

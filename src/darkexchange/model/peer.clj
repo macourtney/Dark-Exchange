@@ -12,11 +12,20 @@
 
 (def peer-update-listeners (atom []))
 
-(defn add-peer-update-listener [peer-update-listener]
-  (swap! peer-update-listeners conj peer-update-listener))
+(def peer-delete-listeners (atom []))
+
+(defn add-peer-update-listener [listener]
+  (swap! peer-update-listeners conj listener))
+
+(defn add-peer-delete-listener [listener]
+  (swap! peer-delete-listeners conj listener))
 
 (defn peer-update [peer]
   (doseq [listener @peer-update-listeners]
+    (listener peer)))
+
+(defn peer-delete [peer]
+  (doseq [listener @peer-delete-listeners]
     (listener peer)))
 
 (defn peer-clean-up [peer]
@@ -29,7 +38,8 @@
 (clj-record.core/init-model
   (:callbacks (:after-update peer-update)
               (:after-insert peer-update)
-              (:after-load peer-clean-up)))
+              (:after-load peer-clean-up)
+              (:after-destroy peer-delete)))
 
 (defn all-peers []
   (find-records [true]))
@@ -46,6 +56,10 @@
 
 (defn find-peer [destination]
   (find-record { :destination (i2p-server/as-destination-str destination) }))
+
+(defn remove-destination [destination]
+  (when-let [peer (find-peer destination)]
+    (destroy-record peer)))
 
 (defn update-destination [destination]
   (if-let [peer (find-peer destination)]

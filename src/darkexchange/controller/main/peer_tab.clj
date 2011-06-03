@@ -9,7 +9,8 @@
             [darkexchange.model.property :as property]
             [darkexchange.model.server :as server]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
-            [seesaw.core :as seesaw-core])
+            [seesaw.core :as seesaw-core]
+            [seesaw.table :as seesaw-table])
   (:import [javax.swing.table DefaultTableModel]))
 
 (defn find-destination-text [main-frame]
@@ -38,6 +39,18 @@
       :model [:columns peer-tab-view/peer-table-columns
               :rows peers])))
 
+(defn table-row-pairs [peer-table]
+  (map #(list %1 (seesaw-table/value-at peer-table %1))
+    (range (seesaw-table/row-count peer-table))))
+
+(defn find-table-peer-pair [peer-table peer]
+  (some #(when (= (:id (second %1)) (:id peer)) %1)
+    (table-row-pairs peer-table)))
+
+(defn delete-peer-from-table [main-frame peer]
+  (let [peer-table (find-peer-table main-frame)]
+    (seesaw-table/remove-at! peer-table (first (find-table-peer-pair peer-table peer)))))
+
 (defn load-peer-table [main-frame]
   (reload-table-data main-frame)
   main-frame)
@@ -50,7 +63,8 @@
     (fn [e] (add-destination/show #(reload-table-data main-frame)))))
 
 (defn attach-peer-listener [main-frame]
-  (peers-model/add-peer-update-listener (fn [_] (reload-table-data main-frame)))
+  (peers-model/add-peer-update-listener (fn [_] (seesaw-core/invoke-later (reload-table-data main-frame))))
+  (peers-model/add-peer-delete-listener (fn [peer] (seesaw-core/invoke-later (delete-peer-from-table main-frame peer))))
   main-frame)
 
 (defn load-data [main-frame]

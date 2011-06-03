@@ -9,5 +9,6 @@
 (defn init []
   (logging/info "Adding listeners.")
   (i2p-server-model/add-destination-listener peer-listeners/destination-listener)
+  (i2p-server-model/add-send-message-fail-listener peer-listeners/remove-missing-peers)
   (client-model/add-response-interceptor identity-interceptor/interceptor)
   (server-model/add-server-receive-interceptor identity-interceptor/interceptor))
