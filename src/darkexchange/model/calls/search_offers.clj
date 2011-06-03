@@ -3,11 +3,14 @@
             [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.peer :as peer-model]))
 
-
+(defn add-info-to-offer [request-map offer]
+  (merge offer
+    { :name (:name (:user (:from request-map)))
+      :destination (:destination (:from request-map)) }))
 
 (defn search-offers-call-back [request-map call-back]
   (if-let [data (:data request-map)]
-    (call-back (map #(assoc % :name (:name (:user (:from request-map)))) data))
+    (call-back (map #(add-info-to-offer request-map %) data))
     (call-back nil)))
 
 (defn call [i-have-currency i-have-payment-type i-want-currency i-want-payment-type call-back]

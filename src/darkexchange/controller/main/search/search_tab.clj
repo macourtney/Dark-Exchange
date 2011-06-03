@@ -9,9 +9,6 @@
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table]))
 
-(defn find-search-button [parent-component]
-  (seesaw-core/select parent-component ["#search-button"]))
-
 (defn find-search-offer-table [parent-component]
   (seesaw-core/select parent-component ["#search-offer-table"]))
 
@@ -25,7 +22,8 @@
       (seesaw.core/invoke-later (insert-offer-into-table parent-component offer)))))
 
 (defn convert-offer [offer]
-  { :name (:name offer)
+  { :destination (:destination offer)
+    :name (:name offer)
     :has (offer-model/has-amount-str offer)
     :to_send_by (offer-model/has-payment-type-str offer)
     :wants (offer-model/wants-amount-str offer)
@@ -48,11 +46,21 @@
   (action-utils/attach-listener parent-component "#search-button"
     (fn [e] (run-search parent-component))))
 
+(defn view-offer-listener [parent-component]
+  (let [search-offer-table (find-search-offer-table parent-component)
+        selected-row (seesaw-table/value-at search-offer-table (seesaw-core/selection search-offer-table))]
+    (logging/debug (str "selected-offer: " selected-row))))
+
+(defn attach-view-offer-action [parent-component]
+  (action-utils/attach-listener parent-component "#view-offer-button"
+    (fn [e] (view-offer-listener parent-component))))
+
 (defn load-data [main-frame]
   (offer-wants-panel/load-data (offer-has-panel/load-data main-frame)))
 
 (defn attach [main-frame]
-  (attach-search-action main-frame))
+  (attach-search-action main-frame)
+  (attach-view-offer-action main-frame))
 
 (defn init [main-frame]
   (attach (load-data main-frame)))
