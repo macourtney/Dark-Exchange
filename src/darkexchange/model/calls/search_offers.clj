@@ -6,7 +6,7 @@
 (defn add-info-to-offer [request-map offer]
   (merge offer
     { :name (:name (:user (:from request-map)))
-      :destination (:destination (:from request-map)) }))
+      :public-key (:public-key (:user (:from request-map))) }))
 
 (defn search-offers-call-back [request-map call-back]
   (if-let [data (:data request-map)]

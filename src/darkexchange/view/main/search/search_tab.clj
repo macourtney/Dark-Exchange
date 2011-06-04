@@ -6,7 +6,8 @@
 
 (def tab-name (terms/search))
 
-(def table-columns [ { :key :name :text (terms/name) }
+(def table-columns [ { :key :public-key :text (terms/public-key)}
+                     { :key :name :text (terms/name) }
                      { :key :wants :text (terms/wants) }
                      { :key :to_receive_by :text (terms/to-receive-by) }
                      { :key :has :text (terms/has) }
