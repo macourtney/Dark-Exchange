@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.offer.has-panel :as offer-has-panel]
             [darkexchange.controller.offer.wants-panel :as offer-wants-panel]
+            [darkexchange.controller.offer.view :as offer-view-controller]
             [darkexchange.model.calls.search-offers :as search-offers-call]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.view.main.search.search-tab :as search-tab-view]
@@ -49,7 +50,7 @@
 (defn view-offer-listener [parent-component]
   (let [search-offer-table (find-search-offer-table parent-component)
         selected-row (seesaw-table/value-at search-offer-table (seesaw-core/selection search-offer-table))]
-    (logging/debug (str "selected-offer: " selected-row))))
+    (offer-view-controller/show selected-row)))
 
 (defn attach-view-offer-action [parent-component]
   (action-utils/attach-listener parent-component "#view-offer-button"

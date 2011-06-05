@@ -1,12 +1,10 @@
 (ns darkexchange.controller.actions.utils
   (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.utils :as controller-utils]
             [seesaw.core :as seesaw-core]))
 
-(defn find-component [parent-component id]
-  (seesaw-core/select parent-component [id]))
-
 (defn attach-listener [parent-component id listener]
-  (seesaw-core/listen (find-component parent-component id)
+  (seesaw-core/listen (controller-utils/find-component parent-component id)
     :action listener)
   parent-component)
 

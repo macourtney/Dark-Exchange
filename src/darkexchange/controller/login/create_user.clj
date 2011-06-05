@@ -10,13 +10,13 @@
   (actions-utils/attach-window-close-listener create-user-frame "#cancel-button"))
 
 (defn find-user-name-text [create-user-frame]
-  (actions-utils/find-component create-user-frame "#user-name-text"))
+  (controller-utils/find-component create-user-frame "#user-name-text"))
 
 (defn find-password-field1-text [create-user-frame]
-  (actions-utils/find-component create-user-frame "#password-field1"))
+  (controller-utils/find-component create-user-frame "#password-field1"))
 
 (defn find-password-field2-text [create-user-frame]
-  (actions-utils/find-component create-user-frame "#password-field2"))
+  (controller-utils/find-component create-user-frame "#password-field2"))
 
 (defn reset-password [password-field]
   (.setText password-field ""))
