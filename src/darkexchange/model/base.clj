@@ -6,3 +6,6 @@
 (defn load-clob [clob]
   (let [clob-str (.toString clob)]
     (.substring clob-str (inc (.indexOf clob-str "'")) (dec (.length clob-str)))))
+
+(defn as-boolean [value]
+  (and value (not (= value 0))))

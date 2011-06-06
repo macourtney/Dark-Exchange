@@ -2,17 +2,20 @@
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.utils :as controller-utils]
+            [darkexchange.model.calls.accept-offer :as accept-offer-call]
             [darkexchange.view.offer.view :as offer-view]
             [seesaw.core :as seesaw-core]))
 
 (defn attach-cancel-action [parent-component]
   (actions-utils/attach-window-close-listener parent-component "#cancel-button"))
 
-(defn accept-offer-action [offer]
-  (logging/debug (str "offer: " offer)))
+(defn accept-offer-action [parent-component offer]
+  (accept-offer-call/call offer)
+  (actions-utils/close-window parent-component))
 
 (defn attach-accept-offer-action [parent-component offer]
-  (actions-utils/attach-listener parent-component "#accept-offer-button" (fn [_] (accept-offer-action offer))))
+  (actions-utils/attach-listener parent-component "#accept-offer-button"
+    (fn [_] (accept-offer-action parent-component offer))))
 
 (defn attach [parent-component offer]
   (attach-accept-offer-action (attach-cancel-action parent-component) offer))

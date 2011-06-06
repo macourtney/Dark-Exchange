@@ -23,7 +23,8 @@
       (seesaw.core/invoke-later (insert-offer-into-table parent-component offer)))))
 
 (defn convert-offer [offer]
-  { :public-key (:public-key offer)
+  { :id (:id offer)
+    :public-key (:public-key offer)
     :name (:name offer)
     :has (offer-model/has-amount-str offer)
     :to_send_by (offer-model/has-payment-type-str offer)

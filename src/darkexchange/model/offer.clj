@@ -2,32 +2,55 @@
   (:require [clj-record.boot :as clj-record-boot]
             [clojure.contrib.logging :as logging]
             [darkexchange.model.currency :as currency]
+            [darkexchange.model.identity :as identity-model]
             [darkexchange.model.payment-type :as payment-type]
             [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
   (:import [java.util Date]))
 
 (def offer-add-listeners (atom []))
+(def delete-offer-listeners (atom []))
+(def update-offer-listeners (atom []))
 
-(defn add-offer-add-listener [offer-add-listener]
-  (swap! offer-add-listeners conj offer-add-listener))
+(defn add-offer-add-listener [listener]
+  (swap! offer-add-listeners conj listener))
 
-(defn offer-add [new-offer]
+(defn add-delete-offer-listener [listener]
+  (swap! delete-offer-listeners conj listener))
+
+(defn add-update-offer-listener [listener]
+  (swap! update-offer-listeners conj listener))
+
+(defn offer-add [offer]
   (doseq [listener @offer-add-listeners]
-    (listener new-offer)))
+    (listener offer)))
+
+(defn offer-deleted [offer]
+  (doseq [listener @delete-offer-listeners]
+    (listener offer)))
+
+(defn offer-updated [offer]
+  (doseq [listener @update-offer-listeners]
+    (listener offer)))
 
 (clj-record.core/init-model
   (:associations
     (belongs-to identity)
-    (belongs-to user)
-    (has-many wants-offers)
-    (has-many has-offers))
-  (:callbacks (:after-insert offer-add)))
+    (belongs-to user))
+  (:callbacks (:after-insert offer-add)
+              (:after-destroy offer-deleted)
+              (:after-update offer-updated)))
 
 (defn create-new-offer [offer-data]
   (insert (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
             (select-keys offer-data [:has_amount :has_currency :has_payment_type :wants_amount :wants_currency
-                                     :wants_payment_type]))))
+                                     :wants_payment_type :identity_id :foreign_offer_id]))))
+
+(defn update-or-create-offer [offer-data]
+  (when offer-data
+    (or
+      (find-record (select-keys offer-data [:user_id :identity_id :foreign_offer_id]))
+      (get-record (create-new-offer offer-data)))))
 
 (defn all-offers []
   (find-records [true]))
@@ -92,3 +115,9 @@
   (find-by-sql ["SELECT * FROM offers WHERE identity_id IS NULL AND user_id = ? AND has_currency = ? AND has_payment_type = ? AND wants_currency = ? AND wants_payment_type = ?"
                 (:id (user/current-user)) (:i-want-currency search-args) (:i-want-payment-type search-args)
                 (:i-have-currency search-args) (:i-have-payment-type search-args)]))
+
+(defn accept-offer [user-name public-key offer]
+  (when-let [offer-id (:id offer)]
+    (when-let [accepting-identity (identity-model/find-identity user-name public-key)]
+      (update { :id offer-id :identity_id (:id accepting-identity) })
+      (get-record offer-id))))

@@ -7,7 +7,7 @@
 
 (defn scrub-offer [offer]
   (select-keys offer
-    [:user :has_amount :has_currency :has_payment_type :wants_amount :wants_currency :wants_payment_type])) 
+    [:id :user :has_amount :has_currency :has_payment_type :wants_amount :wants_currency :wants_payment_type])) 
 
 (defn action [request-map]
   { :data (map scrub-offer (offer-model/search-offers (:data request-map))) })

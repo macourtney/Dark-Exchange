@@ -9,7 +9,7 @@
     (date-time :created_at)
     (belongs-to :identity) ; The id of the identity of the acceptor. Nil until the offer is accepted.
     (belongs-to :user)
-    (integer :accept_confirm)
+    (integer :foreign_offer_id) ; The id of the matching trade on the other system.
     (integer :has_amount)
     (string :has_currency) ; Currency code.
     (string :has_payment_type) ; Payment type code.

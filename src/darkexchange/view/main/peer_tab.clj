@@ -17,7 +17,7 @@
                     :id :destination-text
                     :multi-line? true
                     :editable? false
-                    :preferred-size [400 :by 60])]
+                    :preferred-size [400 :by 100])]
     (.setLineWrap text-area true)
     text-area))
 

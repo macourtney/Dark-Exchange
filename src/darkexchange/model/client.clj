@@ -1,5 +1,6 @@
 (ns darkexchange.model.client
-  (:require [darkexchange.model.i2p-server :as i2p-server-model]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.model.i2p-server :as i2p-server-model]
             [darkexchange.model.user :as user-model]
             [darkexchange.model.util :as model-util]))
 

@@ -57,6 +57,9 @@
 (defn find-peer [destination]
   (find-record { :destination (i2p-server/as-destination-str destination) }))
 
+(defn destination-for [peer]
+  (:destination (find-record peer)))
+
 (defn remove-destination [destination]
   (when-let [peer (find-peer destination)]
     (destroy-record peer)))
