@@ -34,9 +34,7 @@
     (listener offer)))
 
 (clj-record.core/init-model
-  (:associations
-    (belongs-to identity)
-    (belongs-to user))
+  (:associations (belongs-to user))
   (:callbacks (:after-insert offer-add)
               (:after-destroy offer-deleted)
               (:after-update offer-updated)))
@@ -56,11 +54,11 @@
   (find-records [true]))
 
 (defn open-offer? [offer]
-  (nil? (:identity_id offer)))
+  (as-boolean (not (:closed offer))))
 
 (defn open-offers
   ([] (open-offers (user/current-user)))
-  ([user] (find-records ["identity_id IS NULL AND user_id = ?" (:id user)])))
+  ([user] (find-records ["(closed IS NULL OR closed = 0) AND user_id = ?" (:id user)])))
 
 (defn currency [offer currency-key]
   (currency/get-currency (currency-key offer)))
@@ -112,12 +110,10 @@
   (destroy-record { :id offer-id }))
 
 (defn search-offers [search-args]
-  (find-by-sql ["SELECT * FROM offers WHERE identity_id IS NULL AND user_id = ? AND has_currency = ? AND has_payment_type = ? AND wants_currency = ? AND wants_payment_type = ?"
+  (find-by-sql ["SELECT * FROM offers WHERE (closed IS NULL OR closed = 0) AND user_id = ? AND has_currency = ? AND has_payment_type = ? AND wants_currency = ? AND wants_payment_type = ?"
                 (:id (user/current-user)) (:i-want-currency search-args) (:i-want-payment-type search-args)
                 (:i-have-currency search-args) (:i-have-payment-type search-args)]))
 
-(defn accept-offer [user-name public-key offer]
-  (when-let [offer-id (:id offer)]
-    (when-let [accepting-identity (identity-model/find-identity user-name public-key)]
-      (update { :id offer-id :identity_id (:id accepting-identity) })
-      (get-record offer-id))))
+(defn close-offer [offer]
+  (update { :id (:id offer) :closed 1 })
+  (get-record (:id offer)))

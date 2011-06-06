@@ -2,6 +2,7 @@
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.offer.new-offer :as new-offer]
+            [darkexchange.controller.trade.view :as view-trade]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.trade :as trade-model]
             [darkexchange.model.user :as user-model]
@@ -102,6 +103,13 @@
   (trade-model/add-update-trade-listener #(seesaw-core/invoke-later (new-trade-listener main-frame %)))
   main-frame)
 
+(defn view-open-trade-listener [main-frame e]
+  (let [open-trade-table (find-open-trade-table main-frame)]
+    (view-trade/show (seesaw-table/value-at open-trade-table (seesaw-core/selection open-trade-table)))))
+
+(defn attach-view-open-trade-listener [main-frame]
+  (action-utils/attach-frame-listener main-frame "#view-open-trade-button" view-open-trade-listener))
+
 (defn load-data [main-frame]
   (load-open-trade-table (load-open-offer-table main-frame)))
 
@@ -112,7 +120,7 @@
         (attach-add-offer-action main-frame)))))
 
 (defn attach-trade-listeners [main-frame]
-  (attach-new-trade-listener (attach-trade-update-listener main-frame)))
+  (attach-view-open-trade-listener (attach-new-trade-listener (attach-trade-update-listener main-frame))))
 
 (defn attach [main-frame]
   (attach-trade-listeners (attach-offer-listeners main-frame)))

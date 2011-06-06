@@ -1,6 +1,7 @@
 (ns darkexchange.model.trade
   (:require [clj-record.boot :as clj-record-boot]
             [clojure.contrib.logging :as logging]
+            [darkexchange.model.identity :as identity-model]
             [darkexchange.model.offer :as offer]
             [darkexchange.model.terms :as terms]
             [darkexchange.model.user :as user])
@@ -32,14 +33,32 @@
     (listener trade)))
 
 (clj-record.core/init-model
-  (:associations (belongs-to offer))
+  (:associations (belongs-to identity)
+                 (belongs-to offer)
+                 (belongs-to user))
   (:callbacks (:after-insert trade-add)
               (:after-update trade-updated)))
 
 (defn create-new-trade [trade-data]
   (insert
     (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
-      (select-keys trade-data [:offer_id :foreign_trade_id :wants_first]))))
+      (select-keys trade-data [:foreign_trade_id :identity_id :is_acceptor :offer_id :wants_first]))))
+
+(defn create-non-acceptor-trade [acceptor-user-name acceptor-public-key offer]
+  (let [acceptor-identity (identity-model/find-identity acceptor-user-name acceptor-public-key)]
+    (create-new-trade
+      { :offer_id (:id offer)
+        :wants_first 1
+        :identity_id (:id acceptor-identity)
+        :is_acceptor 0 })))
+
+(defn create-acceptor-trade [other-identity foreign_trade_id offer]
+  (create-new-trade
+    { :offer_id (:id offer)
+      :wants_first 0
+      :identity_id (:id other-identity)
+      :is_acceptor 1
+      :foreign_trade_id foreign_trade_id }))
 
 (defn open-trades
   ([] (open-trades (user/current-user)))
@@ -130,3 +149,7 @@
 
 (defn table-open-trades []
   (map convert-to-table-trade (open-trades)))
+
+(defn as-view-trade [trade-id]
+  (let [trade (get-record trade-id)]
+    (merge trade { :offer (find-offer trade) :identity (find-identity trade) })))

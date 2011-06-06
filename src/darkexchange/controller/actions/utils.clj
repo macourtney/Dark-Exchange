@@ -8,17 +8,24 @@
     :action listener)
   parent-component)
 
-(defn close-window [e]
-  (let [frame (seesaw-core/to-frame e)]
+(defn frame-listener [listener e]
+  (listener (seesaw-core/to-frame e) e))
+
+(defn attach-frame-listener [parent-component id listener]
+  (attach-listener parent-component id #(frame-listener listener %)))
+
+(defn close-window
+  ([frame e] (close-window frame))
+  ([frame]
     (.hide frame)
     (.dispose frame)))
 
 (defn attach-window-close-listener [parent-component id]
-  (attach-listener parent-component id close-window))
+  (attach-frame-listener parent-component id close-window))
 
-(defn close-window-and-exit [e]
-  (close-window e)
+(defn close-window-and-exit [frame e]
+  (close-window frame e)
   (System/exit 0))
 
 (defn attach-window-close-and-exit-listener [parent-component id]
-  (attach-listener parent-component id close-window-and-exit))
+  (attach-frame-listener parent-component id close-window-and-exit))

@@ -29,8 +29,8 @@
   (offer-model/create-new-offer (merge (has-offer new-offer-view) (wants-offer new-offer-view))))
 
 (defn attach-create-offer-action [new-offer-view call-back]
-  (actions-utils/attach-listener new-offer-view "#create-offer-button"
-    (fn [e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window e))))
+  (actions-utils/attach-frame-listener new-offer-view "#create-offer-button"
+    (fn [frame e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window frame e))))
 
 (defn attach [new-offer-view call-back]
   (attach-create-offer-action (attach-cancel-action new-offer-view) call-back))
