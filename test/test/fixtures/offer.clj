@@ -8,9 +8,9 @@
 (def records [
   { :id 1
     :created_at (new Date)
-    :identity_id nil
     :user_id 1
-    :accept_confirm 0
+    :foreign_offer_id nil
+    :closed nil
     :has_amount 1
     :has_currency "BITCOIN"
     :has_payment_type "BITCOIN"
