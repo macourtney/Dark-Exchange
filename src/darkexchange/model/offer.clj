@@ -42,7 +42,7 @@
 (defn create-new-offer [offer-data]
   (insert (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
             (select-keys offer-data [:has_amount :has_currency :has_payment_type :wants_amount :wants_currency
-                                     :wants_payment_type :identity_id :foreign_offer_id]))))
+                                     :wants_payment_type :identity_id :foreign_offer_id :closed]))))
 
 (defn update-or-create-offer [offer-data]
   (when offer-data
