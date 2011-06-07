@@ -40,8 +40,10 @@
       found-identity
       (get-record (add-identity user-name public-key destination)))))
 
-(defn destination-for [user-name public-key]
-  (peer/destination-for (find-peer (find-identity user-name public-key))))
+(defn destination-for
+  ([user-name public-key] (destination-for (find-identity user-name public-key)))
+  ([target-identity] (peer/destination-for (find-peer target-identity))))
 
-(defn send-message [user-name public-key action data]
-  (client/send-message (destination-for user-name public-key) action data))
+(defn send-message 
+  ([user-name public-key action data] (send-message (find-identity user-name public-key) action data))
+  ([target-identity action data] (client/send-message (destination-for target-identity) action data)))

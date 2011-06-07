@@ -2,7 +2,9 @@
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.utils :as controller-utils]
+            [darkexchange.model.calls.confirm-trade :as confirm-trade-call]
             [darkexchange.model.offer :as offer-model]
+            [darkexchange.model.terms :as terms]
             [darkexchange.model.trade :as trade-model]
             [darkexchange.view.trade.view :as view-view]
             [seesaw.core :as seesaw-core]))
@@ -56,18 +58,33 @@
     parent-component "#waiting-for"))
 
 (defn load-data [parent-component trade]
-  (let [trade (trade-model/as-view-trade (:id trade))]
-    (load-waiting-for trade
-      (load-offer-data trade
-        (load-partner-data trade
-            (load-initiated-at trade
-              (load-trade-id trade parent-component)))))))
+  (load-waiting-for trade
+    (load-offer-data trade
+      (load-partner-data trade
+          (load-initiated-at trade
+            (load-trade-id trade parent-component))))))
 
 (defn attach-cancel-action [parent-component]
   (actions-utils/attach-window-close-listener parent-component "#cancel-button"))
 
-(defn attach [parent-component]
-  (attach-cancel-action parent-component))
+(defn confirm-action [trade e]
+  (confirm-trade-call/call trade)
+  (seesaw-core/config! (controller-utils/find-component (seesaw-core/to-frame e) "#next-step-button") :enabled? false))
+
+(defn attach-confirm-action [parent-component trade]
+  (actions-utils/attach-listener parent-component "#next-step-button" #(confirm-action trade %))
+  (let [next-step-button (controller-utils/find-component parent-component "#next-step-button")]
+    (seesaw-core/config! next-step-button :text (terms/accept-trade) :visible? true)))
+
+(defn attach-next-step-action [parent-component trade]
+  (let [next-step-key (trade-model/next-step-key trade)]
+    (cond
+      (= next-step-key trade-model/needs-to-be-confirmed-key) (attach-confirm-action parent-component trade))
+    parent-component))
+
+(defn attach [parent-component trade]
+  (attach-next-step-action (attach-cancel-action parent-component) trade))
 
 (defn show [trade]
-  (controller-utils/show (attach (load-data (view-view/create) trade))))
+  (let [trade (trade-model/as-view-trade (:id trade))]
+    (controller-utils/show (attach (load-data (view-view/create) trade) trade))))

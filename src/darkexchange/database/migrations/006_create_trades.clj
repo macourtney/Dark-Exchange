@@ -9,8 +9,8 @@
     (date-time :created_at)
     (belongs-to :user)
     (belongs-to :offer)
-    (belongs-to :identity) ; The id of the identity of the acceptor.
-    (integer :foreign_trade_id) ; The id of the matching trade on the other system.
+    (belongs-to :identity) ; The id of the identity of the trade partner.
+    (integer :foreign_trade_id) ; The id of the matching trade on the trade partner's system.
     (integer :is_acceptor)
     (integer :accept_confirm)
     (integer :wants_first) ; Set to true if the wants currency should be sent first.

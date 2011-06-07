@@ -153,3 +153,12 @@
 (defn as-view-trade [trade-id]
   (let [trade (get-record trade-id)]
     (merge trade { :offer (find-offer trade) :identity (find-identity trade) })))
+
+(defn find-trade [foreign-trade-id trade-partner-identity]
+  (find-record { :foreign_trade_id foreign-trade-id :identity_id (:id trade-partner-identity) }))
+
+(defn confirm-trade
+  ([foreign-trade-id trade-partner-identity] (confirm-trade (find-trade foreign-trade-id trade-partner-identity)))
+  ([trade]
+    (update { :id (:id trade) :accept_confirm 1 })
+    (get-record (:id trade))))
