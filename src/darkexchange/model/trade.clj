@@ -8,6 +8,8 @@
   (:use darkexchange.model.base)
   (:import [java.util Date]))
 
+(declare get-record)
+
 (def needs-to-be-confirmed-key :needs-to-be-confirmed)
 (def waiting-to-be-confirmed-key :waiting-to-be-confirmed)
 (def waiting-for-wants-key :waiting-for-wants)
@@ -29,8 +31,9 @@
     (listener new-trade)))
 
 (defn trade-updated [trade]
-  (doseq [listener @update-trade-listeners]
-    (listener trade)))
+  (let [trade (get-record (:id trade))]
+    (doseq [listener @update-trade-listeners]
+      (listener trade))))
 
 (clj-record.core/init-model
   (:associations (belongs-to identity)
@@ -97,22 +100,22 @@
   (or (needs-to-be-confirmed-next-step-key trade) (waiting-to-be-confirmed-next-step-key trade)))
 
 (defn wants-sent-next-step-key [trade]
-  (when (wants-sent? trade)
+  (when (not (wants-sent? trade))
     waiting-for-wants-key))
 
 (defn wants-received-next-step-key [trade]
-  (when (wants-received? trade)
+  (when (not (wants-received? trade))
     send-wants-receipt-key))
 
 (defn wants-next-step-key [trade]
   (or (wants-sent-next-step-key trade) (wants-received-next-step-key trade)))
 
 (defn has-sent-next-step-key [trade]
-  (when (has-sent? trade)
+  (when (not (has-sent? trade))
     send-has-key))
 
 (defn has-received-next-step-key [trade]
-  (when (has-received? trade)
+  (when (not (has-received? trade))
     waiting-for-has-receipt-key))
 
 (defn has-next-step-key [trade]

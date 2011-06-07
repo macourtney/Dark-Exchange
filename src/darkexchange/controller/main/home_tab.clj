@@ -95,12 +95,13 @@
     (seesaw-table/insert-at! open-trade-table trade-index (trade-model/convert-to-table-trade trade))))
 
 (defn trade-update-listener [main-frame trade]
-  (let [open-trade-table (find-open-trade-table main-frame)]
-    (when-let [trade-index (find-trade-index open-trade-table trade)]
-      (replace-trade-at open-trade-table trade trade-index))))
+  (seesaw-core/invoke-later
+    (let [open-trade-table (find-open-trade-table main-frame)]
+      (when-let [trade-index (find-trade-index open-trade-table trade)]
+        (replace-trade-at open-trade-table trade trade-index)))))
 
 (defn attach-trade-update-listener [main-frame]
-  (trade-model/add-update-trade-listener #(seesaw-core/invoke-later (new-trade-listener main-frame %)))
+  (trade-model/add-update-trade-listener (fn [trade] (trade-update-listener main-frame trade)))
   main-frame)
 
 (defn view-open-trade-listener [main-frame e]
