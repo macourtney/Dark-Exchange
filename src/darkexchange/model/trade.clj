@@ -70,6 +70,12 @@
 (defn open-trade? [trade]
   (not (as-boolean (:closed trade))))
 
+(defn does-not-go-first? [trade]
+  (as-boolean (:wants_first trade)))
+
+(defn goes-first? [trade]
+  (not (does-not-go-first? trade)))
+
 (defn needs-to-be-confirmed? [trade]
   (and (not (as-boolean (:accept_confirm trade))) (nil? (:foreign_trade_id trade))))
 
@@ -99,7 +105,7 @@
 (defn confirmation-next-step-key [trade]
   (or (needs-to-be-confirmed-next-step-key trade) (waiting-to-be-confirmed-next-step-key trade)))
 
-(defn wants-sent-next-step-key [trade]
+(defn waiting-for-wants-next-step-key [trade]
   (when (not (wants-sent? trade))
     waiting-for-wants-key))
 
@@ -108,7 +114,7 @@
     send-wants-receipt-key))
 
 (defn wants-next-step-key [trade]
-  (or (wants-sent-next-step-key trade) (wants-received-next-step-key trade)))
+  (or (waiting-for-wants-next-step-key trade) (wants-received-next-step-key trade)))
 
 (defn has-sent-next-step-key [trade]
   (when (not (has-sent? trade))
@@ -122,9 +128,9 @@
   (or (has-sent-next-step-key trade) (has-received-next-step-key trade)))
 
 (defn has-want-next-step-key [trade]
-  (if (as-boolean (:wants_first trade))
-    (or (wants-next-step-key trade) (has-next-step-key trade))
-    (or (has-next-step-key trade) (wants-next-step-key trade))))
+  (if (goes-first? trade)
+    (or (has-next-step-key trade) (wants-next-step-key trade))
+    (or (wants-next-step-key trade) (has-next-step-key trade))))
 
 (defn next-step-key [trade]
   (or (confirmation-next-step-key trade) (has-want-next-step-key trade)))
@@ -165,3 +171,15 @@
   ([trade]
     (update { :id (:id trade) :accept_confirm 1 })
     (get-record (:id trade))))
+
+(defn payment-sent [trade]
+  (update { :id (:id trade) :has_sent 1 })
+  (get-record (:id trade)))
+
+(defn foreign-payment-sent [foreign-trade-id trade-partner-identity]
+  (let [trade (find-trade foreign-trade-id trade-partner-identity)]
+    (update { :id (:id trade) :wants_sent 1 })
+    (get-record (:id trade))))
+
+(defn update-foreign-trade-id [trade-id foreign-trade-id]
+  (update { :id trade-id :foreign_trade_id foreign-trade-id }))

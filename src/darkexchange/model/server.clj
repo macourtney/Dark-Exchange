@@ -38,11 +38,15 @@
   (when-let [action-key (:action request-map)]
     (keyword action-key)))
 
+(defn action-not-found [action-key]
+  (logging/error (str "Action not found: " action-key))
+  { :data nil :type :action-not-found :action action-key })
+
 (defn run-action [request-map]
   (let [action-key (get-action-key request-map)]
     (if-let [action-fn (find-action action-key)]
       (assoc (action-fn request-map) :action action-key)
-      { :data nil :type :action-not-found :action action-key })))
+      (action-not-found action-key))))
 
 (defn build-request [socket]
   (run-server-receive-interceptors (i2p-server/read-json socket)))
