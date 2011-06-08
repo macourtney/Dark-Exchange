@@ -183,3 +183,21 @@
 
 (defn update-foreign-trade-id [trade-id foreign-trade-id]
   (update { :id trade-id :foreign_trade_id foreign-trade-id }))
+
+(defn close [trade]
+  (update { :id (:id trade) :closed 1 })
+  (get-record (:id trade)))
+
+(defn close-if-complete [trade]
+  (if (and (wants-sent? trade) (wants-received? trade) (has-sent? trade) (has-received? trade))
+    (close trade)
+    trade))
+
+(defn payment-received [trade]
+  (update { :id (:id trade) :wants_received 1 })
+  (close-if-complete (get-record (:id trade))))
+
+(defn foreign-payment-received [foreign-trade-id trade-partner-identity]
+  (let [trade (find-trade foreign-trade-id trade-partner-identity)]
+    (update { :id (:id trade) :has_received 1 })
+    (close-if-complete (get-record (:id trade)))))

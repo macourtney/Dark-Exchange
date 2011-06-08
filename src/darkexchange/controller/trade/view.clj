@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.calls.confirm-trade :as confirm-trade-call]
+            [darkexchange.model.calls.payment-received :as payment-received-call]
             [darkexchange.model.calls.payment-sent :as payment-sent-call]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.terms :as terms]
@@ -92,11 +93,18 @@
 (defn attach-payment-sent-action [parent-component trade]
   (attach-next-step-action parent-component trade payment-sent-action (terms/payment-sent)))
 
+(defn payment-received-action [trade e]
+  (execute-next-step-call trade e payment-received-call/call))
+
+(defn attach-payment-received-action [parent-component trade]
+  (attach-next-step-action parent-component trade payment-received-action (terms/confirm-payment-received)))
+
 (defn find-and-attach-next-step-action [parent-component trade]
   (let [next-step-key (trade-model/next-step-key trade)]
     (cond
       (= next-step-key trade-model/needs-to-be-confirmed-key) (attach-confirm-action parent-component trade)
-      (= next-step-key trade-model/send-has-key) (attach-payment-sent-action parent-component trade))
+      (= next-step-key trade-model/send-has-key) (attach-payment-sent-action parent-component trade)
+      (= next-step-key trade-model/send-wants-receipt-key) (attach-payment-received-action parent-component trade))
     parent-component))
 
 (defn attach [parent-component trade]
