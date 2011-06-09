@@ -9,7 +9,8 @@
 
 (defn find-identity [response-map]
   (identity-model/find-or-create-identity (calls-util/from-user-name response-map)
-    (calls-util/from-public-key response-map) (calls-util/from-destination response-map)))
+    (calls-util/from-public-key response-map) (calls-util/from-public-key-algorithm response-map)
+    (calls-util/from-destination response-map)))
 
 (defn create-offer-from [foreign-offer]
   { :use_id (:id (user-model/current-user))
@@ -39,6 +40,8 @@
 
 (defn call [offer]
   (let [user-name (:name offer)
-        public-key (:public-key offer)]
-    (create-trade (identity-model/send-message user-name public-key action-keys/accept-offer-action-key
-      { :name user-name :public-key public-key :offer offer }))))
+        public-key (:public-key offer)
+        public-key-algorithm (:public-key-algorithm offer)]
+    (create-trade
+      (identity-model/send-message user-name public-key public-key-algorithm action-keys/accept-offer-action-key
+        { :name user-name :public-key public-key :public-key-algorithm public-key-algorithm :offer offer }))))

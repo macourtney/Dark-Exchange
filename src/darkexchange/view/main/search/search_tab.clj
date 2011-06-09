@@ -8,6 +8,7 @@
 
 (def table-columns [ { :key :id :text (terms/id)}
                      { :key :public-key :text (terms/public-key)}
+                     { :key :public-key-algorithm :text (terms/algorithm)}
                      { :key :name :text (terms/name) }
                      { :key :wants :text (terms/wants) }
                      { :key :to_receive_by :text (terms/to-receive-by) }

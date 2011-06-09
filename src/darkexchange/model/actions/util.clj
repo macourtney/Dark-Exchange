@@ -16,5 +16,9 @@
 (defn from-public-key [request-map]
   (:public-key (from-user-map request-map)))
 
+(defn from-public-key-algorithm [request-map]
+  (:public-key-algorithm (from-user-map request-map)))
+
 (defn from-identity [request-map]
-  (identity-model/find-identity (from-user-name request-map) (from-public-key request-map)))
+  (identity-model/find-identity (from-user-name request-map) (from-public-key request-map)
+    (from-public-key-algorithm request-map)))

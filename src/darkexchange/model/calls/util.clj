@@ -14,3 +14,6 @@
 
 (defn from-public-key [response-map]
   (:public-key (from-user-map response-map)))
+
+(defn from-public-key-algorithm [request-map]
+  (:public-key-algorithm (from-user-map request-map)))

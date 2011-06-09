@@ -25,6 +25,7 @@
 (defn convert-offer [offer]
   { :id (:id offer)
     :public-key (:public-key offer)
+    :public-key-algorithm (:public-key-algorithm offer)
     :name (:name offer)
     :has (offer-model/has-amount-str offer)
     :to_send_by (offer-model/has-payment-type-str offer)

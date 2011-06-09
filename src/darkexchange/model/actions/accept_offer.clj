@@ -10,7 +10,8 @@
 (defn create-trade [request-data offer]
   (when offer
     { :offer (dissoc offer :created_at)
-      :trade-id (trade-model/create-non-acceptor-trade (:name request-data) (:public-key request-data) offer) }))
+      :trade-id (trade-model/create-non-acceptor-trade (:name request-data) (:public-key request-data)
+                  (:public-key-algorithm request-data) offer) }))
 
 (defn accept-offer [request-data]
   (create-trade request-data (offer-model/close-offer (:offer request-data))))

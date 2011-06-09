@@ -1,29 +1,12 @@
 (ns darkexchange.model.server
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.i2p-server :as i2p-server]
-            [darkexchange.model.user :as user-model]
-            [darkexchange.model.util :as model-util]))
-
-(def server-receive-interceptors (atom []))
-
-(def server-reply-interceptors (atom []))
+            [darkexchange.model.listeners.server-interceptors :as server-interceptors]))
 
 (def actions (atom {}))
 
-(defn add-server-receive-interceptor [interceptor]
-  (swap! server-receive-interceptors conj interceptor))
-
-(defn add-server-reply-interceptor [interceptor]
-  (swap! server-reply-interceptors conj interceptor))
-
 (defn add-action [action-key action-fn]
   (swap! actions assoc action-key action-fn))
-
-(defn run-server-receive-interceptors [request-map]
-  (model-util/run-interceptors @server-receive-interceptors request-map))
-
-(defn run-server-reply-interceptors [response-map]
-  (model-util/run-interceptors @server-reply-interceptors response-map))
 
 (defn action-map []
   @actions)
@@ -48,14 +31,11 @@
       (assoc (action-fn request-map) :action action-key)
       (action-not-found action-key))))
 
-(defn build-request [socket]
-  (run-server-receive-interceptors (i2p-server/read-json socket)))
-
-(defn build-response [request-map]
-  (run-server-reply-interceptors (run-action request-map)))
+(defn build-response [socket]
+  (server-interceptors/run-interceptors run-action (i2p-server/read-json socket)))
 
 (defn perform-action [socket]
-  (i2p-server/write-json socket (build-response (build-request socket))))
+  (i2p-server/write-json socket (build-response socket)))
 
 (defn client-handler [server-socket]
   (while true
@@ -66,15 +46,3 @@
 (defn init []
   (logging/info "Initializing server.")
   (i2p-server/init client-handler))
-
-(defn response-map-user []
-  (let [user (user-model/current-user)]
-    { :name (:name user) :public-key (:public_key user) }))
-
-(defn response-map-from []
-  { :destination (i2p-server/base-64-destination) :user (response-map-user) })
-
-(defn header-reply-interceptor [response-map]
-  (merge { :from (response-map-from) :type :ok } response-map))
-
-(add-server-reply-interceptor header-reply-interceptor)

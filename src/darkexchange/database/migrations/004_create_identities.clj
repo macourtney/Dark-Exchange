@@ -8,6 +8,7 @@
     (id)
     (string :name)
     (string :public_key)
+    (string :public_key_algorithm)
     (belongs-to :peer)))
   
 (defn
