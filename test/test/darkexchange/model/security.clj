@@ -66,3 +66,10 @@
       (is decoded-key-pair "Expected non-nil decoded-key-pair")
       (is (instance? KeyPair decoded-key-pair) "decode-key-pair must return an object of type KeyPair.")
       (is (key-pair-equals? key-pair decoded-key-pair) "The decoded key is not equal to the original key."))))
+
+(deftest signature
+  (let [test-data "Test data to sign"
+        key-pair (generate-key-pair)
+        signature (sign key-pair test-data)]
+    (is (verify-signature key-pair test-data signature))
+    (is (not (verify-signature (generate-key-pair) test-data signature)))))

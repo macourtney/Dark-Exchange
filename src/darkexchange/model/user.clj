@@ -39,13 +39,19 @@
 (defn char-array-to-bytes [char-array-data]
   (byte-array (flatten (map #(seq (.getBytes (Character/toString %1) "UTF-8")) char-array-data))))
 
+(defn char-array-to-string [char-array-data]
+  (String. char-array-data))
+
+(defn encrypt-private-key [password key-bytes]
+  (Base64/encodeBase64String
+    (security/password-encrypt (char-array-to-string password) (Base64/encodeBase64String key-bytes))))
+
 (defn generate-keys [user]
   (let [key-pair (security/generate-key-pair)
         key-pair-map (security/get-key-pair-map key-pair)]
     (merge user { :public_key (Base64/encodeBase64String (:bytes (:public-key key-pair-map)))
                   :public_key_algorithm (:algorithm (:public-key key-pair-map))
-                  :private_key (security/password-encrypt (char-array-to-bytes (:password user))
-                                 (:bytes (:private-key key-pair-map)))
+                  :private_key (encrypt-private-key (:password user) (:bytes (:private-key key-pair-map)))
                   :private_key_algorithm (:algorithm (:private-key key-pair-map)) })))
 
 (defn generate-fields [user]
@@ -96,3 +102,32 @@
 
 (defn current-user []
   @saved-current-user)
+
+(defn decode-base64 [string]
+  (when string
+    (.decode (new Base64) string)))
+
+(defn public-key-bytes [user]
+  (decode-base64 (:public_key user)))
+
+(defn public-key-map [user]
+  { :algorithm (:public_key_algorithm user)  :bytes (public-key-bytes user) })
+
+(defn private-key-bytes [user]
+  (decode-base64
+    (security/password-decrypt (char-array-to-string (:password user)) (decode-base64 (:private_key user)))))
+
+(defn private-key-map [user]
+  { :algorithm (:private_key_algorithm user) :bytes (private-key-bytes user) })
+
+(defn current-user-key-pair []
+  (let [user (current-user)
+        public-key-map (public-key-map user)
+        private-key-map (private-key-map user)]
+    (security/decode-key-pair { :public-key public-key-map :private-key private-key-map })))
+
+(defn sign [data]
+  (Base64/encodeBase64String (security/sign (current-user-key-pair) data)))
+
+(defn verify [data signature]
+  (security/verify-signature (current-user-key-pair) data (decode-base64 signature)))

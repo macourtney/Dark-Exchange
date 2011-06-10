@@ -10,20 +10,21 @@
 (deftest test-add-identity
   (let [identity-name "add-identity"
         public-key "test public key"
+        public-key-algorithm "RSA"
         peer (first peer-fixture/records)
-        id (add-identity identity-name public-key (:destination peer))]
+        id (add-identity identity-name public-key public-key-algorithm (:destination peer))]
     (is id "Identity not added.")
     (let [new-identity (get-record id)]
       (is (= identity-name (:name new-identity)) "Incorrect name for new identity.")
       (is (= public-key (:public_key new-identity)) "Incorrect public key for new identity.")
       (is (= (:id peer) (:peer_id new-identity)) "Incorrect peer id for new identity."))
     (destroy-record { :id id }))
-  (is (not (add-identity "blah" "blah" "blah")) "Indentity created with invalid peer."))
+  (is (not (add-identity "blah" "blah" "blah" "blah")) "Indentity created with invalid peer."))
 
 (deftest test-update-identity-name
   (let [identity-name "update-identity-name"
         peer (first peer-fixture/records)
-        id (add-identity identity-name "" (:destination peer))]
+        id (add-identity identity-name "" "RSA" (:destination peer))]
     (is id "Test identity was not added.")
     (let [current-identity (get-record id)
           new-name "new-name"]
@@ -34,7 +35,7 @@
 
 (deftest test-update-identity-peer
   (let [peer (first peer-fixture/records)
-        id (add-identity "blah" "" (:destination peer))]
+        id (add-identity "blah" "" "RSA" (:destination peer))]
     (is id "Test identity was not added.")
     (let [current-identity (get-record id)
           new-peer (second peer-fixture/records)]
@@ -46,7 +47,7 @@
 (deftest test-update-identity
   (let [identity-name "update-identity-name"
         peer (first peer-fixture/records)
-        id (add-identity identity-name "" (:destination peer))]
+        id (add-identity identity-name "" "RSA" (:destination peer))]
     (is id "Test identity was not added.")
     (let [current-identity (get-record id)
           new-peer (second peer-fixture/records)
@@ -60,10 +61,11 @@
 (deftest test-add-or-update-identity
   (let [identity-name "add-identity"
         public-key "test public key"
+        public-key-algorithm "RSA" 
         peer (first peer-fixture/records)]
     (is (nil? (find-record { :name identity-name  :public_key public-key :peer_id (:id peer) }))
       "Duplicate identity in database. Could not add the test identity.") 
-    (let [id (add-or-update-identity identity-name public-key (:destination peer))]
+    (let [id (add-or-update-identity identity-name public-key public-key-algorithm (:destination peer))]
       (is id "Identity not added.")
       (let [new-identity (get-record id)]
         (is (= identity-name (:name new-identity)) "Incorrect name for new identity.")

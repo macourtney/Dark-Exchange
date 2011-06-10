@@ -1,4 +1,4 @@
-(ns darkexchange.model.listeners.interceptor-util)
+(ns darkexchange.model.interceptors.interceptor-util)
 
 (defn compose-interceptors [interceptor1 interceptor2]
   (fn [action arg] (interceptor2 #(interceptor1 action %) arg)))

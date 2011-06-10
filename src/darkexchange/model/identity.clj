@@ -2,8 +2,10 @@
   (:require [clj-record.boot :as clj-record-boot]
             [clojure.contrib.logging :as logging]
             [darkexchange.model.client :as client]
-            [darkexchange.model.peer :as peer])
-  (:use darkexchange.model.base))
+            [darkexchange.model.peer :as peer]
+            [darkexchange.model.security :as security])
+  (:use darkexchange.model.base)
+  (:import [org.apache.commons.codec.binary Base64]))
 
 (clj-record.core/init-model
   (:associations (belongs-to peer)))
@@ -52,3 +54,14 @@
     (send-message (find-identity user-name public-key public-key-algorithm) action data))
   ([target-identity action data]
     (client/send-message (destination-for target-identity) action data)))
+
+(defn decode-base64 [string]
+  (when string
+    (.decode (new Base64) string)))
+
+(defn public-key [target-identity]
+  (security/decode-public-key { :algorithm (:public_key_algorithm target-identity)
+                                :bytes (decode-base64 (:public_key target-identity)) }))
+
+(defn verify-signature [target-identity data signature]
+  (security/verify-signature (public-key target-identity) data (decode-base64 signature)))

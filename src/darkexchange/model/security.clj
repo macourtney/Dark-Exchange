@@ -2,7 +2,7 @@
   (:require [clojure.contrib.logging :as logging])
   (:import [org.apache.commons.codec.binary Base64]
            [org.bouncycastle.jce.provider BouncyCastleProvider]
-           [java.security KeyFactory KeyPair KeyPairGenerator MessageDigest Security]
+           [java.security KeyFactory KeyPair KeyPairGenerator MessageDigest PrivateKey PublicKey Security Signature]
            [java.security.spec PKCS8EncodedKeySpec X509EncodedKeySpec]
            [java.util Random]
            [javax.crypto Cipher SecretKeyFactory]
@@ -11,6 +11,7 @@
 (def des-algorithm "DES")
 
 (def default-algorithm "RSA")
+(def default-signature-algorithm "SHA1withRSA")
 (def default-transformation "RSA/None/NoPadding")
 (def default-provider "BC") ; Bouncy Castle provider.
 (def default-character-encoding "UTF8")
@@ -25,8 +26,20 @@
 (defn private-key [key-pair]
   (.getPrivate key-pair))
 
+(defn as-private-key [key]
+  (cond
+    (instance? KeyPair key) (private-key key)
+    (instance? PrivateKey key) key
+    true (throw (RuntimeException. (str "Don't know how to convert to private key: " key)))))
+
 (defn public-key [key-pair]
   (.getPublic key-pair))
+
+(defn as-public-key [key]
+  (cond
+    (instance? KeyPair key) (public-key key)
+    (instance? PublicKey key) key
+    true (throw (RuntimeException. (str "Don't know how to convert to public key: " key)))))
 
 (defn algorithm [key]
   (.getAlgorithm key))
@@ -92,7 +105,10 @@
     :private-key (get-private-key-map (.getPrivate key-pair))})
 
 (defn decode-public-key [public-key-map]
-  (.generatePublic (KeyFactory/getInstance (:algorithm public-key-map)) (X509EncodedKeySpec. (:bytes public-key-map))))
+  (when public-key-map
+    (when-let [key-bytes (:bytes public-key-map)]
+      (when-let [algorithm (:algorithm public-key-map)]
+        (.generatePublic (KeyFactory/getInstance algorithm) (X509EncodedKeySpec. key-bytes))))))
 
 (defn decode-private-key [private-key-map]
   (.generatePrivate (KeyFactory/getInstance (:algorithm private-key-map))
@@ -100,6 +116,22 @@
 
 (defn decode-key-pair [key-pair-map]
   (KeyPair. (decode-public-key (:public-key key-pair-map)) (decode-private-key (:private-key key-pair-map))))
+
+; Signing
+
+(defn sign [key data]
+  (let [private-key (as-private-key key)
+        signature (Signature/getInstance default-signature-algorithm default-provider)]
+    (.initSign signature private-key)
+    (.update signature (get-data-bytes data))
+    (.sign signature)))
+
+(defn verify-signature [key data signature]
+  (let [public-key (as-public-key key)
+        signature-obj (Signature/getInstance default-signature-algorithm default-provider)]
+    (.initVerify signature-obj public-key)
+    (.update signature-obj (get-data-bytes data))
+    (.verify signature-obj (get-data-bytes signature))))
 
 ;http://stackoverflow.com/questions/339004/java-encrypt-decrypt-user-name-and-password-from-a-configuration-file
 (defn des-cipher []

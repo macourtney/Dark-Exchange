@@ -1,4 +1,4 @@
-(ns darkexchange.model.listeners.header-reply-interceptor
+(ns darkexchange.model.interceptors.header-reply-interceptor
   (:require [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.user :as user-model]))
 

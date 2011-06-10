@@ -9,7 +9,9 @@
     :encrypted_password "nTsg+WsHHNURODpaVcbK1Ip8UHY=" ; the test password is "password"
     :salt "197849973"
     :public_key ""
-    :private_key "" }])
+    :public_key_algorithm "RSA" 
+    :private_key ""
+    :private_key_algorithm "RSA" }])
 
 (def fixture-table-name :users)
 

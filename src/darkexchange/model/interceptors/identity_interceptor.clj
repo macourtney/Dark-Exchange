@@ -1,4 +1,4 @@
-(ns darkexchange.model.listeners.identity-interceptor
+(ns darkexchange.model.interceptors.identity-interceptor
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.identity :as identity-model]))
 

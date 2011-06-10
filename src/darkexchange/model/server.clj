@@ -1,7 +1,7 @@
 (ns darkexchange.model.server
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.i2p-server :as i2p-server]
-            [darkexchange.model.listeners.server-interceptors :as server-interceptors]))
+            [darkexchange.model.interceptors.server-interceptors :as server-interceptors]))
 
 (def actions (atom {}))
 

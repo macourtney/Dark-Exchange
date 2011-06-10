@@ -1,16 +1,16 @@
 (ns darkexchange.model.calls.accept-offer
   (:require [clojure.contrib.logging :as logging]
+            [darkexchange.interchange-map-util :as interchange-map-util]
             [darkexchange.model.actions.action-keys :as action-keys]
-            [darkexchange.model.calls.util :as calls-util]
             [darkexchange.model.identity :as identity-model]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.trade :as trade-model]
             [darkexchange.model.user :as user-model]))
 
 (defn find-identity [response-map]
-  (identity-model/find-or-create-identity (calls-util/from-user-name response-map)
-    (calls-util/from-public-key response-map) (calls-util/from-public-key-algorithm response-map)
-    (calls-util/from-destination response-map)))
+  (identity-model/find-or-create-identity (interchange-map-util/from-user-name response-map)
+    (interchange-map-util/from-public-key response-map) (interchange-map-util/from-public-key-algorithm response-map)
+    (interchange-map-util/from-destination response-map)))
 
 (defn create-offer-from [foreign-offer]
   { :use_id (:id (user-model/current-user))

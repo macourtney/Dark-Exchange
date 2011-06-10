@@ -1,5 +1,6 @@
 (ns test.darkexchange.model.user
-  (:require [test.fixtures.util :as fixtures-util]) 
+  (:require [test.fixtures.util :as fixtures-util]
+            [darkexchange.model.security :as security]) 
   (:use clojure.contrib.test-is
         test.fixtures.user
         darkexchange.model.user))
@@ -70,3 +71,17 @@
       (destroy-record { :id user-id })))
   (logout)
   (is (nil? (current-user)) "The user failed to logout."))
+
+(defn test-bytes [byte-array1 byte-array2]
+  (when (= (count byte-array1) (count byte-array2))
+    (not (some identity (map #(not (= %1 %2)) byte-array1 byte-array2))))) 
+
+(deftest test-private-key-bytes
+  (let [key-pair (security/generate-key-pair)
+        key-pair-map (security/get-key-pair-map key-pair)
+        test-password (.toCharArray "password")
+        key-bytes (:bytes (:private-key key-pair-map))
+        private-key-str (encrypt-private-key test-password key-bytes)
+        decrypted-bytes (private-key-bytes { :password test-password :private_key private-key-str })]
+    (is (= (count key-bytes) (count decrypted-bytes))) 
+    (is (test-bytes key-bytes decrypted-bytes))))

@@ -1,7 +1,7 @@
 (ns darkexchange.model.client
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.model.i2p-server :as i2p-server-model]
-            [darkexchange.model.listeners.client-interceptors :as client-interceptors]
+            [darkexchange.model.interceptors.client-interceptors :as client-interceptors]
             [darkexchange.model.user :as user-model]))
 
 (defn current-destination []
