@@ -2,6 +2,10 @@
   (:require [darkexchange.model.terms :as terms]
             [seesaw.core :as seesaw-core]))
 
+(def trade-messages-table-columns [ { :key :id :text (terms/id) }
+                                    { :key :from :text (terms/from) }
+                                    { :key :date-received :text (terms/date-received) } ])
+
 (defn create-label-value-pair-panel [text label-key]
   (seesaw-core/horizontal-panel
       :items [ (seesaw-core/border-panel :size [120 :by 15] :east (seesaw-core/label :text text))
@@ -36,7 +40,7 @@
 (defn create-waiting-for-panel []
   (create-label-value-pair-panel (terms/waiting-for) :waiting-for))
 
-(defn create-center-panel []
+(defn create-data-panel []
   (seesaw-core/vertical-panel
       :items [ (create-trade-id-panel)
                [:fill-v 3]
@@ -56,6 +60,33 @@
                [:fill-v 3]
                (create-waiting-for-panel)]))
 
+(defn create-send-message-button []
+  (seesaw-core/button :id :send-message-button :text (terms/send-message)))
+
+(defn create-view-message-button []
+  (seesaw-core/button :id :view-message-button :text (terms/view)))
+
+(defn create-trade-messages-title-panel []
+  (seesaw-core/border-panel
+      :vgap 3
+      :west (terms/messages)
+      :east (seesaw-core/horizontal-panel :items 
+              [ (create-view-message-button)
+                [:fill-h 3]
+                (create-send-message-button) ])))
+
+(defn create-trade-messages-table []
+  (seesaw-core/scrollable
+    (seesaw-core/table :id :trade-messages-table
+      :model [ :columns trade-messages-table-columns ])
+    :preferred-size [350 :by 150]))
+
+(defn create-trade-messages-panel []
+  (seesaw-core/border-panel
+      :vgap 3
+      :north (create-trade-messages-title-panel)
+      :center (create-trade-messages-table)))
+
 (defn create-button-panel []
   (seesaw-core/border-panel
       :border 5
@@ -69,7 +100,8 @@
   (seesaw-core/border-panel
       :border 5
       :vgap 5
-      :center (create-center-panel)
+      :north (create-data-panel)
+      :center (create-trade-messages-panel)
       :south (create-button-panel)))
 
 (defn create []

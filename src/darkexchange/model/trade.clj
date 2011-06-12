@@ -4,6 +4,7 @@
             [darkexchange.model.identity :as identity-model]
             [darkexchange.model.offer :as offer]
             [darkexchange.model.terms :as terms]
+            [darkexchange.model.trade-message :as trade-message]
             [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
   (:import [java.util Date]))
@@ -38,7 +39,8 @@
 (clj-record.core/init-model
   (:associations (belongs-to identity)
                  (belongs-to offer)
-                 (belongs-to user))
+                 (belongs-to user)
+                 (has-many trade-messages))
   (:callbacks (:after-insert trade-add)
               (:after-update trade-updated)))
 
@@ -160,8 +162,9 @@
   (map convert-to-table-trade (open-trades)))
 
 (defn as-view-trade [trade-id]
-  (let [trade (get-record trade-id)]
-    (merge trade { :offer (find-offer trade) :identity (find-identity trade) })))
+  (when trade-id
+    (let [trade (get-record trade-id)]
+      (merge trade { :offer (find-offer trade) :identity (find-identity trade) }))))
 
 (defn find-trade [foreign-trade-id trade-partner-identity]
   (find-record { :foreign_trade_id foreign-trade-id :identity_id (:id trade-partner-identity) }))
@@ -201,3 +204,6 @@
   (let [trade (find-trade foreign-trade-id trade-partner-identity)]
     (update { :id (:id trade) :has_received 1 })
     (close-if-complete (get-record (:id trade)))))
+
+(defn table-trade-messages [trade]
+  (map trade-message/as-table-trade-message (find-trade-messages trade)))

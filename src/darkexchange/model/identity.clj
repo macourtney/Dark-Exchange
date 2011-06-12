@@ -3,7 +3,8 @@
             [clojure.contrib.logging :as logging]
             [darkexchange.model.client :as client]
             [darkexchange.model.peer :as peer]
-            [darkexchange.model.security :as security])
+            [darkexchange.model.security :as security]
+            [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
   (:import [org.apache.commons.codec.binary Base64]))
 
@@ -65,3 +66,7 @@
 
 (defn verify-signature [target-identity data signature]
   (security/verify-signature (public-key target-identity) data (decode-base64 signature)))
+
+(defn current-user-identity []
+  (let [user (user/current-user)]
+    (find-identity (:name user) (:public_key user) (:public_key_algorithm user))))

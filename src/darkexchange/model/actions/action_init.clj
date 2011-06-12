@@ -8,6 +8,7 @@
             [darkexchange.model.actions.notify :as notify]
             [darkexchange.model.actions.payment-sent :as payment-sent]
             [darkexchange.model.actions.search-offers :as search-offers]
+            [darkexchange.model.actions.send-trade-message :as send-trade-message]
             [darkexchange.model.server :as server-model]))
 
 (defn init []
@@ -19,4 +20,5 @@
   (server-model/add-action get-peers/action-key get-peers/action)
   (server-model/add-action notify/action-key notify/action)
   (server-model/add-action payment-sent/action-key payment-sent/action)
-  (server-model/add-action search-offers/action-key search-offers/action))
+  (server-model/add-action search-offers/action-key search-offers/action)
+  (server-model/add-action send-trade-message/action-key send-trade-message/action))

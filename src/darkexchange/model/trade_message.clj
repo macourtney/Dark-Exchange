@@ -1,0 +1,40 @@
+(ns darkexchange.model.trade-message
+  (:require [clojure.contrib.logging :as logging]
+            [clj-record.boot :as clj-record-boot]
+            [darkexchange.model.identity :as identity])
+  (:use darkexchange.model.base)
+  (:import [java.util Date]))
+
+(def message-add-listeners (atom []))
+
+(defn add-message-add-listener [listener]
+  (swap! message-add-listeners conj listener))
+
+(defn remove-message-add-listener [listener]
+  (swap! message-add-listeners remove-listener listener))
+
+(defn message-added [trade-message]
+  (doseq [listener @message-add-listeners]
+    (listener trade-message)))
+
+(defn trade-message-clean-up [trade-message]
+  (clean-clob-key trade-message :body))
+
+(clj-record.core/init-model
+  (:associations (belongs-to trade)
+                 (belongs-to identity))
+  (:callbacks (:after-insert message-added)
+              (:after-load trade-message-clean-up)))
+
+(defn create-new-message
+  ([body trade] (create-new-message body trade nil (identity/current-user-identity)))
+  ([body trade foreign-message-id from-identity]
+    (when (and body trade from-identity)
+      (insert { :created_at (new Date) :body body :trade_id (:id trade)  :foreign_message_id foreign-message-id
+                :identity_id (:id from-identity) }))))
+
+(defn update-foreign-message-id [message-id foreign-message-id]
+  (update { :id message-id :foreign_message_id foreign-message-id }))
+
+(defn as-table-trade-message [trade-message]
+  { :id (:id trade-message) :from (:name (find-identity trade-message)) :date-received (:created_at trade-message) })

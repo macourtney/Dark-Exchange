@@ -9,3 +9,4 @@
 (def payment-received-action-key :payment-received)
 (def payment-sent-action-key :payment-sent)
 (def search-offers-action-key :search-offers)
+(def send-trade-message-action-key :send-trade-message)
