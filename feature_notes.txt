@@ -1,12 +1,14 @@
-Features for Beta Release (in progress):
+Features for Beta Release (complete):
 
 Trade messages
 
+Features for Beta Release (in progress):
+
 Features for Beta Release (To be completed):
 
+Automatically connect to network.
 Ability to reject trades.
 Off line updated of trades.
-Automatically connect to network.
 Verify deleted or already claimed offers don't cause too many problems.
 Center windows.
 Make currency and payment type comboboxes agree.
