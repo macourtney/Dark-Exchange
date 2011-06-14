@@ -6,7 +6,7 @@
 (def initialized (atom false))
 
 (def conjure-environment-property "conjure.environment")
-(def default-environment "development")
+(def default-environment "production")
 
 (defn
   set-evironment-property [environment]

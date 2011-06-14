@@ -14,4 +14,6 @@
                  [org.clojure/clojure-contrib "1.2.0"]
                  [seesaw "1.0.5"]]
   :dev-dependencies [[drift "1.2.0"]]
-  :main darkexchange.main)
+  :main darkexchange.main
+  
+  :run-aliases { :development darkexchange.development-main })

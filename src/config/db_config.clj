@@ -2,6 +2,7 @@
 
 (ns config.db-config
   (:require [clojure.contrib.java-utils :as java-utils]
+            [clojure.contrib.logging :as logging]
             [config.environment :as environment]
             [darkexchange.database.h2 :as h2]))
 
@@ -18,15 +19,14 @@
 
 (defn
 #^{:doc "Returns the database flavor which is used by Conjure to connect to the database."}
-  create-flavor 
-  ([] (create-flavor :production))
-  ([environment]
-    (h2/flavor
+  create-flavor [environment]
+  (logging/info (str "Environment: " environment))
+  (h2/flavor
 
-      ;; Calculates the database to use.
-      (dbname environment)
-      
-      "data/db/")))
+    ;; Calculates the database to use.
+    (dbname environment)
+
+    "data/db/"))
             
 (defn
   load-config []
