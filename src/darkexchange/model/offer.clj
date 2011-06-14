@@ -44,6 +44,18 @@
             (select-keys offer-data [:has_amount :has_currency :has_payment_type :wants_amount :wants_currency
                                      :wants_payment_type :identity_id :foreign_offer_id :closed]))))
 
+(defn update-from-foreign-offer [offer-id foreign-offer]
+  (update
+    { :id offer-id
+      :foreign_offer_id (:id foreign-offer)
+      :has_amount (:wants_amount foreign-offer)
+      :has_currency (:wants_currency foreign-offer)
+      :has_payment_type (:wants_payment_type foreign-offer)
+      :wants_amount (:has_amount foreign-offer)
+      :wants_currency (:has_currency foreign-offer)
+      :wants_payment_type (:has_payment_type foreign-offer) })
+  (get-record offer-id))
+
 (defn update-or-create-offer [offer-data]
   (when offer-data
     (or

@@ -49,21 +49,24 @@
     (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
       (select-keys trade-data [:foreign_trade_id :identity_id :is_acceptor :offer_id :wants_first]))))
 
-(defn create-non-acceptor-trade [acceptor-user-name acceptor-public-key acceptor-public-key-algorithm offer]
+(defn create-non-acceptor-trade [acceptor-user-name acceptor-public-key acceptor-public-key-algorithm offer foreign-trade-id]
   (let [acceptor-identity (identity-model/find-identity acceptor-user-name acceptor-public-key acceptor-public-key-algorithm)]
     (create-new-trade
       { :offer_id (:id offer)
         :wants_first 1
         :identity_id (:id acceptor-identity)
-        :is_acceptor 0 })))
+        :is_acceptor 0
+        :foreign_trade_id foreign-trade-id })))
 
-(defn create-acceptor-trade [other-identity foreign_trade_id offer]
+(defn create-acceptor-trade [other-identity offer-id]
   (create-new-trade
-    { :offer_id (:id offer)
+    { :offer_id offer-id
       :wants_first 0
       :identity_id (:id other-identity)
-      :is_acceptor 1
-      :foreign_trade_id foreign_trade_id }))
+      :is_acceptor 1 }))
+
+(defn set-foreign-trade-id [trade-id foreign-trade-id]
+  (update { :id trade-id :foreign_trade_id foreign-trade-id }))
 
 (defn open-trades
   ([] (open-trades (user/current-user)))
@@ -79,10 +82,10 @@
   (not (does-not-go-first? trade)))
 
 (defn needs-to-be-confirmed? [trade]
-  (and (not (as-boolean (:accept_confirm trade))) (nil? (:foreign_trade_id trade))))
+  (and (not (as-boolean (:accept_confirm trade))) (not (as-boolean (:is_acceptor trade)))))
 
 (defn waiting-to-be-confirmed? [trade]
-  (and (not (as-boolean (:accept_confirm trade))) (:foreign_trade_id trade)))
+  (and (not (as-boolean (:accept_confirm trade))) (as-boolean (:is_acceptor trade))))
 
 (defn wants-sent? [trade]
   (as-boolean (:wants_sent trade)))

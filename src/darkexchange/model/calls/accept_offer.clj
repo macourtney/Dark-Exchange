@@ -7,41 +7,45 @@
             [darkexchange.model.trade :as trade-model]
             [darkexchange.model.user :as user-model]))
 
-(defn find-identity [response-map]
-  (identity-model/find-or-create-identity (interchange-map-util/from-user-name response-map)
-    (interchange-map-util/from-public-key response-map) (interchange-map-util/from-public-key-algorithm response-map)
-    (interchange-map-util/from-destination response-map)))
-
-(defn create-offer-from [foreign-offer]
-  { :use_id (:id (user-model/current-user))
-    :foreign_offer_id (:id foreign-offer)
-    :closed 1
-    :has_amount (:wants_amount foreign-offer)
-    :has_currency (:wants_currency foreign-offer)
-    :has_payment_type (:wants_payment_type foreign-offer)
-    :wants_amount (:has_amount foreign-offer)
-    :wants_currency (:has_currency foreign-offer)
-    :wants_payment_type (:has_payment_type foreign-offer) })
-
-(defn update-offer [foreign-offer]
+(defn update-offer [initial-trade foreign-offer]
   (when foreign-offer
-    (offer-model/update-or-create-offer (create-offer-from foreign-offer))))
+    (offer-model/update-from-foreign-offer (:offer_id initial-trade) foreign-offer)))
 
-(defn find-or-create-offer [response-map]
-  (update-offer (:offer (:data response-map))))
+(defn find-offer [initial-trade response-map]
+  (update-offer initial-trade (:offer (:data response-map))))
 
-(defn create-new-trade [response-map offer other-identity]
-  (trade-model/create-acceptor-trade other-identity (:trade-id (:data response-map)) offer))
+(defn update-trade [initial-trade response-map]
+  (if-let [foreign-trade-id (:trade-id (:data response-map))]
+    (when-let [other-identity (interchange-map-util/from-identity response-map)]
+      (when-let [offer (find-offer initial-trade response-map)]
+        (trade-model/set-foreign-trade-id (:id initial-trade) foreign-trade-id)))
+    (trade-model/destroy-record initial-trade)))
 
-(defn create-trade [response-map]
-  (when-let [other-identity (find-identity response-map)]
-    (when-let [offer (find-or-create-offer response-map)]
-      (create-new-trade response-map offer other-identity))))
+(defn find-identity 
+  ([offer] (find-identity (:name offer) (:public-key offer) (:public-key-algorithm offer)))
+  ([user-name public-key public-key-algorithm]
+    (identity-model/find-identity user-name public-key public-key-algorithm)))
+
+(defn create-offer []
+  (offer-model/create-new-offer
+    { :use_id (:id (user-model/current-user))
+      :closed 1 }))
+
+(defn create-initial-trade [other-identity]
+  (trade-model/create-acceptor-trade other-identity (create-offer)))
+
+(defn create-data [offer initial-trade-id other-identity]
+  { :name (:name other-identity)
+    :public-key (:public_key other-identity)
+    :public-key-algorithm (:public_key_algorithm other-identity)
+    :offer offer
+    :foreign-trade-id initial-trade-id })
+
+(defn send-message [offer initial-trade-id other-identity]
+  (identity-model/send-message other-identity action-keys/accept-offer-action-key
+    (create-data offer initial-trade-id other-identity)))
 
 (defn call [offer]
-  (let [user-name (:name offer)
-        public-key (:public-key offer)
-        public-key-algorithm (:public-key-algorithm offer)]
-    (create-trade
-      (identity-model/send-message user-name public-key public-key-algorithm action-keys/accept-offer-action-key
-        { :name user-name :public-key public-key :public-key-algorithm public-key-algorithm :offer offer }))))
+  (let [other-identity (identity-model/find-identity (:name offer) (:public-key offer) (:public-key-algorithm offer))
+        initial-trade-id (create-initial-trade other-identity)]
+    (update-trade (trade-model/get-record initial-trade-id) (send-message offer initial-trade-id other-identity))))

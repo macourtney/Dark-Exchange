@@ -7,11 +7,14 @@
 
 (def action-key action-keys/accept-offer-action-key)
 
+(defn create-non-acceptor-trade [request-data offer]
+  (trade-model/create-non-acceptor-trade (:name request-data) (:public-key request-data)
+    (:public-key-algorithm request-data) offer (:foreign-trade-id request-data)))
+
 (defn create-trade [request-data offer]
   (when offer
     { :offer (dissoc offer :created_at)
-      :trade-id (trade-model/create-non-acceptor-trade (:name request-data) (:public-key request-data)
-                  (:public-key-algorithm request-data) offer) }))
+      :trade-id (create-non-acceptor-trade request-data offer) }))
 
 (defn accept-offer [request-data]
   (create-trade request-data (offer-model/close-offer (:offer request-data))))

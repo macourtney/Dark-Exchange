@@ -8,7 +8,7 @@
 
 (defn create-label-value-pair-panel [text label-key]
   (seesaw-core/horizontal-panel
-      :items [ (seesaw-core/border-panel :size [120 :by 15] :east (seesaw-core/label :text text))
+      :items [ (seesaw-core/border-panel :size [130 :by 15] :east (seesaw-core/label :text text))
                [:fill-h 3]
                (seesaw-core/border-panel :size [200 :by 15]
                  :west (seesaw-core/label :id label-key :text "data" :font { :style :plain }))]))

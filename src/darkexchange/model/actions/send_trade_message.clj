@@ -14,7 +14,6 @@
   (let [data (:data request-map)
         trade-data (:trade data)
         from-identity (interchange-map-util/from-identity request-map)]
-    (logging/debug (str "trade-data: " trade-data))
     (trade-message-model/create-new-message (:body trade-data) (find-trade trade-data from-identity)
       (:foreign-message-id trade-data) from-identity)))
 
