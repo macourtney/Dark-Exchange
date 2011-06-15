@@ -15,5 +15,8 @@
                  [seesaw "1.0.5"]]
   :dev-dependencies [[drift "1.2.0"]]
   :main darkexchange.main
+
+  :run-aliases { :development darkexchange.development-main }
   
-  :run-aliases { :development darkexchange.development-main })
+  :manifest { "Name" "org/bouncycastle/asn1/ocsp/ResponderID.class"
+              "SHA1-Digest" "STmNnCNaPJoaOnuwvVP6lO4LBLs=" })

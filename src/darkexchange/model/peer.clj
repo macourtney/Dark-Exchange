@@ -1,5 +1,7 @@
 (ns darkexchange.model.peer
   (:require [clojure.contrib.logging :as logging]
+            [clojure.java.io :as java-io]
+            [clojure.tools.loading-utils :as loading-utils]
             [clj-record.boot :as clj-record-boot]
             [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.client :as client]
@@ -9,6 +11,8 @@
   (:import [java.sql Clob]
            [java.text SimpleDateFormat]
            [java.util Date]))
+
+(def peers-file-name "peers.txt")
 
 (def peer-update-listeners (atom []))
 
@@ -86,6 +90,22 @@
 (defn last-updated-peer []
   (first (find-by-sql ["SELECT * FROM peers ORDER BY updated_at DESC LIMIT 1"])))
 
+(defn peers-text-reader []
+  (java-io/reader (java-io/resource peers-file-name)))
+
+(defn peers-text-lines []
+  (filter #(< 0 (count (.trim %1))) (line-seq (peers-text-reader))))
+
+(defn default-destinations []
+  (peers-text-lines))
+
+(defn destination-online? [destination]
+  (when (i2p-server/destination-online? destination)
+    destination))
+
+(defn find-online-destination []
+  (some destination-online? (cons (:destination (last-updated-peer)) (default-destinations))))
+
 (defn add-destination-if-missing [destination]
   (let [peer (find-peer destination)]
     (when-not peer
@@ -111,10 +131,15 @@
     (add-destination-if-missing destination))
   (notify-all-peers))
 
+(defn all-network-destinations []
+  (let [online-destination (find-online-destination)]
+    (filter #(not (= (i2p-server/base-64-destination) %)) ; Do not add yourself to the peer table.
+      (cons online-destination (:data (get-peers-from online-destination))))))
+
 (defn download-peers-background []
   (when-not (property/test-peers-downloaded?)
     (try
-      (let [destinations (:data (get-peers-from (:destination (last-updated-peer))))]
+      (let [destinations (all-network-destinations)]
         (if (and destinations (not-empty destinations))
           (add-destinations destinations)
           (property/reset-peers-downloaded?)))
