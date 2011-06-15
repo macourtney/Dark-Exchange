@@ -194,8 +194,16 @@
   (update { :id (:id trade) :closed 1 })
   (get-record (:id trade)))
 
+(defn complete? [trade]
+  (and (wants-sent? trade) (wants-received? trade) (has-sent? trade) (has-received? trade)))
+
+(defn update-closed [trade]
+  (if (complete? trade)
+    (assoc trade :closed 1)
+    trade))
+
 (defn close-if-complete [trade]
-  (if (and (wants-sent? trade) (wants-received? trade) (has-sent? trade) (has-received? trade))
+  (if (complete? trade)
     (close trade)
     trade))
 
@@ -210,3 +218,23 @@
 
 (defn table-trade-messages [trade]
   (map trade-message/as-table-trade-message (find-trade-messages trade)))
+
+(defn update-trade-accept-confirm [trade foreign-trade]
+  (if (as-boolean (:is_acceptor trade))
+    (assoc trade :accept_confirm foreign-trade)
+    trade))
+
+(defn update-has-received [trade foreign-trade]
+  (assoc trade :has_received (:wants_received foreign-trade)))
+
+(defn update-wants-sent [trade foreign-trade]
+  (assoc trade :wants_sent (:has_sent foreign-trade)))
+
+(defn update-trade [trade-partner-identity foreign-trade]
+  (when-let [trade (find-trade (:id foreign-trade) trade-partner-identity)]
+    (update
+      (update-closed
+        (update-wants-sent
+          (update-has-received
+            (update-trade-accept-confirm trade foreign-trade)))))
+    (get-record (:id trade))))

@@ -8,6 +8,7 @@
             [darkexchange.model.interceptors.server-interceptors :as server-interceptors]
             [darkexchange.model.interceptors.signature-interceptor :as signature-interceptor]
             [darkexchange.model.listeners.peer :as peer-listeners]
+            [darkexchange.model.listeners.trade :as trade-listener]
             [darkexchange.model.server :as server-model]))
 
 (defn client-init []
@@ -25,5 +26,6 @@
   (logging/info "Adding listeners.")
   (i2p-server-model/add-destination-listener peer-listeners/destination-listener)
   (i2p-server-model/add-send-message-fail-listener peer-listeners/remove-missing-peers)
+  (i2p-server-model/add-destination-listener trade-listener/destination-listener)
   (client-init)
   (server-init))

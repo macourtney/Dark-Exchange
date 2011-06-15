@@ -5,10 +5,11 @@ Automatically connect to network.
 
 Features for Beta Release (in progress):
 
+Off line updated of trades.
+
 Features for Beta Release (To be completed):
 
 Ability to reject trades.
-Off line updated of trades.
 Verify deleted or already claimed offers don't cause too many problems.
 Center windows.
 Make currency and payment type comboboxes agree.
