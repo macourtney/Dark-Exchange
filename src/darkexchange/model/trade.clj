@@ -230,6 +230,9 @@
 (defn update-wants-sent [trade foreign-trade]
   (assoc trade :wants_sent (:has_sent foreign-trade)))
 
+(defn update-trade-messages [trade foreign-trade trade-partner-identity]
+  (map trade-message/update-or-create-message (:id trade) (:messages foreign-trade) trade-partner-identity))
+
 (defn update-trade [trade-partner-identity foreign-trade]
   (when-let [trade (find-trade (:id foreign-trade) trade-partner-identity)]
     (update
@@ -237,4 +240,11 @@
         (update-wants-sent
           (update-has-received
             (update-trade-accept-confirm trade foreign-trade)))))
-    (get-record (:id trade))))
+    (update-trade-messages trade foreign-trade trade-partner-identity)
+    (assoc (get-record (:id trade)) :messages (trade-message/find-matching-messages (:messages foreign-trade)))))
+
+(defn unconfirmed-messages [trade]
+  (filter #(nil? (:foreign_message_id %1)) (find-trade-messages trade)))
+
+(defn contains-unconfirmed-message? [trade]
+  (seq (unconfirmed-messages trade)))

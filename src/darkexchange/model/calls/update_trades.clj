@@ -4,6 +4,11 @@
             [darkexchange.model.identity :as identity-model]
             [darkexchange.model.trade :as trade-model]))
 
+(defn create-call-message [message]
+  { :id (:id message)
+    :foreign-message-id (:foreign_message_id message)
+    :body (:body message) })
+
 (defn create-call-data [trade]
   { :id (:id trade)
     :foreign-trade-id (:foreign_trade_id trade)
@@ -11,7 +16,13 @@
     :wants-first (:wants_first trade)
     :wants-received (:wants_received trade)
     :has-sent (:has_sent trade)
-    :closed (:closed trade) })
+    :closed (:closed trade)
+    :messages (map create-call-message (trade-model/unconfirmed-messages trade)) })
+
+(defn get-response-message [response-map message]
+  { :id (:id message)
+    :identity (interchange-map-util/from-identity response-map)
+    :body (:body message) })
 
 (defn get-response-trade [response-map]
   (when-let [foreign-trade (:data response-map)]
@@ -21,7 +32,8 @@
       :wants_first (:wants-first foreign-trade)
       :wants_received (:wants-received foreign-trade)
       :has_sent (:has-sent foreign-trade)
-      :closed (:closed foreign-trade) }))
+      :closed (:closed foreign-trade)
+      :messages (map #(get-response-message response-map %) (:messages foreign-trade))}))
 
 (defn save-updated-trade [response-map]
   (when-let [foreign-trade (get-response-trade response-map)]

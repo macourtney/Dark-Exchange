@@ -38,3 +38,12 @@
 
 (defn as-table-trade-message [trade-message]
   { :id (:id trade-message) :from (:name (find-identity trade-message)) :date-received (:created_at trade-message) })
+
+(defn update-or-create-message [trade-id message from-identity]
+  (if-let [foreign-message-id (:foreign_message_id message)]
+    (update-foreign-message-id foreign-message-id (:id message))
+    (when-not (find-record { :foreign_message_id (:id message) })
+      (create-new-message (:body message) { :id trade-id } (:id message) from-identity))))
+
+(defn find-matching-messages [messages]
+  (map #(find-record { :foreign_message_id (:id %1)}) messages))
