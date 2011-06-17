@@ -2,6 +2,7 @@
   (:require [clojure.tools.string-utils :as conjure-str-utils]
             [config.environment :as environment]
             [darkexchange.database.util :as database-util]
+            [darkexchange.uncaught-exception-handler :as uncaught-exception-handler]
             [drift.runner :as drift-runner]))
 
 (def initialized? (atom false))
@@ -21,6 +22,7 @@
 
 (defn environment-init []
   (when (compare-and-set! environment-initialized? false true)
+    (uncaught-exception-handler/init)
     (environment/require-environment)
     (database-util/init-database)))
 

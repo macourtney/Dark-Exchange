@@ -13,4 +13,4 @@
 (defn call [trade]
   (update-foreign-trade-id trade
     (:data (identity-model/send-message (trade-model/find-identity trade) action-keys/confirm-trade-action-key
-      { :trade-id (:id (confirm-trade trade)) }))))
+      { :trade-id (confirm-trade trade) }))))

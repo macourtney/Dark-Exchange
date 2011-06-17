@@ -7,6 +7,7 @@
             [darkexchange.model.calls.confirm-trade :as confirm-trade-call]
             [darkexchange.model.calls.payment-received :as payment-received-call]
             [darkexchange.model.calls.payment-sent :as payment-sent-call]
+            [darkexchange.model.calls.reject-trade :as reject-trade-call]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.terms :as terms]
             [darkexchange.model.trade :as trade-model]
@@ -90,7 +91,8 @@
 
 (defn execute-next-step-call [trade e call]
   (call trade)
-  (disable-next-step-button e))
+  (disable-next-step-button e)
+  (actions-utils/close-window (seesaw-core/to-frame e)))
 
 (defn attach-next-step-action [parent-component trade action button-text]
   (actions-utils/attach-listener parent-component "#next-step-button" #(action trade %))
@@ -101,7 +103,8 @@
   (execute-next-step-call trade e confirm-trade-call/call))
 
 (defn attach-confirm-action [parent-component trade]
-  (attach-next-step-action parent-component trade confirm-action (terms/accept-trade)))
+  (attach-next-step-action parent-component trade confirm-action (terms/accept-trade))
+  (seesaw-core/config! (controller-utils/find-component parent-component "#reject-button") :visible? true))
 
 (defn payment-sent-action [trade e]
   (execute-next-step-call trade e payment-sent-call/call))
@@ -115,9 +118,25 @@
 (defn attach-payment-received-action [parent-component trade]
   (attach-next-step-action parent-component trade payment-received-action (terms/confirm-payment-received)))
 
+(defn reject-trade-action [trade e]
+  (reject-trade-call/call trade)
+  (actions-utils/close-window (seesaw-core/to-frame e)))
+
+(defn attach-reject-trade-action [parent-component trade]
+  (actions-utils/attach-listener parent-component "#reject-button" #(reject-trade-action trade %)))
+
+(defn close-action [trade e]
+  (trade-model/close trade)
+  (actions-utils/close-window (seesaw-core/to-frame e)))
+
+(defn attach-close-action [parent-component trade]
+  (attach-next-step-action parent-component trade close-action (terms/close-trade)))
+
 (defn find-and-attach-next-step-action [trade parent-component]
+  (attach-reject-trade-action parent-component trade)
   (let [next-step-key (trade-model/next-step-key trade)]
     (cond
+      (= next-step-key trade-model/rejected-key) (attach-close-action parent-component trade)
       (= next-step-key trade-model/needs-to-be-confirmed-key) (attach-confirm-action parent-component trade)
       (= next-step-key trade-model/send-has-key) (attach-payment-sent-action parent-component trade)
       (= next-step-key trade-model/send-wants-receipt-key) (attach-payment-received-action parent-component trade))

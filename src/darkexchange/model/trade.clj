@@ -13,6 +13,7 @@
 
 (def needs-to-be-confirmed-key :needs-to-be-confirmed)
 (def waiting-to-be-confirmed-key :waiting-to-be-confirmed)
+(def rejected-key :rejected)
 (def waiting-for-wants-key :waiting-for-wants)
 (def send-wants-receipt-key :send-wants-receipt)
 (def send-has-key :send-has)
@@ -87,6 +88,9 @@
 (defn waiting-to-be-confirmed? [trade]
   (and (not (as-boolean (:accept_confirm trade))) (as-boolean (:is_acceptor trade))))
 
+(defn rejected? [trade]
+  (as-boolean (:accept_rejected trade)))
+
 (defn wants-sent? [trade]
   (as-boolean (:wants_sent trade)))
 
@@ -99,6 +103,10 @@
 (defn has-received? [trade]
   (as-boolean (:has_received trade)))
 
+(defn rejected-next-step-key [trade]
+  (when (rejected? trade)
+    rejected-key))
+
 (defn needs-to-be-confirmed-next-step-key [trade]
   (when (needs-to-be-confirmed? trade)
     needs-to-be-confirmed-key))
@@ -108,7 +116,8 @@
     waiting-to-be-confirmed-key))
 
 (defn confirmation-next-step-key [trade]
-  (or (needs-to-be-confirmed-next-step-key trade) (waiting-to-be-confirmed-next-step-key trade)))
+  (or (rejected-next-step-key trade) (needs-to-be-confirmed-next-step-key trade)
+    (waiting-to-be-confirmed-next-step-key trade)))
 
 (defn waiting-for-wants-next-step-key [trade]
   (when (not (wants-sent? trade))
@@ -142,6 +151,7 @@
 
 (defn waiting-for-key-to-text [waiting-for-key]
   (cond
+    (= waiting-for-key rejected-key) (terms/rejected)
     (= waiting-for-key needs-to-be-confirmed-key) (terms/needs-to-be-confirmed)
     (= waiting-for-key waiting-to-be-confirmed-key) (terms/waiting-to-be-confirmed)
     (= waiting-for-key waiting-for-wants-key) (terms/waiting-for-payment-to-be-sent)
@@ -175,8 +185,16 @@
 (defn confirm-trade
   ([foreign-trade-id trade-partner-identity] (confirm-trade (find-trade foreign-trade-id trade-partner-identity)))
   ([trade]
-    (update { :id (:id trade) :accept_confirm 1 })
-    (get-record (:id trade))))
+    (let [trade-id (:id trade)]
+      (update { :id trade-id :accept_confirm 1 :accept_rejected 0 })
+      trade-id)))
+
+(defn reject-trade
+  ([foreign-trade-id trade-partner-identity] (reject-trade (find-trade foreign-trade-id trade-partner-identity)))
+  ([trade]
+    (let [trade-id (:id trade)]
+      (update { :id trade-id :accept_confirm 0 :accept_rejected 1 })
+      trade-id)))
 
 (defn payment-sent [trade]
   (update { :id (:id trade) :has_sent 1 })
@@ -221,7 +239,8 @@
 
 (defn update-trade-accept-confirm [trade foreign-trade]
   (if (as-boolean (:is_acceptor trade))
-    (assoc trade :accept_confirm foreign-trade)
+    (merge trade { :accept_confirm (or (:accept_confirm foreign-trade) 0)
+                   :accept_rejected (or (:accept_rejected foreign-trade) 0) })
     trade))
 
 (defn update-has-received [trade foreign-trade]

@@ -6,7 +6,7 @@
 (def action-key action-keys/confirm-trade-action-key)
 
 (defn confirm-trade [foreign-trade-id trade-partner-identity]
-  { :id (:id (trade-model/confirm-trade foreign-trade-id trade-partner-identity))})
+  { :id (trade-model/confirm-trade foreign-trade-id trade-partner-identity)})
 
 (defn action [request-map]
   { :data (confirm-trade (:trade-id (:data request-map)) (interchange-map-util/from-identity request-map)) })

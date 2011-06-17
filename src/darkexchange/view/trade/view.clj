@@ -92,7 +92,9 @@
       :border 5
       :hgap 5
       :east (seesaw-core/horizontal-panel :items 
-              [ (seesaw-core/button :id :next-step-button :text "CHANGE ME" :visible? false)
+              [ (seesaw-core/button :id :reject-button :text (terms/reject-trade) :visible? false)
+                [:fill-h 3]
+                (seesaw-core/button :id :next-step-button :text "CHANGE ME" :visible? false)
                 [:fill-h 3]
                 (seesaw-core/button :id :cancel-button :text (terms/cancel)) ])))
 
