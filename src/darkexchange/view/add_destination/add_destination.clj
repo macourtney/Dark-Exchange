@@ -23,7 +23,7 @@
       :east (seesaw-core/horizontal-panel :items 
               [ (seesaw-core/button :id :add-button :text (terms/add))
                 [:fill-h 3]
-                (seesaw-core/button :id :cancel-button :text (terms/cancel)) ])))
+                (seesaw-core/button :id :cancel-button :text (terms/done)) ])))
 
 (defn create-content []
   (seesaw-core/border-panel

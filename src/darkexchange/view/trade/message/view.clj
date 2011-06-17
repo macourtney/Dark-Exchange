@@ -17,7 +17,7 @@
   (seesaw-core/border-panel
       :border 5
       :hgap 5
-      :east (seesaw-core/button :id :cancel-button :text (terms/cancel))))
+      :east (seesaw-core/button :id :cancel-button :text (terms/done))))
 
 (defn create-content []
   (seesaw-core/border-panel

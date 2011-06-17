@@ -96,7 +96,7 @@
                 [:fill-h 3]
                 (seesaw-core/button :id :next-step-button :text "CHANGE ME" :visible? false)
                 [:fill-h 3]
-                (seesaw-core/button :id :cancel-button :text (terms/cancel)) ])))
+                (seesaw-core/button :id :cancel-button :text (terms/done)) ])))
 
 (defn create-content []
   (seesaw-core/border-panel
