@@ -5,6 +5,7 @@ Automatically connect to network.
 Ability to reject trades.
 Change inappropriate cancel buttons to close buttons.
 Center windows.
+Update seesaw
 
 Features for Beta Release (in progress):
 
@@ -17,4 +18,3 @@ Make currency and payment type comboboxes agree.
 Enable and disable buttons as appropriate to avoid errors.
 Add missing currencies.
 Highlight when a trade has an unread message.
-Update seesaw

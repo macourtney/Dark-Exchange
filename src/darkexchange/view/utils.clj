@@ -1,6 +1,8 @@
-(ns darkexchange.view.utils)
+(ns darkexchange.view.utils
+  (:require [seesaw.core :as seesaw-core]))
 
 (defn center-window-on [parent window]
+  (seesaw-core/pack! window)
   (.setLocationRelativeTo window parent)
   window)
 

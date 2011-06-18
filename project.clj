@@ -12,7 +12,7 @@
                  [org.clojars.macourtney/streaming "0.8.5-0"]
                  [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
-                 [seesaw "1.0.5"]]
+                 [seesaw "1.0.6"]]
   :dev-dependencies [[drift "1.2.0"]]
   :main darkexchange.main
 

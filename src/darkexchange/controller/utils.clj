@@ -6,4 +6,4 @@
   (seesaw-core/select parent-component [id]))
 
 (defn show [frame]
-  (seesaw-core/config! frame :visible? true))
+  (seesaw-core/show! frame))
