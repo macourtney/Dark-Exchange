@@ -1,5 +1,6 @@
 (ns darkexchange.controller.offer.has-panel
   (:require [darkexchange.controller.offer.widgets :as offer-widgets]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.currency :as currency-model]
             [darkexchange.model.payment-type :as payment-type-model]
             [seesaw.core :as seesaw-core]))
@@ -28,13 +29,20 @@
     :has_payment_type (:code (i-have-payment-type parent-component)) })
 
 (defn load-currencies [parent-component]
-  (offer-widgets/load-combobox (find-i-have-currency-combobox parent-component) (currency-model/currency-adaptors))
+  (offer-widgets/load-currencies (find-i-have-currency-combobox parent-component))
   parent-component)
 
 (defn load-payment-types [parent-component]
-  (offer-widgets/load-combobox (find-i-have-payment-type-combobox parent-component)
-    (payment-type-model/payment-type-adaptors))
+  (offer-widgets/load-payment-type-combobox (find-i-have-payment-type-combobox parent-component)
+    (find-i-have-currency-combobox parent-component))
   parent-component)
 
 (defn load-data [parent-component]
   (load-payment-types (load-currencies parent-component)))
+
+(defn attach-currency-listener [parent-component]
+  (offer-widgets/attach-currency-listener (find-i-have-currency-combobox parent-component) load-payment-types)
+  parent-component)
+
+(defn attach [parent-component]
+  (attach-currency-listener parent-component))

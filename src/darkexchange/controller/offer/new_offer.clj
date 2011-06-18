@@ -33,7 +33,7 @@
     (fn [frame e] (call-back (scrape-offer new-offer-view)) (actions-utils/close-window frame e))))
 
 (defn attach [new-offer-view call-back]
-  (attach-create-offer-action (attach-cancel-action new-offer-view) call-back))
+  (wants-panel/attach (has-panel/attach (attach-create-offer-action (attach-cancel-action new-offer-view) call-back))))
 
 (defn load-data [new-offer-view]
   (wants-panel/load-data (has-panel/load-data new-offer-view)))

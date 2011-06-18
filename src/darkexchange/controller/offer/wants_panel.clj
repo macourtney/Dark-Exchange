@@ -28,13 +28,20 @@
     :wants_payment_type (:code (i-want-payment-type parent-component)) })
 
 (defn load-currencies [parent-component]
-  (offer-widgets/load-combobox (find-i-want-currency-combobox parent-component) (currency-model/currency-adaptors))
+  (offer-widgets/load-currencies (find-i-want-currency-combobox parent-component))
   parent-component)
 
 (defn load-payment-types [parent-component]
-  (offer-widgets/load-combobox (find-i-want-payment-type-combobox parent-component)
-    (payment-type-model/payment-type-adaptors))
+  (offer-widgets/load-payment-type-combobox (find-i-want-payment-type-combobox parent-component)
+    (find-i-want-currency-combobox parent-component))
   parent-component)
 
 (defn load-data [parent-component]
   (load-payment-types (load-currencies parent-component)))
+
+(defn attach-currency-listener [parent-component]
+  (offer-widgets/attach-currency-listener (find-i-want-currency-combobox parent-component) load-payment-types)
+  parent-component)
+
+(defn attach [parent-component]
+  (attach-currency-listener parent-component))
