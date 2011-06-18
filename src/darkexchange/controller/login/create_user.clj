@@ -57,5 +57,5 @@
 (defn attach [create-user-frame]
   (attach-register-action (attach-cancel-action create-user-frame)))
 
-(defn show []
-  (controller-utils/show (attach (create-user-view/create))))
+(defn show [login-frame]
+  (controller-utils/show (attach (create-user-view/create login-frame))))

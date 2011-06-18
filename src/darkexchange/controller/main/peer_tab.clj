@@ -60,7 +60,7 @@
 
 (defn attach-listener-to-add-button [main-frame]
   (action-utils/attach-listener main-frame "#add-button" 
-    (fn [e] (add-destination/show #(reload-table-data main-frame)))))
+    (fn [e] (add-destination/show main-frame #(reload-table-data main-frame)))))
 
 (defn attach-peer-listener [main-frame]
   (peers-model/add-peer-update-listener (fn [_] (seesaw-core/invoke-later (reload-table-data main-frame))))

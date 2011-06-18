@@ -29,7 +29,7 @@
 
 (defn attach-add-offer-action [main-frame]
   (action-utils/attach-listener main-frame "#new-open-offer-button"
-    (fn [e] (new-offer/show (create-add-offer-call-back main-frame)))))
+    (fn [e] (new-offer/show main-frame (create-add-offer-call-back main-frame)))))
 
 (defn delete-selected-offer [main-frame]
   (let [open-offer-table (find-open-offer-table main-frame)
@@ -106,7 +106,7 @@
 
 (defn view-open-trade-listener [main-frame e]
   (let [open-trade-table (find-open-trade-table main-frame)]
-    (view-trade/show (seesaw-table/value-at open-trade-table (seesaw-core/selection open-trade-table)))))
+    (view-trade/show main-frame (seesaw-table/value-at open-trade-table (seesaw-core/selection open-trade-table)))))
 
 (defn attach-view-open-trade-listener [main-frame]
   (action-utils/attach-frame-listener main-frame "#view-open-trade-button" view-open-trade-listener))

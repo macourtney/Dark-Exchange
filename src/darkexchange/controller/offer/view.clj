@@ -65,5 +65,5 @@
   (load-to-send-by parent-component offer)
   parent-component)
 
-(defn show [offer]
-  (controller-utils/show (attach (load-data (offer-view/create) offer) offer)))
+(defn show [main-frame offer]
+  (controller-utils/show (attach (load-data (offer-view/create main-frame) offer) offer)))

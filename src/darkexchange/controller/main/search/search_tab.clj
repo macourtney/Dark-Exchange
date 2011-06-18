@@ -52,7 +52,7 @@
 (defn view-offer-listener [parent-component]
   (let [search-offer-table (find-search-offer-table parent-component)
         selected-row (seesaw-table/value-at search-offer-table (seesaw-core/selection search-offer-table))]
-    (offer-view-controller/show selected-row)))
+    (offer-view-controller/show parent-component selected-row)))
 
 (defn attach-view-offer-action [parent-component]
   (action-utils/attach-listener parent-component "#view-offer-button"

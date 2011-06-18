@@ -142,8 +142,8 @@
       (= next-step-key trade-model/send-wants-receipt-key) (attach-payment-received-action parent-component trade))
     parent-component))
 
-(defn send-message-action [trade _]
-  (send-message/show trade))
+(defn send-message-action [trade e]
+  (send-message/show (seesaw-core/to-frame e) trade))
 
 (defn attach-send-message-action [trade parent-component]
   (actions-utils/attach-listener parent-component "#send-message-button" #(send-message-action trade %)))
@@ -174,7 +174,7 @@
 (defn view-message-action [parent-component e]
   (let [trade-messages-table (find-trade-messages-table parent-component)]
     (when-let [selected-row (seesaw-core/selection trade-messages-table)]
-      (message-view/show (:id (seesaw-table/value-at trade-messages-table selected-row))))))
+      (message-view/show parent-component (:id (seesaw-table/value-at trade-messages-table selected-row))))))
 
 (defn attach-view-message-action [parent-component]
   (actions-utils/attach-frame-listener parent-component "#view-message-button" view-message-action))
@@ -189,6 +189,6 @@
     (find-and-attach-next-step-action trade
       (attach-cancel-action parent-component))))
 
-(defn show [trade]
+(defn show [main-frame trade]
   (when-let [trade (trade-model/as-view-trade (:id trade))]
-    (controller-utils/show (attach (load-data (view-view/create) trade) trade))))
+    (controller-utils/show (attach (load-data (view-view/create main-frame) trade) trade))))

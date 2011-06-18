@@ -38,5 +38,5 @@
 (defn load-data [new-offer-view]
   (wants-panel/load-data (has-panel/load-data new-offer-view)))
 
-(defn show [call-back]
-  (controller-utils/show (attach (load-data (new-offer-view/create)) call-back)))
+(defn show [main-frame call-back]
+  (controller-utils/show (attach (load-data (new-offer-view/create main-frame)) call-back)))

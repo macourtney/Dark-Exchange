@@ -2,6 +2,7 @@
   (:require [darkexchange.model.terms :as terms]
             [darkexchange.view.offer.has-panel :as has-panel]
             [darkexchange.view.offer.wants-panel :as wants-panel]
+            [darkexchange.view.utils :as view-utils]
             [seesaw.core :as seesaw-core]))
 
 (defn create-button-panel []
@@ -16,9 +17,10 @@
     :border 5
     :items [(has-panel/create) [:fill-v 5] (wants-panel/create) [:fill-v 5] (create-button-panel)]))
 
-(defn create []
-  (seesaw-core/frame
-    :title (terms/new-offer)
-    :content (create-content)
-    :on-close :dispose
-    :visible? false))
+(defn create [main-frame]
+  (view-utils/center-window-on main-frame
+    (seesaw-core/frame
+      :title (terms/new-offer)
+      :content (create-content)
+      :on-close :dispose
+      :visible? false)))

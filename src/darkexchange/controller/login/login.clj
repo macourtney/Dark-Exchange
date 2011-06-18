@@ -20,7 +20,7 @@
   (reload-user-name-combobox login-frame))
 
 (defn attach-new-user-action [login-frame]
-  (actions-utils/attach-listener login-frame "#new-user-button" (fn [_] (create-user/show))))
+  (actions-utils/attach-listener login-frame "#new-user-button" (fn [_] (create-user/show login-frame))))
 
 (defn attach-cancel-action [login-frame]
   (actions-utils/attach-window-close-and-exit-listener login-frame "#cancel-button"))

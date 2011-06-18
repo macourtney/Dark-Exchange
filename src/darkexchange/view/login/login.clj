@@ -1,5 +1,6 @@
 (ns darkexchange.view.login.login
   (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.utils :as view-utils]
             [seesaw.core :as seesaw-core])
   (:import [javax.swing JPasswordField]))
 
@@ -36,7 +37,8 @@
     :items [(create-user-name-panel) [:fill-v 3] (create-password-panel) [:fill-v 5] (create-button-panel)]))
 
 (defn create []
-  (seesaw-core/frame
-    :title (terms/dark-exchange-login)
-    :content (create-content)
-    :visible? false))
+  (view-utils/center-window
+    (seesaw-core/frame
+      :title (terms/dark-exchange-login)
+      :content (create-content)
+      :visible? false)))

@@ -1,5 +1,6 @@
 (ns darkexchange.view.trade.message.view
   (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.utils :as view-utils]
             [seesaw.core :as seesaw-core]))
 
 (defn create-body-text-area []
@@ -26,9 +27,10 @@
       :center (create-body-panel)
       :south (create-button-panel)))
 
-(defn create []
-  (seesaw-core/frame
-    :title (terms/message-viewer)
-    :content (create-content)
-    :on-close :dispose
-    :visible? false))
+(defn create [trade-frame]
+  (view-utils/center-window-on trade-frame
+    (seesaw-core/frame
+      :title (terms/message-viewer)
+      :content (create-content)
+      :on-close :dispose
+      :visible? false)))

@@ -1,5 +1,6 @@
 (ns darkexchange.view.trade.view
   (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.utils :as view-utils]
             [seesaw.core :as seesaw-core]))
 
 (def trade-messages-table-columns [ { :key :id :text (terms/id) }
@@ -106,9 +107,10 @@
       :center (create-trade-messages-panel)
       :south (create-button-panel)))
 
-(defn create []
-  (seesaw-core/frame
-    :title (terms/trade-viewer)
-    :content (create-content)
-    :on-close :dispose
-    :visible? false))
+(defn create [main-frame]
+  (view-utils/center-window-on main-frame
+    (seesaw-core/frame
+      :title (terms/trade-viewer)
+      :content (create-content)
+      :on-close :dispose
+      :visible? false)))

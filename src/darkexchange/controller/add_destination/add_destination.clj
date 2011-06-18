@@ -29,5 +29,5 @@
 (defn attach [add-destination-frame call-back]
   (attach-add-action (attach-cancel-action add-destination-frame) call-back))
 
-(defn show [call-back]
-  (controller-utils/show (attach (add-destination-view/create) call-back)))
+(defn show [main-frame call-back]
+  (controller-utils/show (attach (add-destination-view/create main-frame) call-back)))

@@ -24,5 +24,5 @@
 (defn attach [trade parent-component]
   (attach-send-action trade (attach-cancel-action parent-component)))
 
-(defn show [trade]
-  (controller-utils/show (attach trade (send-view/create))))
+(defn show [trade-frame trade]
+  (controller-utils/show (attach trade (send-view/create trade-frame))))

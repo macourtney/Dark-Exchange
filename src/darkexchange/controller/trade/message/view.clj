@@ -18,6 +18,6 @@
 (defn attach [message parent-component]
   (attach-cancel-action parent-component))
 
-(defn show [message-id]
+(defn show [trade-frame message-id]
   (when-let [message (trade-message-model/get-record message-id)]
-    (controller-utils/show (attach message (load-data message (view-view/create))))))
+    (controller-utils/show (attach message (load-data message (view-view/create trade-frame))))))
