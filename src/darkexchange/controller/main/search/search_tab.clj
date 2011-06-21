@@ -63,7 +63,9 @@
 
 (defn attach [main-frame]
   (attach-search-action main-frame)
-  (attach-view-offer-action main-frame))
+  (attach-view-offer-action main-frame)
+  (offer-has-panel/attach main-frame)
+  (offer-wants-panel/attach main-frame))
 
 (defn init [main-frame]
   (attach (load-data main-frame)))

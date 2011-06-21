@@ -6,6 +6,7 @@ Ability to reject trades.
 Change inappropriate cancel buttons to close buttons.
 Center windows.
 Update seesaw
+Make currency and payment type comboboxes agree.
 
 Features for Beta Release (in progress):
 
@@ -14,7 +15,6 @@ Off line updated of trades.
 Features for Beta Release (To be completed):
 
 Verify deleted or already claimed offers don't cause too many problems.
-Make currency and payment type comboboxes agree.
 Enable and disable buttons as appropriate to avoid errors.
 Add missing currencies.
 Highlight when a trade has an unread message.
