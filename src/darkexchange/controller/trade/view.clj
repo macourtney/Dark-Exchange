@@ -4,6 +4,7 @@
             [darkexchange.controller.trade.message.view :as message-view]
             [darkexchange.controller.trade.message.send :as send-message]
             [darkexchange.controller.utils :as controller-utils]
+            [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.calls.confirm-trade :as confirm-trade-call]
             [darkexchange.model.calls.payment-received :as payment-received-call]
             [darkexchange.model.calls.payment-sent :as payment-sent-call]
@@ -179,10 +180,28 @@
 (defn attach-view-message-action [parent-component]
   (actions-utils/attach-frame-listener parent-component "#view-message-button" view-message-action))
 
+(defn find-view-message-button [parent-component]
+  (seesaw-core/select parent-component ["#view-message-button"]))
+
+(defn view-message-if-enabled [parent-component]
+  (widgets-utils/do-click-if-enabled (find-view-message-button parent-component)))
+
+(defn attach-view-message-table-action [parent-component]
+  (widgets-utils/add-table-action (find-trade-messages-table parent-component)
+    #(view-message-if-enabled parent-component))
+  parent-component)
+
+(defn attach-view-message-enable-listener [parent-component]
+  (widgets-utils/single-select-table-button (find-view-message-button parent-component)
+    (find-trade-messages-table parent-component))
+  parent-component)
+
 (defn attach-message-actions [trade parent-component]
-  (attach-view-message-action
-    (attach-new-message-listener trade
-      (attach-send-message-action trade parent-component))))
+  (attach-view-message-table-action
+    (attach-view-message-enable-listener
+      (attach-view-message-action
+        (attach-new-message-listener trade
+          (attach-send-message-action trade parent-component))))))
 
 (defn attach [parent-component trade]
   (attach-message-actions trade

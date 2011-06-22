@@ -65,7 +65,7 @@
   (seesaw-core/button :id :send-message-button :text (terms/send-message)))
 
 (defn create-view-message-button []
-  (seesaw-core/button :id :view-message-button :text (terms/view)))
+  (seesaw-core/button :id :view-message-button :text (terms/view) :enabled? false))
 
 (defn create-trade-messages-title-panel []
   (seesaw-core/border-panel
