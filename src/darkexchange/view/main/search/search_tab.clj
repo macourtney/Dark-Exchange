@@ -24,7 +24,7 @@
 
 (defn list-buttons []
   (seesaw-core/horizontal-panel :items 
-    [ (seesaw-core/button :id :view-offer-button :text (terms/view)) ]))
+    [ (seesaw-core/button :id :view-offer-button :text (terms/view) :enabled? false) ]))
 
 (defn list-header-panel []
   (seesaw-core/border-panel

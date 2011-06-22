@@ -15,7 +15,7 @@
   (seesaw-core/horizontal-panel :items 
     [ (seesaw-core/button :id :new-open-offer-button :text (terms/new))
       [:fill-h 3]
-      (seesaw-core/button :id :delete-open-offer-button :text (terms/delete))]))
+      (seesaw-core/button :id :delete-open-offer-button :text (terms/delete) :enabled? false)]))
 
 (defn create-table-header []
   (seesaw-core/border-panel

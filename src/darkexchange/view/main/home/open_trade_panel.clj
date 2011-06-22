@@ -14,7 +14,7 @@
 
 (defn create-table-header-buttons []
   (seesaw-core/horizontal-panel :items 
-    [ (seesaw-core/button :id :view-open-trade-button :text (terms/view)) ]))
+    [ (seesaw-core/button :id :view-open-trade-button :text (terms/view) :enabled? false) ]))
 
 (defn create-table-header []
   (seesaw-core/border-panel

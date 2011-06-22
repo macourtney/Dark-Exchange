@@ -4,6 +4,7 @@
             [darkexchange.controller.offer.has-panel :as offer-has-panel]
             [darkexchange.controller.offer.wants-panel :as offer-wants-panel]
             [darkexchange.controller.offer.view :as offer-view-controller]
+            [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.calls.search-offers :as search-offers-call]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.view.main.search.search-tab :as search-tab-view]
@@ -12,6 +13,9 @@
 
 (defn find-search-offer-table [parent-component]
   (seesaw-core/select parent-component ["#search-offer-table"]))
+
+(defn find-view-offer-button [parent-component]
+  (seesaw-core/select parent-component ["#view-offer-button"]))
 
 (defn insert-offer-into-table [parent-component offer]
   (let [search-offer-table (find-search-offer-table parent-component)]
@@ -58,6 +62,19 @@
   (action-utils/attach-listener parent-component "#view-offer-button"
     (fn [e] (view-offer-listener parent-component))))
 
+(defn view-offer-if-enabled [main-frame]
+  (widgets-utils/do-click-if-enabled (find-view-offer-button main-frame)))
+
+(defn attach-view-offer-table-action [main-frame]
+  (widgets-utils/add-table-action (find-search-offer-table main-frame)
+    #(view-offer-if-enabled main-frame))
+  main-frame)
+
+(defn attach-view-offer-enable-listener [main-frame]
+  (widgets-utils/single-select-table-button (find-view-offer-button main-frame)
+    (find-search-offer-table main-frame))
+  main-frame)
+
 (defn load-data [main-frame]
   (offer-wants-panel/load-data (offer-has-panel/load-data main-frame)))
 
@@ -65,7 +82,9 @@
   (attach-search-action main-frame)
   (attach-view-offer-action main-frame)
   (offer-has-panel/attach main-frame)
-  (offer-wants-panel/attach main-frame))
+  (offer-wants-panel/attach main-frame)
+  (attach-view-offer-table-action main-frame)
+  (attach-view-offer-enable-listener main-frame))
 
 (defn init [main-frame]
   (attach (load-data main-frame)))
