@@ -29,7 +29,9 @@
         n default-encrypt-password-n
         encrypted-password (encrypt-password-string password salt algorithm n)]
     (is (not (= encrypted-password password)) "Password not encrypted") 
-    (is (= encrypted-password (encrypt-password-string password salt algorithm n)) "Password check not valid.")))
+    (is (= encrypted-password (encrypt-password-string password salt algorithm n)) "Password check not valid.")
+    (is (not (= encrypted-password (encrypt-password-string password salt algorithm 1))) "Multiple hash iterations do not help.")
+    (is (not (= encrypted-password (encrypt-password-string (.substring password 0 4) salt algorithm n))) "Short password works when it shouldn't.")))
 
 (defn byte-not-equals [byte1 byte2]
   (not (= byte1 byte2))) 

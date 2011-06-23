@@ -171,7 +171,7 @@
   encrypt-password-string
   ([password salt] (encrypt-password-string password salt default-encrypt-password-algorithm default-encrypt-password-n))
   ([password salt algorithm n]
-    (let [message-digest (MessageDigest/getInstance algorithm)
-          password-and-salt (str password salt)]
-      (.update message-digest (get-data-bytes password-and-salt))
-      (Base64/encodeBase64String (last (repeatedly n #(.digest message-digest)))))))
+    (let [message-digest (MessageDigest/getInstance algorithm)]
+      (.reset message-digest)
+      (.update message-digest (get-data-bytes (str salt)))
+      (Base64/encodeBase64String (reduce (fn [data _] (.digest message-digest data)) (get-data-bytes password) (range n))))))
