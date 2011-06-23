@@ -13,11 +13,11 @@
                  [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [seesaw "1.0.6"]]
-  :dev-dependencies [[drift "1.2.0"]
+  :dev-dependencies [[drift "1.2.1-SNAPSHOT"]
                      [lein-tar "1.0.6"]]
+
   :main darkexchange.main
 
-  :run-aliases { :development darkexchange.development-main }
-  
-  :manifest { "Name" "org/bouncycastle/asn1/ocsp/ResponderID.class"
-              "SHA1-Digest" "STmNnCNaPJoaOnuwvVP6lO4LBLs=" })
+  :resources-path "pkg/resources"
+
+  :run-aliases { :development darkexchange.development-main } )
