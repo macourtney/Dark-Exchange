@@ -33,8 +33,11 @@
 (defn encrypt-password [user]
   (let [salt (security/create-salt)]
     (merge user
-      { :encrypted_password (security/encrypt-password-string (password-str (:password user)) salt)
-        :salt (str salt) })))
+      { :encrypted_password (security/encrypt-password-string (password-str (:password user)) salt
+                              security/default-encrypt-password-algorithm security/default-encrypt-password-n)
+        :salt (str salt)
+        :encrypted_password_algorithm security/default-encrypt-password-algorithm
+        :encrypted_password_n security/default-encrypt-password-n })))
 
 (defn char-array-to-bytes [char-array-data]
   (byte-array (flatten (map #(seq (.getBytes (Character/toString %1) "UTF-8")) char-array-data))))
@@ -44,7 +47,8 @@
 
 (defn encrypt-private-key [password key-bytes]
   (Base64/encodeBase64String
-    (security/password-encrypt (char-array-to-string password) (Base64/encodeBase64String key-bytes))))
+    (security/password-encrypt (char-array-to-string password) (Base64/encodeBase64String key-bytes)
+      security/default-symmetrical-algorithm)))
 
 (defn generate-keys [user]
   (let [key-pair (security/generate-key-pair)
@@ -52,11 +56,13 @@
     (merge user { :public_key (Base64/encodeBase64String (:bytes (:public-key key-pair-map)))
                   :public_key_algorithm (:algorithm (:public-key key-pair-map))
                   :private_key (encrypt-private-key (:password user) (:bytes (:private-key key-pair-map)))
-                  :private_key_algorithm (:algorithm (:private-key key-pair-map)) })))
+                  :private_key_algorithm (:algorithm (:private-key key-pair-map))
+                  :private_key_encryption_algorithm security/default-symmetrical-algorithm })))
 
 (defn generate-fields [user]
   (select-keys (generate-keys (encrypt-password user))
-    [:name :encrypted_password :salt :public_key :public_key_algorithm :private_key :private_key_algorithm]))
+    [:name :encrypted_password :salt :encrypted_password_algorithm :encrypted_password_n :public_key
+     :public_key_algorithm :private_key :private_key_algorithm :private_key_encryption_algorithm]))
 
 (defn call-user-add-listeners [user]
   (doseq [user-add-listener @user-add-listeners]
@@ -91,9 +97,13 @@
 (defn create-user [user-name password]
   (insert { :name user-name :password password }))
 
+(defn encrypted-password [user password]
+  (security/encrypt-password-string (password-str password) (:salt user) (:encrypted_password_algorithm user)
+    (:encrypted_password_n user)))
+
 (defn login [user-name password]
   (when-let [user (find-user-by-name user-name)]
-    (when (= (:encrypted_password user) (security/encrypt-password-string (password-str password) (:salt user)))
+    (when (= (:encrypted_password user) (encrypted-password user password))
       (reset! saved-current-user (assoc user :password password))
       @saved-current-user)))
 
@@ -115,7 +125,8 @@
 
 (defn private-key-bytes [user]
   (decode-base64
-    (security/password-decrypt (char-array-to-string (:password user)) (decode-base64 (:private_key user)))))
+    (security/password-decrypt (char-array-to-string (:password user)) (decode-base64 (:private_key user))
+      (:private_key_encryption_algorithm user))))
 
 (defn private-key-map [user]
   { :algorithm (:private_key_algorithm user) :bytes (private-key-bytes user) })

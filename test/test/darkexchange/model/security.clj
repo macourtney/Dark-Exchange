@@ -17,16 +17,19 @@
 (deftest password-encrypt-decrypt
   (let [password "password"
         data "secret text"
-        encrypted-data (password-encrypt password data)]
+        algorithm des-algorithm
+        encrypted-data (password-encrypt password data algorithm)]
     (is (not (= data encrypted-data)) "Text not encrypted.")
-    (is (= data (password-decrypt password encrypted-data)) "Text not decrypted.")))
+    (is (= data (password-decrypt password encrypted-data algorithm)) "Text not decrypted.")))
 
 (deftest basic-password-protection
   (let [password "password"
         salt 2079324
-        encrypted-password (encrypt-password-string password salt)]
+        algorithm default-encrypt-password-algorithm
+        n default-encrypt-password-n
+        encrypted-password (encrypt-password-string password salt algorithm n)]
     (is (not (= encrypted-password password)) "Password not encrypted") 
-    (is (= encrypted-password (encrypt-password-string password salt)) "Password check not valid.")))
+    (is (= encrypted-password (encrypt-password-string password salt algorithm n)) "Password check not valid.")))
 
 (defn byte-not-equals [byte1 byte2]
   (not (= byte1 byte2))) 

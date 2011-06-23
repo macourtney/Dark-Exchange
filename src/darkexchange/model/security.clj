@@ -10,11 +10,16 @@
 
 (def des-algorithm "DES")
 
+(def default-symmetrical-algorithm des-algorithm)
+
 (def default-algorithm "RSA")
 (def default-signature-algorithm "SHA1withRSA")
 (def default-transformation "RSA/None/NoPadding")
 (def default-provider "BC") ; Bouncy Castle provider.
 (def default-character-encoding "UTF8")
+
+(def default-encrypt-password-algorithm "SHA-256")
+(def default-encrypt-password-n 1000)
 
 (Security/addProvider (new BouncyCastleProvider))
 
@@ -134,20 +139,28 @@
     (.verify signature-obj (get-data-bytes signature))))
 
 ;http://stackoverflow.com/questions/339004/java-encrypt-decrypt-user-name-and-password-from-a-configuration-file
-(defn des-cipher []
-  (create-cipher des-algorithm))
+(defn des-cipher
+  ([] (des-cipher default-symmetrical-algorithm))
+  ([algorithm]
+    (create-cipher algorithm)))
 
 (defn des-key-spec [password]
   (DESKeySpec. (get-data-bytes password)))
 
-(defn des-key [password]
-  (.generateSecret (SecretKeyFactory/getInstance des-algorithm) (des-key-spec password)))
+(defn des-key
+  ([password] (des-key password default-symmetrical-algorithm))
+  ([password algorithm]
+    (.generateSecret (SecretKeyFactory/getInstance algorithm) (des-key-spec password))))
 
-(defn password-encrypt [password data]
-  (encrypt (des-key password) data (des-cipher)))
+(defn password-encrypt
+  ([password data] (password-encrypt password data default-symmetrical-algorithm))
+  ([password data algorithm]
+    (encrypt (des-key password algorithm) data (des-cipher algorithm))))
 
-(defn password-decrypt [password data]
-  (decrypt (des-key password) data (des-cipher)))
+(defn password-decrypt
+  ([password data] (password-decrypt password data default-symmetrical-algorithm))
+  ([password data algorithm]
+    (decrypt (des-key password algorithm) data (des-cipher algorithm))))
 
 ; Basic password protection
 (defn
@@ -155,8 +168,10 @@
   (.nextInt (new Random)))
 
 (defn
-  encrypt-password-string [password salt]
-  (let [message-digest (MessageDigest/getInstance "SHA-1")
-        password-and-salt (str password salt)]
-    (.update message-digest (get-data-bytes password-and-salt))
-    (Base64/encodeBase64String (.digest message-digest))))
+  encrypt-password-string
+  ([password salt] (encrypt-password-string password salt default-encrypt-password-algorithm default-encrypt-password-n))
+  ([password salt algorithm n]
+    (let [message-digest (MessageDigest/getInstance algorithm)
+          password-and-salt (str password salt)]
+      (.update message-digest (get-data-bytes password-and-salt))
+      (Base64/encodeBase64String (last (repeatedly n #(.digest message-digest)))))))

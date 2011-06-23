@@ -6,12 +6,15 @@
 (def records [
   { :id 1
     :name "test-user"
-    :encrypted_password "nTsg+WsHHNURODpaVcbK1Ip8UHY=" ; the test password is "password"
-    :salt "197849973"
+    :encrypted_password "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=" ; the test password is "password" 
+    :salt "2145354708"
+    :encrypted_password_algorithm "SHA-256"
+    :encrypted_password_n 1000
     :public_key ""
     :public_key_algorithm "RSA" 
     :private_key ""
-    :private_key_algorithm "RSA" }])
+    :private_key_algorithm "RSA"
+    :private_key_encryption_algorithm "DES" }])
 
 (def fixture-table-name :users)
 

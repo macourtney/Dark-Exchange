@@ -82,6 +82,7 @@
         test-password (.toCharArray "password")
         key-bytes (:bytes (:private-key key-pair-map))
         private-key-str (encrypt-private-key test-password key-bytes)
-        decrypted-bytes (private-key-bytes { :password test-password :private_key private-key-str })]
+        decrypted-bytes (private-key-bytes { :password test-password :private_key private-key-str
+                                             :private_key_encryption_algorithm security/default-symmetrical-algorithm })]
     (is (= (count key-bytes) (count decrypted-bytes))) 
     (is (test-bytes key-bytes decrypted-bytes))))
