@@ -6,7 +6,7 @@
            [java.security.spec PKCS8EncodedKeySpec X509EncodedKeySpec]
            [java.util Random]
            [javax.crypto Cipher SecretKeyFactory]
-           [javax.crypto.spec DESKeySpec]))
+           [javax.crypto.spec SecretKeySpec]))
 
 (def des-algorithm "DES")
 
@@ -61,10 +61,20 @@
   ([transformation provider]
     (Cipher/getInstance transformation provider)))
 
+(defn integer-byte [integer byte-offset]
+  (let [short-int (bit-and 0xff (bit-shift-right integer (* byte-offset 8)))]
+    (if (< short-int 128)
+      (byte short-int)
+      (byte (- short-int 256)))))
+
+(defn integer-bytes [integer]
+  (byte-array [(integer-byte integer 3) (integer-byte integer 2) (integer-byte integer 1) (integer-byte integer 0)]))
+
 (defn get-data-bytes [data]
-  (if (instance? String data)
-    (.getBytes data default-character-encoding)
-    data))
+  (cond
+    (instance? String data) (.getBytes data default-character-encoding)
+    (instance? Integer data) (integer-bytes data)
+    true data))
 
 (defn get-data-str [data]
   (if (instance? String data)
@@ -144,13 +154,13 @@
   ([algorithm]
     (create-cipher algorithm)))
 
-(defn des-key-spec [password]
-  (DESKeySpec. (get-data-bytes password)))
+(defn key-spec [password algorithm]
+  (SecretKeySpec. (get-data-bytes password) algorithm))
 
 (defn des-key
   ([password] (des-key password default-symmetrical-algorithm))
   ([password algorithm]
-    (.generateSecret (SecretKeyFactory/getInstance algorithm) (des-key-spec password))))
+    (.generateSecret (SecretKeyFactory/getInstance algorithm) (key-spec password algorithm))))
 
 (defn password-encrypt
   ([password data] (password-encrypt password data default-symmetrical-algorithm))
@@ -173,5 +183,7 @@
   ([password salt algorithm n]
     (let [message-digest (MessageDigest/getInstance algorithm)]
       (.reset message-digest)
-      (.update message-digest (get-data-bytes (str salt)))
-      (Base64/encodeBase64String (reduce (fn [data _] (.digest message-digest data)) (get-data-bytes password) (range n))))))
+      (.update message-digest (get-data-bytes salt))
+      (Base64/encodeBase64String
+        (reduce (fn [data _] (.reset message-digest) (.digest message-digest data))
+          (get-data-bytes password) (range n))))))

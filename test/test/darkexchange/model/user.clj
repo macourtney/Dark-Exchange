@@ -37,7 +37,7 @@
   (let [test-user-name "blah"
         user-id (create-user test-user-name (.toCharArray "password"))]
     (is user-id "User id not returned.")
-    (let [user (get-record user-id)]
+    (let [user (get-record user-id)] 
       (is user (str "User with the id: " user-id " could not be found."))
       (is (= (:name user) test-user-name) "The user name does not match the test user name.")
       (is (not (contains? user :password)) "The password was not removed before saving.")
