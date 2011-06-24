@@ -18,4 +18,6 @@ Off line updated of trades.
 Features for Beta Release (To be completed):
 
 Verify deleted or already claimed offers don't cause too many problems.
+
+Features for future releases:
 Highlight when a trade has an unread message.
