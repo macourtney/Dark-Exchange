@@ -2,11 +2,12 @@
   (:require [clojure.contrib.json :as json]
             [clojure.contrib.logging :as logging]
             [darkexchange.interchange-map-util :as interchange-map-util]
+            [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.identity :as identity-model]
             [darkexchange.model.interceptors.header-reply-interceptor :as header-reply-interceptor]
             [darkexchange.model.user :as user-model]))
 
-(def unsigned-actions #{:notify})
+(def unsigned-actions #{ (name action-keys/notify-action-key) })
 
 (defn sign [response-map]
   (let [str-data (json/json-str (dissoc response-map :destination))]

@@ -4,6 +4,7 @@
             [clojure.tools.loading-utils :as loading-utils]
             [clj-record.boot :as clj-record-boot]
             [darkexchange.model.actions.action-keys :as action-keys]
+            [darkexchange.model.calls.notify :as notify-call]
             [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.property :as property])
@@ -74,14 +75,9 @@
     (add-destination destination)))
 
 (defn notify-destination [destination]
-  (try
-    (let [response (client/send-message (i2p-server/as-destination destination) action-keys/notify-action-key
-      { :destination (client/base-64-destination) })]
-      (update (merge (find-peer (i2p-server/as-destination-str destination)) { :notified true :updated_at (new Date) }))
-      response)
-    (catch Exception e
-      (logging/error (str "e: " e))
-      nil)))
+  (if (notify-call/call destination)
+    (update (merge (find-peer (i2p-server/as-destination-str destination)) { :notified true :updated_at (new Date) }))
+    (logging/info (str "Destination " destination " is not online."))))
 
 (defn get-peers-from [destination]
   (when destination
@@ -119,7 +115,7 @@
     (notify-destination (:destination peer))))
 
 (defn notified? [peer]
-  (and peer (:notified peer)))
+  (as-boolean (:notified peer)))
 
 (defn notify-peer-if-necessary [destination]
   (when-let [peer (find-peer destination)]

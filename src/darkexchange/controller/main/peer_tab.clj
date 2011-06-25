@@ -49,7 +49,8 @@
 
 (defn delete-peer-from-table [main-frame peer]
   (let [peer-table (find-peer-table main-frame)]
-    (seesaw-table/remove-at! peer-table (first (find-table-peer-pair peer-table peer)))))
+    (when-let [peer-pair (first (find-table-peer-pair peer-table peer))]
+      (seesaw-table/remove-at! peer-table peer-pair))))
 
 (defn load-peer-table [main-frame]
   (reload-table-data main-frame)

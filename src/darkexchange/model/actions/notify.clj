@@ -1,5 +1,6 @@
 (ns darkexchange.model.actions.notify
-  (:require [darkexchange.model.actions.action-keys :as action-keys]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.peer :as peer-model]))
 
 (def action-key action-keys/notify-action-key)
