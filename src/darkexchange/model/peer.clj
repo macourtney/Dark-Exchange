@@ -71,8 +71,9 @@
 
 (defn update-destination [destination]
   (if-let [peer (find-peer destination)]
-    (update { :id (:id peer) :updated_at (new Date) })
-    (add-destination destination)))
+    (update { :id (:id peer) :updated_at (new Date) :notified true })
+    (when-let [peer-id (add-destination destination)]
+      (update { :id peer-id :notified true }))))
 
 (defn notify-destination [destination]
   (if (notify-call/call destination)
