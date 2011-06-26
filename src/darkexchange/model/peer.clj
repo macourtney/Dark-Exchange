@@ -141,7 +141,7 @@
           (add-destinations destinations)
           (property/reset-peers-downloaded?)))
       (catch Exception e
-        (logging/debug "An exception occured while downloading the peers.")
+        (logging/error "An exception occured while downloading the peers.")
         (property/reset-peers-downloaded?)
         (throw e)))))
 

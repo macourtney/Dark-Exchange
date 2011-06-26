@@ -7,17 +7,24 @@
 
 (def action-key action-keys/accept-offer-action-key)
 
-(defn create-non-acceptor-trade [request-data offer]
-  (trade-model/create-non-acceptor-trade (:name request-data) (:public-key request-data)
-    (:public-key-algorithm request-data) offer (:foreign-trade-id request-data)))
+(defn create-non-acceptor-trade [request-map offer]
+  (let [user-map (:user (:from request-map))]
+    (trade-model/create-non-acceptor-trade (:name user-map) (:public-key user-map)
+      (:public-key-algorithm user-map) offer (:foreign-trade-id (:data request-map)))))
 
-(defn create-trade [request-data offer]
+(defn reopen-offer [offer]
+  (offer-model/reopen-offer offer)
+  { :offer nil :trade-id nil })
+
+(defn create-trade [request-map offer]
   (when offer
-    { :offer (dissoc offer :created_at)
-      :trade-id (create-non-acceptor-trade request-data offer) }))
+    (if-let [new-trade-id (create-non-acceptor-trade request-map offer)]
+      { :offer (dissoc offer :created_at)
+        :trade-id new-trade-id }
+      (reopen-offer offer))))
 
-(defn accept-offer [request-data]
-  (create-trade request-data (offer-model/close-offer (:offer request-data))))
+(defn accept-offer [request-map]
+  (create-trade request-map (offer-model/close-offer (:offer (:data request-map)))))
 
 (defn action [request-map]
-  { :data (accept-offer (:data request-map)) })
+  { :data (accept-offer request-map) })

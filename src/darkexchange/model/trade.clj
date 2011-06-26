@@ -51,7 +51,8 @@
       (select-keys trade-data [:foreign_trade_id :identity_id :is_acceptor :offer_id :wants_first]))))
 
 (defn create-non-acceptor-trade [acceptor-user-name acceptor-public-key acceptor-public-key-algorithm offer foreign-trade-id]
-  (let [acceptor-identity (identity-model/find-identity acceptor-user-name acceptor-public-key acceptor-public-key-algorithm)]
+  (when-let [acceptor-identity (identity-model/find-identity acceptor-user-name acceptor-public-key
+                                 acceptor-public-key-algorithm)]
     (create-new-trade
       { :offer_id (:id offer)
         :wants_first 1

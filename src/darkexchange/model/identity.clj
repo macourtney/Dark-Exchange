@@ -70,3 +70,9 @@
 (defn current-user-identity []
   (let [user (user/current-user)]
     (find-identity (:name user) (:public_key user) (:public_key_algorithm user))))
+
+(defn table-identity [identity]
+  (assoc (select-keys identity [:id :name :public_key :public_key_algorithm]) :destination (destination-for identity)))
+
+(defn table-identities []
+  (map table-identity (find-records [true])))

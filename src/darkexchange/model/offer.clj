@@ -129,3 +129,6 @@
 (defn close-offer [offer]
   (update { :id (:id offer) :closed 1 })
   (get-record (:id offer)))
+
+(defn reopen-offer [offer]
+  (update { :id (:id offer) :closed 0 }))

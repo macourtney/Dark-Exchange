@@ -9,8 +9,9 @@
         (:destination from-map)))))
 
 (defn server-interceptor [action request-map]
-  (.start (Thread. #(identity-updater request-map)))
-  (action request-map))
+  (let [response-map (action request-map)]
+    (.start (Thread. #(identity-updater request-map)))
+    response-map))
 
 (defn client-interceptor [action request-map]
   (let [response-map (action request-map)]
