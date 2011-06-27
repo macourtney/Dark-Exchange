@@ -9,7 +9,8 @@
     (text :destination)
     (date-time :created_at)
     (date-time :updated_at)
-    (integer :notified)))
+    (integer :notified)
+    (integer :local)))
   
 (defn
 #^{:doc "Drops the peers table in the database."}

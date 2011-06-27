@@ -23,7 +23,8 @@
 (defn verify [request-map]
   (or
     (unsigned-action? request-map)
-    (when-let [other-identity (interchange-map-util/from-identity request-map)]
+    (let [other-identity { :public_key (interchange-map-util/from-public-key request-map)
+                           :public_key_algorithm (interchange-map-util/from-public-key-algorithm request-map) }]
       (let [data (:data request-map)]
         (identity-model/verify-signature other-identity (:data data) (:signature data))))))
 

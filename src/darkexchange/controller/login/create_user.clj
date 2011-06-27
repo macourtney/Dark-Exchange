@@ -2,6 +2,8 @@
   (:require [clojure.contrib.logging :as logging]
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.utils :as controller-utils]
+            [darkexchange.model.i2p-server :as i2p-server-model]
+            [darkexchange.model.identity :as identity-model]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.login.create-user :as create-user-view]
             [seesaw.core :as seesaw-core]))

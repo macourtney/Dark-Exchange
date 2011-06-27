@@ -49,6 +49,12 @@
 (defn all-peers []
   (find-records [true]))
 
+(defn local? [peer]
+  (as-boolean (:local peer)))
+
+(defn all-foreign-peers []
+  (find-by-sql ["SELECT * FROM peers WHERE local IS NULL OR local = 0"]))
+
 (defn as-row [peer]
   (into-array Object [(:id peer) (:destination peer) (:created_at peer) (:updated_at peer)]))
 
@@ -58,6 +64,11 @@
 (defn add-destination [destination]
   (when destination
     (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date) })))
+
+(defn add-local-destination [destination]
+  (when destination
+    (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date)
+              :notified 1 :local 1 })))
 
 (defn find-peer [destination]
   (find-record { :destination (i2p-server/as-destination-str destination) }))
@@ -85,7 +96,7 @@
     (client/send-message destination action-keys/get-peers-action-key { :type :all })))
 
 (defn last-updated-peer []
-  (first (find-by-sql ["SELECT * FROM peers ORDER BY updated_at DESC LIMIT 1"])))
+  (first (find-by-sql ["SELECT * FROM peers WHERE local IS NULL OR local = 0 ORDER BY updated_at DESC LIMIT 1"])))
 
 (defn peers-text-reader []
   (java-io/reader (java-io/resource peers-file-name)))
@@ -149,4 +160,4 @@
   (.start (Thread. download-peers-background)))
 
 (defn send-messages [action data call-back]
-  (client/send-messages (map :destination (all-peers)) action data call-back))
+  (client/send-messages (map :destination (all-foreign-peers)) action data call-back))
