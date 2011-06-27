@@ -102,7 +102,11 @@
     (find-identity (:name user) (:public_key user) (:public_key_algorithm user))))
 
 (defn table-identity [identity]
-  (assoc (select-keys identity [:id :name :public_key :public_key_algorithm]) :destination (destination-for identity)))
+  (let [destination (destination-for identity)]
+    (assoc (select-keys identity [:id :name :public_key :public_key_algorithm]) :destination destination)))
 
 (defn table-identities []
   (map table-identity (find-records [true])))
+
+(defn get-table-identity [id]
+  (table-identity (get-record id)))
