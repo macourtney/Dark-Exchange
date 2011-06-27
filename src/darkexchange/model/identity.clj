@@ -8,8 +8,38 @@
   (:use darkexchange.model.base)
   (:import [org.apache.commons.codec.binary Base64]))
 
+(def identity-add-listeners (atom []))
+
+(def identity-update-listeners (atom []))
+
+(def identity-delete-listeners (atom []))
+
+(defn add-identity-add-listener [listener]
+  (swap! identity-add-listeners conj listener))
+
+(defn add-identity-update-listener [listener]
+  (swap! identity-update-listeners conj listener))
+
+(defn add-identity-delete-listener [listener]
+  (swap! identity-delete-listeners conj listener))
+
+(defn identity-add [identity]
+  (doseq [listener @identity-add-listeners]
+    (listener identity)))
+
+(defn identity-update [identity]
+  (doseq [listener @identity-update-listeners]
+    (listener identity)))
+
+(defn identity-delete [identity]
+  (doseq [listener @identity-delete-listeners]
+    (listener identity)))
+
 (clj-record.core/init-model
-  (:associations (belongs-to peer)))
+  (:associations (belongs-to peer))
+  (:callbacks (:after-update identity-update)
+              (:after-insert identity-add)
+              (:after-destroy identity-delete)))
 
 (defn add-identity [user-name public-key public-key-algorithm destination]
   (when-let [peer (peer/find-peer destination)]

@@ -3,6 +3,7 @@
             [clojure.string :as clj-string]
             [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.add-destination.add-destination :as add-destination]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.client :as client]
             [darkexchange.model.i2p-server :as i2p-server]
             [darkexchange.model.peer :as peers-model]
@@ -39,18 +40,11 @@
       :model [:columns peer-tab-view/peer-table-columns
               :rows peers])))
 
-(defn table-row-pairs [peer-table]
-  (map #(list %1 (seesaw-table/value-at peer-table %1))
-    (range (seesaw-table/row-count peer-table))))
-
-(defn find-table-peer-pair [peer-table peer]
-  (some #(when (= (:id (second %1)) (:id peer)) %1)
-    (table-row-pairs peer-table)))
+(defn update-peer-id-table [main-frame peer]
+  (controller-utils/update-record-in-table (find-peer-table main-frame) (peers-model/get-record (:id peer))))
 
 (defn delete-peer-from-table [main-frame peer]
-  (let [peer-table (find-peer-table main-frame)]
-    (when-let [peer-pair (first (find-table-peer-pair peer-table peer))]
-      (seesaw-table/remove-at! peer-table peer-pair))))
+  (controller-utils/delete-record-from-table (find-peer-table main-frame) (:id peer)))
 
 (defn load-peer-table [main-frame]
   (reload-table-data main-frame)
@@ -64,7 +58,7 @@
     (fn [e] (add-destination/show main-frame #(reload-table-data main-frame)))))
 
 (defn attach-peer-listener [main-frame]
-  (peers-model/add-peer-update-listener (fn [_] (seesaw-core/invoke-later (reload-table-data main-frame))))
+  (peers-model/add-peer-update-listener (fn [peer] (seesaw-core/invoke-later (update-peer-id-table main-frame peer))))
   (peers-model/add-peer-delete-listener (fn [peer] (seesaw-core/invoke-later (delete-peer-from-table main-frame peer))))
   main-frame)
 
