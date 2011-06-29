@@ -45,8 +45,9 @@
 (defn client-interceptor [action request-map]
   (try
     (let [response-map (action (sign request-map))]
-      (if (verify response-map)
-        (parse-data response-map)
-        (invalid-signature response-map)))
+      (when response-map
+        (if (verify response-map)
+          (parse-data response-map)
+          (invalid-signature response-map))))
     (catch Throwable t
       (logging/error "an error occured while signing or verifying a signature on the client side." t))))
