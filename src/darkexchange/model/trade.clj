@@ -238,33 +238,34 @@
 (defn table-trade-messages [trade]
   (map trade-message/as-table-trade-message (find-trade-messages trade)))
 
-(defn update-trade-accept-confirm [trade foreign-trade]
+(defn update-trade-accept-confirm [foreign-trade trade]
   (if (as-boolean (:is_acceptor trade))
     (merge trade { :accept_confirm (or (:accept_confirm foreign-trade) 0)
                    :accept_rejected (or (:accept_rejected foreign-trade) 0) })
     trade))
 
-(defn update-has-received [trade foreign-trade]
+(defn update-has-received [foreign-trade trade]
   (assoc trade :has_received (:wants_received foreign-trade)))
 
-(defn update-wants-sent [trade foreign-trade]
+(defn update-wants-sent [foreign-trade trade]
   (assoc trade :wants_sent (:has_sent foreign-trade)))
 
-(defn update-trade-messages [trade foreign-trade trade-partner-identity]
+(defn update-trade-messages [foreign-trade trade trade-partner-identity]
   (map trade-message/update-or-create-message (:id trade) (:messages foreign-trade) trade-partner-identity))
 
 (defn update-trade [trade-partner-identity foreign-trade]
   (when-let [trade (find-trade (:id foreign-trade) trade-partner-identity)]
     (update
       (update-closed
-        (update-wants-sent
-          (update-has-received
-            (update-trade-accept-confirm trade foreign-trade)))))
-    (update-trade-messages trade foreign-trade trade-partner-identity)
+        (update-wants-sent foreign-trade
+          (update-has-received foreign-trade
+            (update-trade-accept-confirm foreign-trade trade)))))
+    (update-trade-messages foreign-trade trade trade-partner-identity)
     (assoc (get-record (:id trade)) :messages (trade-message/find-matching-messages (:messages foreign-trade)))))
 
 (defn unconfirmed-messages [trade]
-  (filter #(nil? (:foreign_message_id %1)) (find-trade-messages trade)))
+  (when trade
+    (filter #(nil? (:foreign_message_id %1)) (find-trade-messages trade))))
 
 (defn contains-unconfirmed-message? [trade]
   (seq (unconfirmed-messages trade)))
