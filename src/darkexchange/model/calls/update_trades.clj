@@ -37,12 +37,10 @@
       :messages (map #(get-response-message response-map %) (:messages foreign-trade))}))
 
 (defn save-updated-trade [response-map]
-  (logging/debug (str "response-map: " response-map))
   (when-let [foreign-trade (get-response-trade response-map)]
     (trade-model/update-trade (interchange-map-util/from-identity response-map) foreign-trade)))
 
 (defn update-trade [trade]
-  (logging/debug (str "updating trade: " trade))
   (save-updated-trade
     (identity-model/send-message (trade-model/find-identity trade) action-keys/update-trades-action-key
       (create-call-data trade))))

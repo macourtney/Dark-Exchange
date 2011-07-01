@@ -33,14 +33,15 @@
 
 (defn generate-response [trade]
   (if trade
-    { :id (:id trade)
-      :foreign-trade-id (:foreign_trade_id trade)
-      :accept-confirm (:accept_confirm trade)
-      :wants-first (:wants_first trade)
-      :wants-received (:wants_received trade)
-      :has-sent (:has_sent trade)
-      :closed (:closed trade)
-      :messages (map generate-response-message (cons (:messages trade) (trade-model/unconfirmed-messages trade))) }
+    { :data
+      { :id (:id trade)
+        :foreign-trade-id (:foreign_trade_id trade)
+        :accept-confirm (:accept_confirm trade)
+        :wants-first (:wants_first trade)
+        :wants-received (:wants_received trade)
+        :has-sent (:has_sent trade)
+        :closed (:closed trade)
+        :messages (map generate-response-message (cons (:messages trade) (trade-model/unconfirmed-messages trade))) } }
     { :type :trade-not-found :data "Trade Not found."}))
 
 (defn action [request-map]
