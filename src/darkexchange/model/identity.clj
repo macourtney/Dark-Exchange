@@ -78,7 +78,9 @@
     (destination-for (find-identity user-name public-key public-key-algorithm)))
   ([target-identity]
     (when target-identity
-      (peer/destination-for (find-peer target-identity)))))
+      (when-let [peer-id (:peer_id target-identity)]
+        (when-let [peer (peer/find-record { :id peer-id })]
+          (peer/destination-for peer))))))
 
 (defn send-message 
   ([user-name public-key public-key-algorithm action data]

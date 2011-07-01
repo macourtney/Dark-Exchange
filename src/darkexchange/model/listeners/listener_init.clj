@@ -28,6 +28,5 @@
   (i2p-server-model/add-destination-listener peer-listeners/destination-listener)
   (i2p-server-model/add-destination-listener self-identity-listener/destination-listener)
   (i2p-server-model/add-destination-listener trade-listener/destination-listener)
-  (i2p-server-model/add-send-message-fail-listener peer-listeners/remove-missing-peers)
   (client-init)
   (server-init))

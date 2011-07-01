@@ -65,13 +65,13 @@
   (when destination
     (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date) })))
 
-(defn add-local-destination [destination]
-  (when destination
-    (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date)
-              :notified 1 :local 1 })))
-
 (defn find-peer [destination]
   (find-record { :destination (i2p-server/as-destination-str destination) }))
+
+(defn add-local-destination [destination]
+  (when (and destination (not (find-peer destination)))
+    (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date)
+              :notified 1 :local 1 })))
 
 (defn destination-for [peer]
   (:destination (find-record peer)))

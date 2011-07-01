@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.identity-tab
-  (:require [darkexchange.controller.utils :as controller-utils]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.identity :as identity-model]
             [darkexchange.view.main.identity-tab :as identity-tab-view]
             [seesaw.core :as seesaw-core]))
