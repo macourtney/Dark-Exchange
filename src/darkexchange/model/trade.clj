@@ -251,7 +251,8 @@
   (assoc trade :wants_sent (:has_sent foreign-trade)))
 
 (defn update-trade-messages [foreign-trade trade trade-partner-identity]
-  (map trade-message/update-or-create-message (:id trade) (:messages foreign-trade) trade-partner-identity))
+  (doseq [message (:messages foreign-trade)]
+    (trade-message/update-or-create-message (:id trade) message trade-partner-identity)))
 
 (defn update-trade [trade-partner-identity foreign-trade]
   (when-let [trade (find-trade (:id foreign-trade) trade-partner-identity)]

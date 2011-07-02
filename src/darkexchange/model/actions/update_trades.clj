@@ -1,5 +1,6 @@
 (ns darkexchange.model.actions.update-trades
-  (:require [darkexchange.interchange-map-util :as interchange-map-util]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.interchange-map-util :as interchange-map-util]
             [darkexchange.model.calls.update-trades :as update-trades-call]
             [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.trade :as trade-model]))
@@ -41,7 +42,7 @@
         :wants-received (:wants_received trade)
         :has-sent (:has_sent trade)
         :closed (:closed trade)
-        :messages (map generate-response-message (cons (:messages trade) (trade-model/unconfirmed-messages trade))) } }
+        :messages (filter identity (map generate-response-message (concat (:messages trade) (trade-model/unconfirmed-messages trade)))) } }
     { :type :trade-not-found :data "Trade Not found."}))
 
 (defn action [request-map]

@@ -23,6 +23,7 @@
 (defn get-response-message [response-map message]
   { :id (:id message)
     :identity (interchange-map-util/from-identity response-map)
+    :foreign_message_id (:foreign-message-id message)
     :body (:body message) })
 
 (defn get-response-trade [response-map]
