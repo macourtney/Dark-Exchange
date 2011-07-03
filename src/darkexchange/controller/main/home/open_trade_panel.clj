@@ -72,10 +72,21 @@
   (trade-model/add-update-trade-listener (fn [trade] (trade-update-listener main-frame trade)))
   main-frame)
 
+(defn trade-delete-listener [main-frame trade]
+  (seesaw-core/invoke-later
+    (let [open-trade-table (find-open-trade-table main-frame)]
+      (when-let [trade-index (find-trade-index open-trade-table trade)]
+        (seesaw-table/remove-at! open-trade-table trade-index)))))
+
+(defn attach-trade-delete-listener [main-frame]
+  (trade-model/add-delete-trade-listener (fn [trade] (trade-delete-listener main-frame trade)))
+  main-frame)
+
 (defn attach-trade-listeners [main-frame]
   (attach-open-trade-actions
     (attach-new-trade-listener
-      (attach-trade-update-listener main-frame))))
+      (attach-trade-update-listener
+        (attach-trade-delete-listener main-frame)))))
 
 (defn load-data [main-frame]
   (load-open-trade-table main-frame))

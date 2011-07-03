@@ -127,8 +127,10 @@
                 (:i-have-currency search-args) (:i-have-payment-type search-args)]))
 
 (defn close-offer [offer]
-  (update { :id (:id offer) :closed 1 })
-  (get-record (:id offer)))
+  (when-let [local-offer (find-record { :id (:id offer) })]
+    (when (open-offer? local-offer)
+      (update { :id (:id offer) :closed 1 })
+      (get-record (:id offer)))))
 
 (defn reopen-offer [offer]
   (update { :id (:id offer) :closed 0 }))

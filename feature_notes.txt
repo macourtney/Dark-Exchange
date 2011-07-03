@@ -13,12 +13,13 @@ Create an installer.
 Make sure the identity tab is updated properly when new identities are added, removed, or edited.
 Fix error when sending messages on trades.
 Off line updated of trades.
+Verify deleted or already claimed offers don't cause too many problems.
 
 Features for Beta Release (in progress):
 
 Features for Beta Release (To be completed):
-
-Verify deleted or already claimed offers don't cause too many problems.
+Fix issue with multiple searches showing up in the table.
+Display a better section of the public key for the identity.
 
 Features for future releases:
 

@@ -21,12 +21,16 @@
 
 (def trade-add-listeners (atom []))
 (def update-trade-listeners (atom []))
+(def delete-trade-listeners (atom []))
 
 (defn add-trade-add-listener [listener]
   (swap! trade-add-listeners conj listener))
 
 (defn add-update-trade-listener [listener]
   (swap! update-trade-listeners conj listener))
+
+(defn add-delete-trade-listener [listener]
+  (swap! delete-trade-listeners conj listener))
 
 (defn trade-add [new-trade]
   (doseq [listener @trade-add-listeners]
@@ -37,13 +41,18 @@
     (doseq [listener @update-trade-listeners]
       (listener trade))))
 
+(defn trade-deleted [trade]
+  (doseq [listener @delete-trade-listeners]
+    (listener trade)))
+
 (clj-record.core/init-model
   (:associations (belongs-to identity)
                  (belongs-to offer)
                  (belongs-to user)
                  (has-many trade-messages))
   (:callbacks (:after-insert trade-add)
-              (:after-update trade-updated)))
+              (:after-update trade-updated)
+              (:after-destroy trade-deleted)))
 
 (defn create-new-trade [trade-data]
   (insert
