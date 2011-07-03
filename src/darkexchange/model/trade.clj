@@ -48,7 +48,7 @@
 (defn create-new-trade [trade-data]
   (insert
     (merge { :created_at (new Date) :user_id (:id (user/current-user)) }
-      (select-keys trade-data [:foreign_trade_id :identity_id :is_acceptor :offer_id :wants_first]))))
+      (select-keys trade-data [:foreign_trade_id :identity_id :is_acceptor :offer_id :wants_first :updated]))))
 
 (defn create-non-acceptor-trade [acceptor-user-name acceptor-public-key acceptor-public-key-algorithm offer foreign-trade-id]
   (when-let [acceptor-identity (identity-model/find-identity acceptor-user-name acceptor-public-key
@@ -58,14 +58,16 @@
         :wants_first 1
         :identity_id (:id acceptor-identity)
         :is_acceptor 0
-        :foreign_trade_id foreign-trade-id })))
+        :foreign_trade_id foreign-trade-id
+        :updated 1 })))
 
 (defn create-acceptor-trade [other-identity offer-id]
   (create-new-trade
     { :offer_id offer-id
       :wants_first 0
       :identity_id (:id other-identity)
-      :is_acceptor 1 }))
+      :is_acceptor 1
+      :updated 1 }))
 
 (defn set-foreign-trade-id [trade-id foreign-trade-id]
   (update { :id trade-id :foreign_trade_id foreign-trade-id }))
@@ -187,14 +189,14 @@
   ([foreign-trade-id trade-partner-identity] (confirm-trade (find-trade foreign-trade-id trade-partner-identity)))
   ([trade]
     (let [trade-id (:id trade)]
-      (update { :id trade-id :accept_confirm 1 :accept_rejected 0 })
+      (update { :id trade-id :accept_confirm 1 :accept_rejected 0 :updated 0 })
       trade-id)))
 
 (defn reject-trade
   ([foreign-trade-id trade-partner-identity] (reject-trade (find-trade foreign-trade-id trade-partner-identity)))
   ([trade]
     (let [trade-id (:id trade)]
-      (update { :id trade-id :accept_confirm 0 :accept_rejected 1 })
+      (update { :id trade-id :accept_confirm 0 :accept_rejected 1 :updated 0 })
       trade-id)))
 
 (defn payment-sent [trade]
@@ -203,7 +205,7 @@
 
 (defn foreign-payment-sent [foreign-trade-id trade-partner-identity]
   (let [trade (find-trade foreign-trade-id trade-partner-identity)]
-    (update { :id (:id trade) :wants_sent 1 })
+    (update { :id (:id trade) :wants_sent 1 :updated 0 })
     (get-record (:id trade))))
 
 (defn update-foreign-trade-id [trade-id foreign-trade-id]
@@ -232,7 +234,7 @@
 
 (defn foreign-payment-received [foreign-trade-id trade-partner-identity]
   (let [trade (find-trade foreign-trade-id trade-partner-identity)]
-    (update { :id (:id trade) :has_received 1 })
+    (update { :id (:id trade) :has_received 1 :updated 0 })
     (close-if-complete (get-record (:id trade)))))
 
 (defn table-trade-messages [trade]
@@ -270,3 +272,10 @@
 
 (defn contains-unconfirmed-message? [trade]
   (seq (unconfirmed-messages trade)))
+
+(defn trade-updated [trade]
+  (update { :id (:id trade) :updated 1 }))
+
+(defn trades-to-update
+  ([] (trades-to-update (user/current-user)))
+  ([user] (find-records ["(((updated IS NULL OR updated = 0) AND closed = 1) OR (closed IS NULL OR closed = 0)) AND user_id = ?" (:id user)])))

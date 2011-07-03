@@ -7,6 +7,11 @@
 (defn payment-received [trade]
   (trade-model/payment-received trade))
 
+(defn update-trade [trade response]
+  (when-let [data (:data response)]
+    (trade-model/trade-updated trade)))
+
 (defn call [trade]
-  (identity-model/send-message (trade-model/find-identity trade) action-keys/payment-received-action-key
-    { :trade-id (:id (payment-received trade)) }))
+  (update-trade trade
+    (identity-model/send-message (trade-model/find-identity trade) action-keys/payment-received-action-key
+      { :trade-id (:id (payment-received trade)) })))

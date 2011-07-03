@@ -8,6 +8,11 @@
   (trade-model/reject-trade trade)
   (:id (trade-model/close trade)))
 
+(defn update-trade [trade response]
+  (when-let [data (:data response)]
+    (trade-model/trade-updated trade)))
+
 (defn call [trade]
-  (identity-model/send-message (trade-model/find-identity trade) action-keys/reject-trade-action-key
-      { :trade-id (reject-trade trade) }))
+  (update-trade trade
+    (identity-model/send-message (trade-model/find-identity trade) action-keys/reject-trade-action-key
+      { :trade-id (reject-trade trade) })))

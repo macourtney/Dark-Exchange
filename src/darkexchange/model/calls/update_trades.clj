@@ -47,5 +47,5 @@
       (create-call-data trade))))
 
 (defn call []
-  (doseq [trade (trade-model/open-trades)]
+  (doseq [trade (trade-model/trades-to-update)]
     (update-trade trade)))

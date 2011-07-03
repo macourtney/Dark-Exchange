@@ -19,6 +19,7 @@
     (integer :wants_received) ; Set to true when the wants is received.
     (integer :has_sent) ; Set to true when the has is sent
     (integer :has_received) ; Set to true when the has is received.
+    (integer :updated)
     (integer :closed))) ; Set to true when all transfers are sent and received.
   
 (defn

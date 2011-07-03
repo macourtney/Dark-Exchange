@@ -12,10 +12,9 @@ Enable and disable buttons as appropriate to avoid errors.
 Create an installer.
 Make sure the identity tab is updated properly when new identities are added, removed, or edited.
 Fix error when sending messages on trades.
+Off line updated of trades.
 
 Features for Beta Release (in progress):
-
-Off line updated of trades.
 
 Features for Beta Release (To be completed):
 
