@@ -114,4 +114,4 @@
   (table-identity (get-record id)))
 
 (defn identity-text [identity]
-  (str (:name identity) " (" (.substring (:public_key identity) 10 20) "..)"))
+  (str (:name identity) " (.." (.substring (:public_key identity) 10 20) "..)"))
