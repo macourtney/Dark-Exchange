@@ -31,7 +31,7 @@
   (load-data-label trade parent-component :created_at "#created_at"))
 
 (defn load-trade-partner [trade parent-component]
-  (load-data-label (str (:name (:identity trade)) " (" (.substring (:public_key (:identity trade)) 0 10) "..)")
+  (load-data-label (trade-model/trade-partner-text trade)
     parent-component "#user"))
 
 (defn load-partner-trade-id [trade parent-component]

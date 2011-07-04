@@ -288,3 +288,6 @@
 (defn trades-to-update
   ([] (trades-to-update (user/current-user)))
   ([user] (find-records ["(((updated IS NULL OR updated = 0) AND closed = 1) OR (closed IS NULL OR closed = 0)) AND user_id = ?" (:id user)])))
+
+(defn trade-partner-text [trade]
+  (identity-model/identity-text (:identity trade)))
