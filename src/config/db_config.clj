@@ -9,13 +9,13 @@
 (defn dbname [environment]
   (cond
      ;; The name of the production database to use.
-     (= environment :production) "conjure_production"
+     (= environment :production) "dark_exchange_production"
 
      ;; The name of the development database to use.
-     (= environment :development) "conjure_development"
+     (= environment :development) "dark_exchange_development"
 
      ;; The name of the test database to use.
-     (= environment :test) "conjure_test"))
+     (= environment :test) "dark_exchange_test"))
 
 (defn
 #^{:doc "Returns the database flavor which is used by Conjure to connect to the database."}
