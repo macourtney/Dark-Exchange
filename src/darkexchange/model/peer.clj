@@ -3,6 +3,7 @@
             [clojure.java.io :as java-io]
             [clojure.tools.loading-utils :as loading-utils]
             [clj-record.boot :as clj-record-boot]
+            [config.environment :as environment]
             [darkexchange.model.actions.action-keys :as action-keys]
             [darkexchange.model.calls.notify :as notify-call]
             [darkexchange.model.client :as client]
@@ -14,6 +15,7 @@
            [java.util Date]))
 
 (def peers-file-name "peers.txt")
+(def development-peers-file-name "development-peers.txt")
 
 (def peer-update-listeners (atom []))
 
@@ -98,21 +100,26 @@
 (defn last-updated-peer []
   (first (find-by-sql ["SELECT * FROM peers WHERE local IS NULL OR local = 0 ORDER BY updated_at DESC LIMIT 1"])))
 
+(defn peers-text-resource []
+  (if (= (environment/environment-name) "development")
+    development-peers-file-name
+    peers-file-name))
+
 (defn peers-text-reader []
-  (java-io/reader (java-io/resource peers-file-name)))
+  (java-io/reader (java-io/resource (peers-text-resource))))
 
 (defn peers-text-lines []
   (filter #(< 0 (count (.trim %1))) (line-seq (peers-text-reader))))
 
 (defn default-destinations []
-  (peers-text-lines))
+  (shuffle (peers-text-lines)))
 
 (defn destination-online? [destination]
   (when (i2p-server/destination-online? destination)
     destination))
 
 (defn find-online-destination []
-  (some destination-online? (cons (:destination (last-updated-peer)) (default-destinations))))
+  (some destination-online? (filter identity (cons (:destination (last-updated-peer)) (default-destinations)))))
 
 (defn add-destination-if-missing [destination]
   (let [peer (find-peer destination)]
@@ -142,19 +149,23 @@
 (defn all-network-destinations []
   (let [online-destination (find-online-destination)]
     (filter #(not (= (i2p-server/base-64-destination) %)) ; Do not add yourself to the peer table.
-      (cons online-destination (:data (get-peers-from online-destination))))))
+      (filter identity (cons online-destination (:data (get-peers-from online-destination)))))))
 
-(defn download-peers-background []
-  (when-not (property/test-peers-downloaded?)
-    (try
-      (let [destinations (all-network-destinations)]
-        (if (and destinations (not-empty destinations))
-          (add-destinations destinations)
-          (property/reset-peers-downloaded?)))
-      (catch Exception e
-        (logging/error "An exception occured while downloading the peers.")
-        (property/reset-peers-downloaded?)
-        (throw e)))))
+(defn download-peers-background
+  ([] (download-peers-background 0))
+  ([attempt-count]
+    (when-not (property/test-peers-downloaded?)
+      (try
+        (let [destinations (all-network-destinations)]
+          (if (and destinations (not-empty destinations))
+            (add-destinations destinations)
+            (do
+              (property/reset-peers-downloaded?)
+              (when (< attempt-count 10) (download-peers-background (inc attempt-count))))))
+        (catch Exception e
+          (logging/error "An exception occured while downloading the peers.")
+          (property/reset-peers-downloaded?)
+          (throw e))))))
 
 (defn download-peers []
   (.start (Thread. download-peers-background)))

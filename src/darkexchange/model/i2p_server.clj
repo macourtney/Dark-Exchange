@@ -126,7 +126,7 @@
       (send-message-fail-listener destination data))))
 
 (defn destination-online? [destination]
-  (and @manager destination (.ping @manager (as-destination destination) 3000)))
+  (and @manager destination (.ping @manager (as-destination destination) 30000)))
 
 (defn send-message [destination data]
   (let [destination-obj (as-destination destination)]
