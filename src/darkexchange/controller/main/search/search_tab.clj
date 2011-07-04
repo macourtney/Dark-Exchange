@@ -42,6 +42,7 @@
       (load-search-offer-table parent-component converted-offers))))
 
 (defn run-search [parent-component]
+  (seesaw-table/clear! (find-search-offer-table parent-component))
   (search-offers-call/call
     (offer-has-panel/i-have-currency parent-component)
     (offer-has-panel/i-have-payment-type parent-component)
