@@ -20,6 +20,12 @@
         algorithm des-algorithm
         encrypted-data (password-encrypt password data algorithm)]
     (is (not (= data encrypted-data)) "Text not encrypted.")
+    (is (= data (password-decrypt password encrypted-data algorithm)) "Text not decrypted."))
+  (let [password "password blah blah blah blah blah blah blah blah"
+        data "secret text"
+        algorithm des-algorithm
+        encrypted-data (password-encrypt password data algorithm)]
+    (is (not (= data encrypted-data)) "Text not encrypted.")
     (is (= data (password-decrypt password encrypted-data algorithm)) "Text not decrypted.")))
 
 (deftest basic-password-protection

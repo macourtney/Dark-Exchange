@@ -154,8 +154,13 @@
   ([algorithm]
     (create-cipher algorithm)))
 
+(defn prepare-password [password]
+  (let [message-digest (MessageDigest/getInstance default-encrypt-password-algorithm)]
+    (.reset message-digest)
+    (into-array Byte/TYPE (take 8 (.digest message-digest (get-data-bytes password))))))
+
 (defn key-spec [password algorithm]
-  (SecretKeySpec. (get-data-bytes password) algorithm))
+  (SecretKeySpec. (prepare-password password) algorithm))
 
 (defn des-key
   ([password] (des-key password default-symmetrical-algorithm))
