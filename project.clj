@@ -1,4 +1,4 @@
-(defproject darkexchange "1.0.0-BETA"
+(defproject darkexchange "1.0.0-BETA2"
   :description "Dark Exchange is a distributed p2p exchange for bitcoin."
   :dependencies [[bouncycastle/bcprov-jdk16 "136"]
                  [clojure-tools "1.0.0"]

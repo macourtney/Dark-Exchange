@@ -13,7 +13,7 @@
   (seesaw-core/select parent-component ["#i-have-payment-type"]))
 
 (defn i-have-amount [parent-component]
-  (Integer/parseInt (seesaw-core/text (find-i-have-amount parent-component))))
+  (Double/parseDouble (seesaw-core/text (find-i-have-amount parent-component))))
 
 (defn i-have-currency [parent-component]
   (:currency (seesaw-core/selection (find-i-have-currency-combobox parent-component))))
