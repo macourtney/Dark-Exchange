@@ -30,10 +30,13 @@
 (defn peers-downloaded? []
   (get-property peers-downloaded?-property))
 
+(defn set-peers-downloaded? [value]
+  (set-property peers-downloaded?-property value))
+
 (defn test-peers-downloaded? []
   (let [downloaded? (peers-downloaded?)]
     (when-not downloaded?
-      (set-property peers-downloaded?-property true))
+      (set-peers-downloaded? true))
     downloaded?))
 
 (defn reset-peers-downloaded? []

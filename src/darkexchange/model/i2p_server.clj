@@ -23,7 +23,7 @@
 
 (def private-key-file (File. private-key-directory-name private-key-file-name))
 
-(def timeout 60000)
+(def timeout 600000)
 
 (defn add-destination-listener [listener]
   (swap! destination-listeners conj listener))

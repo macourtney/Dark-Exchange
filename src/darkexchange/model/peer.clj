@@ -118,8 +118,13 @@
   (when (i2p-server/destination-online? destination)
     destination))
 
-(defn find-online-destination []
-  (some destination-online? (filter identity (cons (:destination (last-updated-peer)) (default-destinations)))))
+(defn find-online-destination
+  ([] (find-online-destination 0))
+  ([count]
+    (if-let [online-destination (some destination-online? (filter identity (cons (:destination (last-updated-peer)) (default-destinations))))]
+      online-destination
+      (when (< count 10)
+        (find-online-destination (inc count))))))
 
 (defn add-destination-if-missing [destination]
   (when (and destination (not (find-peer destination)))
@@ -151,20 +156,20 @@
   (when-let [online-destination (find-online-destination)]
     (add-destination-if-missing online-destination)
     (load-all-peers-from online-destination)
-    (.start (Thread. notify-all-peers)) ; load all peers in another thread to avoid blocking on every peer.
     online-destination))
 
 (defn download-peers-background
   ([] (download-peers-background 0))
   ([attempt-count]
-    (when-not (property/test-peers-downloaded?)
+    (when-not (property/peers-downloaded?)
       (try
-        (when-not (load-all-peers)
-          (property/reset-peers-downloaded?))
+        (when (load-all-peers)
+          (property/set-peers-downloaded? true))
         (catch Exception e
           (logging/error "An exception occured while downloading the peers.")
           (property/reset-peers-downloaded?)
-          (throw e))))))
+          (throw e))))
+    (notify-all-peers)))
 
 (defn download-peers []
   (.start (Thread. download-peers-background)))
