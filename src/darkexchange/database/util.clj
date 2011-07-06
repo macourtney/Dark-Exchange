@@ -27,6 +27,12 @@ database flavor function with the current db spec and any arguments"}
     `(defn ~(symbol spec-name)
       ([& args#] (apply ~(symbol (str "flavor-protocol/" spec-name)) @conjure-flavor args#)))))
 
+(defn execute-query [sql-vector]
+  (flavor-protocol/execute-query @conjure-flavor sql-vector))
+
+(defn execute-update [sql-vector]
+  (flavor-protocol/execute-update @conjure-flavor sql-vector))
+
 (defn create-table [table & specs]
   (flavor-protocol/create-table @conjure-flavor table specs))
 
@@ -38,8 +44,6 @@ database flavor function with the current db spec and any arguments"}
 
 (defn insert-into [table & records]
   (flavor-protocol/insert-into @conjure-flavor table records))
-
-;(def-db-fn :insert-into)
 
 (def-db-fn :sql-find)
 
@@ -56,6 +60,8 @@ database flavor function with the current db spec and any arguments"}
 (def-db-fn :id)
 
 (def-db-fn :integer)
+
+(def-db-fn :decimal)
 
 (def-db-fn :string)
 

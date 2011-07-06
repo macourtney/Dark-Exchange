@@ -1,7 +1,11 @@
 (ns darkexchange.development-main
-  (:require [darkexchange.core :as core]
+  (:require [clojure.contrib.command-line :as command-line]
             [darkexchange.main :as main]))
 
 (defn -main [& args]
-  (core/set-mode "development")
-  (main/-main))
+  (command-line/with-command-line args
+    "lein run :development [options]"
+    [ [mode "The run mode. For example, development, production, or test. The default is development." "development"]
+      remaining]
+
+    (apply main/-main "-mode" mode remaining)))

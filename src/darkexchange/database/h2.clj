@@ -86,15 +86,20 @@ any keyword into a string, and replaces dashes with underscores."}
         :subname subname
   
         ;; A datasource for the database.
-        :datasource (create-datasource (format "jdbc:%s:%s" subprotocol subname))
-}))
-  
+        :datasource (create-datasource (format "jdbc:%s:%s" subprotocol subname)) }))
+
   (execute-query [flavor sql-vector]
     (do
       (logging/debug (str "Executing query: " sql-vector))
       (sql/with-connection (flavor-protocol/db-map flavor)
         (sql/with-query-results rows sql-vector
           (doall (map clean-row rows))))))
+  
+  (execute-update [flavor sql-vector]
+    (do
+      (logging/debug (str "Executing update: " sql-vector))
+      (sql/with-connection (flavor-protocol/db-map flavor)
+        (apply sql/do-prepared sql-vector))))
   
   (update [flavor table where-params record]
     (do
@@ -147,12 +152,19 @@ any keyword into a string, and replaces dashes with underscores."}
       (sql/with-connection (flavor-protocol/db-map flavor)
         (sql/delete-rows (table-name table) where))))
   
-  (integer [flavor column] (flavor-protocol/integer flavor column {}) )
+  (integer [flavor column] (flavor-protocol/integer flavor column {}))
   (integer [_ column mods]
     (concat [(column-name column) "INT"] (not-null-mod mods) (auto-increment-mod mods) (primary-key-mod mods)))
 
   (id [flavor]
     (flavor-protocol/integer flavor "id" { :not-null true, :primary-key true, :auto-increment true }))
+
+  (decimal [flavor column] (flavor-protocol/decimal flavor column {}))
+  (decimal [flavor column mods]
+    (let [precision (get mods :precision 20)
+          scale (get mods :scale 6)
+          decimal (str "DECIMAL(" precision "," scale ")")]
+      (concat [(column-name column) decimal] (not-null-mod mods) (auto-increment-mod mods) (primary-key-mod mods))))
 
   (string [flavor column] (flavor-protocol/string flavor column { :length 255 }))
   (string [_ column mods]

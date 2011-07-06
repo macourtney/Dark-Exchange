@@ -7,6 +7,7 @@
 
   (db-map [flavor] "Returns a map for use in db-config.")
   (execute-query [flavor sql-vector] "Executes an sql string and returns the results as a sequence of maps.")
+  (execute-update [flavor sql-vector] "Executes an sql string without returning results.")
   (update [flavor table where-params record]
     "Runs an update given the table, where-params and a record.
 
@@ -38,6 +39,15 @@
          :not-null - If the value of this key resolves to true, then add this column will be forced to be not null.
          :primary-key - If true, then make this column the primary key.")
   (id [flavor] "Returns a new spec describing the id for a table. Use this method with the create-table method.")
+  (decimal [flavor column] [flavor column mods] 
+    "Returns a new spec describing a decimal with the given column and spec mods map. Use this method with the 
+     create-table method.
+
+     Curently supported values for mods:
+         :not-null - If the value of this key resolves to true, then add this column will be forced to be not null.
+         :primary-key - If true, then make this column the primary key.
+         :precision - The number of digits of precision.
+         :scale - The scale.")
   (string [flavor column] [flavor column mods] 
     "Returns a new spec describing a string with the given column and spec mods map. Use this method with the
      create-table method.

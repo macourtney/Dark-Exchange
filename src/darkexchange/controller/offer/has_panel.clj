@@ -1,7 +1,8 @@
 (ns darkexchange.controller.offer.has-panel
   (:require [darkexchange.controller.widgets.currency-combobox :as currency-combobox]
             [darkexchange.controller.widgets.payment-type-combobox :as payment-type-combobox]
-            [seesaw.core :as seesaw-core]))
+            [seesaw.core :as seesaw-core])
+  (:import [java.math BigDecimal]))
 
 (defn find-i-have-amount [parent-component]
   (seesaw-core/select parent-component ["#i-have-amount"]))
@@ -13,7 +14,7 @@
   (seesaw-core/select parent-component ["#i-have-payment-type"]))
 
 (defn i-have-amount [parent-component]
-  (Double/parseDouble (seesaw-core/text (find-i-have-amount parent-component))))
+  (BigDecimal. (seesaw-core/text (find-i-have-amount parent-component))))
 
 (defn i-have-currency [parent-component]
   (:currency (seesaw-core/selection (find-i-have-currency-combobox parent-component))))
