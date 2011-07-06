@@ -23,6 +23,8 @@
 
 (def private-key-file (File. private-key-directory-name private-key-file-name))
 
+(def timeout 60000)
+
 (defn add-destination-listener [listener]
   (swap! destination-listeners conj listener))
 
@@ -126,12 +128,12 @@
       (send-message-fail-listener destination data))))
 
 (defn destination-online? [destination]
-  (and @manager destination (.ping @manager (as-destination destination) 30000)))
+  (and @manager destination (.ping @manager (as-destination destination) timeout)))
 
 (defn send-message [destination data]
   (let [destination-obj (as-destination destination)]
     (when @manager
-      (if (.ping @manager destination-obj 30000)
+      (if (.ping @manager destination-obj timeout)
         (let [socket (.connect @manager destination-obj)]
           (write-json socket data)
           (read-json socket))

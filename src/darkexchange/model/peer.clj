@@ -95,7 +95,7 @@
 
 (defn get-peers-from [destination]
   (when destination
-    (client/send-message destination action-keys/get-peers-action-key { :type :all })))
+    (:data (client/send-message destination action-keys/get-peers-action-key { :type :all }))))
 
 (defn last-updated-peer []
   (first (find-by-sql ["SELECT * FROM peers WHERE local IS NULL OR local = 0 ORDER BY updated_at DESC LIMIT 1"])))
@@ -122,9 +122,8 @@
   (some destination-online? (filter identity (cons (:destination (last-updated-peer)) (default-destinations)))))
 
 (defn add-destination-if-missing [destination]
-  (let [peer (find-peer destination)]
-    (when-not peer
-      (add-destination destination))))
+  (when (and destination (not (find-peer destination)))
+    (add-destination destination)))
 
 (defn all-unnotified-peers []
   (find-by-sql ["SELECT * FROM peers WHERE notified IS NULL"]))
@@ -143,25 +142,25 @@
 
 (defn add-destinations [destinations]
   (doseq [destination destinations]
-    (add-destination-if-missing destination))
-  (notify-all-peers))
+    (add-destination-if-missing destination)))
 
-(defn all-network-destinations []
-  (let [online-destination (find-online-destination)]
-    (filter #(not (= (i2p-server/base-64-destination) %)) ; Do not add yourself to the peer table.
-      (filter identity (cons online-destination (:data (get-peers-from online-destination)))))))
+(defn load-all-peers-from [destination]
+  (add-destinations (filter #(and %1 (not (= (i2p-server/base-64-destination) %1))) (get-peers-from destination))))
+
+(defn load-all-peers []
+  (when-let [online-destination (find-online-destination)]
+    (add-destination-if-missing online-destination)
+    (load-all-peers-from online-destination)
+    (.start (Thread. notify-all-peers)) ; load all peers in another thread to avoid blocking on every peer.
+    online-destination))
 
 (defn download-peers-background
   ([] (download-peers-background 0))
   ([attempt-count]
     (when-not (property/test-peers-downloaded?)
       (try
-        (let [destinations (all-network-destinations)]
-          (if (and destinations (not-empty destinations))
-            (add-destinations destinations)
-            (do
-              (property/reset-peers-downloaded?)
-              (when (< attempt-count 10) (download-peers-background (inc attempt-count))))))
+        (when-not (load-all-peers)
+          (property/reset-peers-downloaded?))
         (catch Exception e
           (logging/error "An exception occured while downloading the peers.")
           (property/reset-peers-downloaded?)
