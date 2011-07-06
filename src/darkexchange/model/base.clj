@@ -1,12 +1,16 @@
 (ns darkexchange.model.base
-  (:require [darkexchange.database.util :as database-util])
+  (:require [clojure.string :as string]
+            [darkexchange.database.util :as database-util])
   (:import [java.sql Clob]))
 
 (def db (deref database-util/db))
 
+(defn clob-string [clob]
+  (let [clob-stream (.getCharacterStream clob)]
+    (string/join "\n" (take-while identity (repeatedly #(.readLine clob-stream))))))
+
 (defn load-clob [clob]
-  (let [clob-str (.toString clob)]
-    (.substring clob-str (inc (.indexOf clob-str "'")) (dec (.length clob-str)))))
+  (clob-string clob))
 
 (defn get-clob [record clob-key]
   (when-let [clob (clob-key record)]

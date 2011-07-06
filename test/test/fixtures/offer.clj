@@ -11,10 +11,10 @@
     :user_id 1
     :foreign_offer_id nil
     :closed nil
-    :has_amount 1
+    :has_amount 1.0
     :has_currency "BITCOIN"
     :has_payment_type "BITCOIN"
-    :wants_amount 1
+    :wants_amount 1.0
     :wants_currency "USD"
     :wants_payment_type "CAM" }])
 

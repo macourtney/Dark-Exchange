@@ -36,11 +36,7 @@
     (listener peer)))
 
 (defn peer-clean-up [peer]
-  (if-let [destination-clob (:destination peer)]
-    (if (instance? Clob destination-clob)
-      (assoc peer :destination (load-clob destination-clob))
-      peer)
-    peer))
+  (clean-clob-key peer :destination))
 
 (clj-record.core/init-model
   (:callbacks (:after-update peer-update)

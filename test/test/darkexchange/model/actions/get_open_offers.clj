@@ -1,7 +1,7 @@
 (ns test.darkexchange.model.actions.get-open-offers
-  (:require [darkexchange.model.actions.action-keys :as action-keys] 
+  (:require [test.darkexchange.util :as test-util] ; test-util must be required first.
+            [darkexchange.model.actions.action-keys :as action-keys] 
             [darkexchange.model.peer :as peer-model]
-            [test.darkexchange.util :as test-util]
             [test.fixtures.offer :as offer-fixture]
             [test.fixtures.util :as fixtures-util]) 
   (:use clojure.test

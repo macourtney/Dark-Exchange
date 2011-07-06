@@ -137,9 +137,10 @@ any keyword into a string, and replaces dashes with underscores."}
 
   (drop-table [flavor table]
     (do
-      (logging/debug (str "Drop table: " table))
-      (sql/with-connection (flavor-protocol/db-map flavor)
-        (sql/drop-table (table-name table)))))
+      (logging/debug (str "Drop table: " (table-name table)))
+      (when (some #(= (.toUpperCase (table-name table)) %) (map :table_name (flavor-protocol/execute-query flavor ["SHOW TABLES"])))
+        (sql/with-connection (flavor-protocol/db-map flavor)
+          (sql/drop-table (table-name table))))))
 
   (describe-table [flavor table]
     (do
@@ -164,7 +165,7 @@ any keyword into a string, and replaces dashes with underscores."}
     (let [precision (get mods :precision 20)
           scale (get mods :scale 6)
           decimal (str "DECIMAL(" precision "," scale ")")]
-      (concat [(column-name column) decimal] (not-null-mod mods) (auto-increment-mod mods) (primary-key-mod mods))))
+      (concat [(column-name column) decimal] (not-null-mod mods) (primary-key-mod mods))))
 
   (string [flavor column] (flavor-protocol/string flavor column { :length 255 }))
   (string [_ column mods]

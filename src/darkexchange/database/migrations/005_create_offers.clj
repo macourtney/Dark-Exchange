@@ -10,10 +10,10 @@
     (belongs-to :user)
     (integer :foreign_offer_id) ; The id of the matching trade on the other system.
     (integer :closed)
-    (integer :has_amount)
+    (decimal :has_amount)
     (string :has_currency) ; Currency code.
     (string :has_payment_type) ; Payment type code.
-    (integer :wants_amount)
+    (decimal :wants_amount)
     (string :wants_currency) ; Currency code.
     (string :wants_payment_type))) ; Payment type code.
   

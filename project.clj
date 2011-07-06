@@ -1,7 +1,7 @@
 (defproject darkexchange "1.0.0-BETA2"
   :description "Dark Exchange is a distributed p2p exchange for bitcoin."
   :dependencies [[clojure-tools "1.0.0"]
-                 [com.h2database/h2 "1.2.137"]
+                 [com.h2database/h2 "1.3.157"]
                  [commons-codec/commons-codec "1.5"]
                  [drift "1.2.1"]
                  [log4j/log4j "1.2.16"]

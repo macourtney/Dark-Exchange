@@ -19,3 +19,19 @@
     (is search-results "Nil results returned unexpectedly.")
     (is (= 0 (count search-results)) "Expected no offers returned."))
   (test-util/logout))
+
+(deftest test-save-decimal
+  (let [has-amount 1.1
+        wants-amount 1.2
+        offer { :has_amount has-amount
+                :has_currency "USD"
+                :has_payment_type "CAM"
+                :wants_amount wants-amount
+                :wants_currency "BITCOIN"
+                :wants_payment_type "BITCOIN" }
+        offer-id (create-new-offer offer)]
+    (is offer-id)
+    (let [saved-offer (get-record offer-id)]
+      (is (= (:has_amount saved-offer) has-amount))
+      (is (= (:wants_amount saved-offer) wants-amount))
+      (destroy-record saved-offer))))
