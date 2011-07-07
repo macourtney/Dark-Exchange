@@ -69,11 +69,6 @@
 (defn delete-open-offer-if-enabled [main-frame]
   (widgets-utils/do-click-if-enabled (find-delete-open-offer-button main-frame)))
 
-(defn attach-delete-open-offer-table-action [main-frame]
-  (widgets-utils/add-table-action (find-open-offer-table main-frame)
-    #(delete-open-offer-if-enabled main-frame))
-  main-frame)
-
 (defn attach-delete-open-offer-enable-listener [main-frame]
   (widgets-utils/single-select-table-button (find-delete-open-offer-button main-frame)
     (find-open-offer-table main-frame))
@@ -81,11 +76,10 @@
 
 (defn attach-offer-listeners [main-frame]
   (attach-delete-open-offer-enable-listener
-    (attach-delete-open-offer-table-action
-      (attach-offer-update-listener
-        (attach-offer-delete-listener
-          (attach-delete-offer-action
-            (attach-add-offer-action main-frame)))))))
+    (attach-offer-update-listener
+      (attach-offer-delete-listener
+        (attach-delete-offer-action
+          (attach-add-offer-action main-frame))))))
 
 (defn load-data [main-frame]
   (load-open-offer-table main-frame))
