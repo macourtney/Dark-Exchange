@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as actions-utils]
             [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.calls.accept-offer :as accept-offer-call]
+            [darkexchange.model.identity :as identity-model]
             [darkexchange.view.offer.view :as offer-view]
             [seesaw.core :as seesaw-core]))
 
@@ -24,7 +25,8 @@
   (controller-utils/find-component parent-component "#public-key-label"))
 
 (defn load-public-key [parent-component offer]
-  (seesaw-core/config! (find-public-key-label parent-component) :text (:public-key offer)))
+  (seesaw-core/config! (find-public-key-label parent-component)
+    :text (identity-model/shortened-public-key-str (:public-key offer))))
 
 (defn find-name-label [parent-component]
   (controller-utils/find-component parent-component "#name-label"))

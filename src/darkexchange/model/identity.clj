@@ -103,15 +103,23 @@
   (let [user (user/current-user)]
     (find-identity (:name user) (:public_key user) (:public_key_algorithm user))))
 
+(defn shortened-public-key-str [public-key]
+  (str ".." (.substring public-key 40 60) ".."))
+
+(defn shortened-public-key [identity]
+  (shortened-public-key-str (:public_key identity)))
+
+(defn identity-text [identity]
+  (str (:name identity) " (" (shortened-public-key identity) ")"))
+
 (defn table-identity [identity]
   (let [destination (destination-for identity)]
-    (assoc (select-keys identity [:id :name :public_key :public_key_algorithm]) :destination destination)))
+    (merge (select-keys identity [:id :name :public_key_algorithm]) 
+      { :destination destination
+        :public_key (shortened-public-key identity) })))
 
 (defn table-identities []
   (map table-identity (find-records [true])))
 
 (defn get-table-identity [id]
   (table-identity (get-record id)))
-
-(defn identity-text [identity]
-  (str (:name identity) " (.." (.substring (:public_key identity) 10 20) "..)"))
