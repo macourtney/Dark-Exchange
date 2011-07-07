@@ -129,6 +129,9 @@
 (defn all-unnotified-peers []
   (find-by-sql ["SELECT * FROM peers WHERE notified IS NULL"]))
 
+(defn all-notified-peers []
+  (find-by-sql ["SELECT * FROM peers WHERE notified IS NOT NULL AND NOT notified = 0"]))
+
 (defn notify-all-peers []
   (doseq [peer (all-unnotified-peers)]
     (notify-destination (:destination peer))))
@@ -149,22 +152,42 @@
   (add-destinations (filter #(and %1 (not (= (i2p-server/base-64-destination) %1))) (get-peers-from destination))))
 
 (defn load-all-peers []
-  (when-let [online-destination (find-online-destination)]
-    (add-destination-if-missing online-destination)
-    (load-all-peers-from online-destination)
-    online-destination))
+  (try
+    (when-let [online-destination (find-online-destination)]
+      (add-destination-if-missing online-destination)
+      (load-all-peers-from online-destination)
+      (property/set-peers-downloaded? true))
+    (catch Exception e
+      (logging/error "An exception occured while downloading the peers.")
+      (property/reset-peers-downloaded?)
+      (throw e))))
+
+(defn is-online-peer? [peer]
+  (and (not (i2p-server/is-current-destination-base-64? (:destination peer)))
+    (destination-online? (:destination peer))))
+
+(defn find-online-notified-peer
+  ([] (find-online-notified-peer 0))
+  ([count]
+    (if-let [online-peer (some #(when (is-online-peer? %1) %1) (shuffle (all-notified-peers)))]
+      online-peer
+      (when (< count 10)
+        (find-online-destination (inc count))))))
+
+(defn reload-peers []
+  (try
+    (when-let [online-peer (find-online-notified-peer)]
+      (load-all-peers-from (:destination online-peer)))
+    (catch Exception e
+      (logging/error "An exception occured while downloading the peers.")
+      (throw e))))
 
 (defn download-peers-background
   ([] (download-peers-background 0))
   ([attempt-count]
-    (when-not (property/peers-downloaded?)
-      (try
-        (when (load-all-peers)
-          (property/set-peers-downloaded? true))
-        (catch Exception e
-          (logging/error "An exception occured while downloading the peers.")
-          (property/reset-peers-downloaded?)
-          (throw e))))
+    (if (property/peers-downloaded?)
+      (reload-peers)
+      (load-all-peers))
     (notify-all-peers)))
 
 (defn download-peers []
