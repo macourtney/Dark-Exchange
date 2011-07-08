@@ -42,10 +42,10 @@
     (.toBase64 destination)))
 
 (defn is-current-destination? [destination]
-  (= destination current-destination))
+  (= destination (current-destination)))
 
 (defn is-current-destination-base-64? [destination]
-  (= destination base-64-destination))
+  (= destination (base-64-destination)))
 
 (defn private-key-file-exists? []
   (.exists private-key-file))
@@ -119,7 +119,7 @@
   (.start (Thread. #(start-server client-handler))))
 
 (defn as-destination [destination]
-  (if (instance? Destination destination)
+  (if (or (nil? destination) (instance? Destination destination))
     destination
     (Destination. (str destination))))
 

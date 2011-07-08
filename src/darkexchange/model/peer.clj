@@ -64,7 +64,12 @@
     (insert { :destination (i2p-server/as-destination-str destination) :created_at (new Date) :updated_at (new Date) })))
 
 (defn find-peer [destination]
-  (find-record { :destination (i2p-server/as-destination-str destination) }))
+  (when destination
+    (find-record { :destination (i2p-server/as-destination-str destination) })))
+
+(defn add-destination-if-missing [destination]
+  (when (and destination (not (find-peer destination)))
+    (add-destination destination)))
 
 (defn add-local-destination [destination]
   (when (and destination (not (find-peer destination)))
@@ -72,7 +77,8 @@
               :notified 1 :local 1 })))
 
 (defn destination-for [peer]
-  (:destination (find-record peer)))
+  (when peer
+    (:destination (find-record peer))))
 
 (defn remove-destination [destination]
   (when-let [peer (find-peer destination)]
@@ -108,7 +114,10 @@
   (filter #(< 0 (count (.trim %1))) (line-seq (peers-text-reader))))
 
 (defn default-destinations []
-  (shuffle (peers-text-lines)))
+  (let [destinations (shuffle (peers-text-lines))]
+    (doseq [destination destinations]
+      (add-destination-if-missing destination))
+    destinations))
 
 (defn destination-online? [destination]
   (when (i2p-server/destination-online? destination)
@@ -122,10 +131,6 @@
       (when (< count 10)
         (logging/warn (str "Could not find a peer to download the latest peer list from. Attempt number: " (inc count)))
         (find-online-destination (inc count))))))
-
-(defn add-destination-if-missing [destination]
-  (when (and destination (not (find-peer destination)))
-    (add-destination destination)))
 
 (defn all-unnotified-peers []
   (find-by-sql ["SELECT * FROM peers WHERE notified IS NULL"]))
@@ -149,20 +154,27 @@
   (doseq [destination destinations]
     (add-destination-if-missing destination)))
 
+(defn local-destination? [destination]
+  (and destination (i2p-server/is-current-destination-base-64? destination)))
+
+(defn valid-non-local-destination? [destination]
+  (and destination (not (local-destination? destination))))
+
 (defn load-all-peers-from [destination]
-  (add-destinations (filter #(and %1 (not (= (i2p-server/base-64-destination) %1))) (get-peers-from destination))))
+  (when (valid-non-local-destination? destination)
+    (when-let [peers (get-peers-from destination)]
+      (logging/info (str "Adding peers from destination: " destination))
+      (add-destinations (filter valid-non-local-destination? peers))
+      (when (not-empty peers)
+        (property/set-peers-downloaded? true)))))
+
+(defn load-all-peers-from-seq [destinations]
+  (doseq [destination destinations]
+    (.start (Thread. #(load-all-peers-from destination)))))
 
 (defn load-all-peers []
   (logging/info "loading peers")
-  (try
-    (when-let [online-destination (find-online-destination)]
-      (add-destination-if-missing online-destination)
-      (load-all-peers-from online-destination)
-      (property/set-peers-downloaded? true))
-    (catch Exception e
-      (logging/error "An exception occured while downloading the peers.")
-      (property/reset-peers-downloaded?)
-      (throw e))))
+  (load-all-peers-from-seq (concat (map :destination (all-notified-peers)) (default-destinations))))
 
 (defn is-online-peer? [peer]
   (and (not (i2p-server/is-current-destination-base-64? (:destination peer)))
@@ -179,12 +191,7 @@
 
 (defn reload-peers []
   (logging/info "Reloading peers")
-  (try
-    (when-let [online-peer (find-online-notified-peer)]
-      (load-all-peers-from (:destination online-peer)))
-    (catch Exception e
-      (logging/error "An exception occured while downloading the peers.")
-      (throw e))))
+  (load-all-peers-from-seq (map :destination (all-notified-peers))))
 
 (defn download-peers-background []
   (logging/info "Downloading peers in background.")

@@ -6,8 +6,9 @@
 (def db (deref database-util/db))
 
 (defn clob-string [clob]
-  (let [clob-stream (.getCharacterStream clob)]
-    (string/join "\n" (take-while identity (repeatedly #(.readLine clob-stream))))))
+  (when clob
+    (let [clob-stream (.getCharacterStream clob)]
+      (string/join "\n" (take-while identity (repeatedly #(.readLine clob-stream)))))))
 
 (defn load-clob [clob]
   (clob-string clob))
