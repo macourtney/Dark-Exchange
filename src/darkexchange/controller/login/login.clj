@@ -40,19 +40,25 @@
 
 (defn login-fail [login-frame]
   (seesaw-core/alert "You entered an invalid user name or password. Please reenter them and try again.")
-  (reset-password login-frame))
+  (reset-password login-frame)
+  (controller-utils/enable-widget login-frame))
 
 (defn login-success [login-frame]
   (core/init)
   (main-frame/show)
   (actions-utils/close-window login-frame))
 
+(defn verify-login [login-frame user-name password]
+  (if (user-model/login user-name password)
+    (seesaw-core/invoke-later (login-success login-frame))
+    (seesaw-core/invoke-later (login-fail login-frame))))
+
 (defn login [login-frame]
   (try
     (if-let [user-name (seesaw-core/selection (find-user-name-combobox login-frame))]
-      (if (user-model/login user-name (password login-frame))
-        (login-success login-frame)
-        (login-fail login-frame))
+      (do
+        (controller-utils/disable-widget login-frame)
+        (.start (Thread. #(verify-login login-frame user-name (password login-frame)))))
       (seesaw-core/alert "You must select a user name. If no user exists, please create one."))
     (catch Throwable t
       (logging/error "An error occurred while logging in." t))))

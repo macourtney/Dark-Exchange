@@ -2,7 +2,8 @@
   (:require [clojure.contrib.logging :as logging]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table])
-  (:import [java.awt.event ItemListener]))
+  (:import [java.awt.event ItemListener]
+           [javax.swing JButton]))
 
 (defn find-component [parent-component id]
   (seesaw-core/select parent-component [id]))
@@ -37,3 +38,18 @@
 (defn update-record-in-table [table record]
   (delete-record-from-table table (:id record))
   (add-record-to-table table record))
+
+(defn enableable-widget? [component]
+  (instance? JButton component))
+
+(defn enableable-widgets [parent-component]
+  (filter enableable-widget? (seesaw-core/select parent-component [:*])))
+
+(defn enable-subwidgets [parent-component enable?]
+  (seesaw-core/config! (enableable-widgets parent-component) :enabled? enable?))
+
+(defn disable-widget [parent-component]
+  (enable-subwidgets parent-component false))
+
+(defn enable-widget [parent-component]
+  (enable-subwidgets parent-component true))
