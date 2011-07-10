@@ -140,7 +140,7 @@
 
 (defn notify-all-peers []
   (doseq [peer (all-unnotified-peers)]
-    (notify-destination (:destination peer))))
+    (.start (Thread. #(notify-destination (:destination peer))))))
 
 (defn notified? [peer]
   (as-boolean (:notified peer)))
