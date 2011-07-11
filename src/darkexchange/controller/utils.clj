@@ -3,7 +3,7 @@
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table])
   (:import [java.awt.event ItemListener]
-           [javax.swing JButton]))
+           [javax.swing JComponent]))
 
 (defn find-component [parent-component id]
   (seesaw-core/select parent-component [id]))
@@ -40,7 +40,7 @@
   (add-record-to-table table record))
 
 (defn enableable-widget? [component]
-  (instance? JButton component))
+  (instance? JComponent component))
 
 (defn enableable-widgets [parent-component]
   (filter enableable-widget? (seesaw-core/select parent-component [:*])))

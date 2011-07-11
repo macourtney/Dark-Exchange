@@ -30,14 +30,27 @@
   (action-utils/attach-listener main-frame "#new-open-offer-button"
     (fn [e] (new-offer/show main-frame (create-add-offer-call-back main-frame)))))
 
+(comment
 (defn delete-selected-offer [main-frame]
   (let [open-offer-table (find-open-offer-table main-frame)
         selected-row-index (.getSelectedRow open-offer-table)]
     (offer-model/delete-offer (:id (seesaw-table/value-at open-offer-table selected-row-index)))))
+)
+
+(defn delete-selected-offer-setup [e main-frame]
+  (let [open-offer-table (find-open-offer-table main-frame)]
+    (:id (seesaw-table/value-at open-offer-table (.getSelectedRow open-offer-table)))))
+
+(defn delete-selected-offer [selected-offer-id]
+  (offer-model/delete-offer selected-offer-id))
 
 (defn attach-delete-offer-action [main-frame]
-  (action-utils/attach-listener main-frame "#delete-open-offer-button"
-    (fn [_] (delete-selected-offer main-frame))))
+  (action-utils/attach-background-listener main-frame "#delete-open-offer-button"
+    { :other-params main-frame
+      :before-background delete-selected-offer-setup
+      :background delete-selected-offer }
+    ;(fn [_] (delete-selected-offer main-frame))
+    ))
 
 (defn find-offer-index [open-offer-table offer]
   (some #(when (= (:id offer) (:id (second %1))) (first %1))

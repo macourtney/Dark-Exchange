@@ -44,17 +44,22 @@
     password
     (create-user-error create-user-frame "The passwords you entered are not the same. Please enter them again.")))
 
-(defn create-user [create-user-frame]
-  (when-let [user-name (user-name create-user-frame)]
-    (when-let [password (password create-user-frame)]
-      (try
-        (user-model/create-user user-name password)
-        (actions-utils/close-window create-user-frame)
-        (catch Throwable t
-          (logging/error "" t))))))
+(defn create-user-setup [e create-user-frame]
+  [create-user-frame (user-name create-user-frame) (password create-user-frame)])
+
+(defn create-user [[create-user-frame user-name password]]
+  [create-user-frame (when (and user-name password) (user-model/create-user user-name password))])
+
+(defn create-user-cleanup [[create-user-frame user-id]]
+  (when user-id
+    (actions-utils/close-window create-user-frame)))
 
 (defn attach-register-action [create-user-frame]
-  (actions-utils/attach-listener create-user-frame "#register-button" (fn [_] (create-user create-user-frame))))
+  (actions-utils/attach-background-listener create-user-frame "#register-button"
+    { :other-params create-user-frame
+      :before-background create-user-setup
+      :background create-user
+      :after-background create-user-cleanup }))
 
 (defn attach [create-user-frame]
   (attach-register-action (attach-cancel-action create-user-frame)))
