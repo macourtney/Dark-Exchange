@@ -87,12 +87,9 @@
 (defn attach-cancel-action [parent-component]
   (actions-utils/attach-window-close-listener parent-component "#cancel-button"))
 
-(defn disable-next-step-button [e]
-  (seesaw-core/config! (controller-utils/find-component (seesaw-core/to-frame e) "#next-step-button") :enabled? false))
-
 (defn execute-next-step-call [trade e call]
-  (call trade)
-  (disable-next-step-button e)
+  (future
+    (call trade))
   (actions-utils/close-window (seesaw-core/to-frame e)))
 
 (defn attach-next-step-action [parent-component trade action button-text]
@@ -120,15 +117,17 @@
   (attach-next-step-action parent-component trade payment-received-action (terms/confirm-payment-received)))
 
 (defn reject-trade-action [trade e]
-  (reject-trade-call/call trade)
+  (future
+    (reject-trade-call/call trade))
   (actions-utils/close-window (seesaw-core/to-frame e)))
 
 (defn attach-reject-trade-action [parent-component trade]
   (actions-utils/attach-listener parent-component "#reject-button" #(reject-trade-action trade %)))
 
 (defn close-action [trade e]
-  (trade-model/close trade)
-  (actions-utils/close-window (seesaw-core/to-frame e)))
+  (future
+    (trade-model/close trade)
+    (seesaw-core/invoke-later (actions-utils/close-window (seesaw-core/to-frame e)))))
 
 (defn attach-close-action [parent-component trade]
   (attach-next-step-action parent-component trade close-action (terms/close-trade)))

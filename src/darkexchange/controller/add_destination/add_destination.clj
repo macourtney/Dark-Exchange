@@ -13,18 +13,25 @@
 (defn attach-cancel-action [add-destination-frame]
   (actions-utils/attach-window-close-listener add-destination-frame "#cancel-button"))
 
-(defn add-action [add-destination-frame call-back]
-  (let [destination (.getText (find-destination-text add-destination-frame))]
-    (peer-model/add-destination destination)
-    (peer-model/notify-peer-if-necessary destination))
-  (peer-model/download-peers)
-  (call-back)
-  (.hide add-destination-frame)
-  (.dispose add-destination-frame))
+(defn add-destination-cleanup [add-destination-frame call-back]
+  (seesaw-core/invoke-later
+    (call-back)
+    (actions-utils/close-window add-destination-frame)))
+
+(defn add-destination [add-destination-frame call-back destination]
+  (future
+    (peer-model/add-destination-if-missing destination)
+    (peer-model/notify-peer-if-necessary destination)
+    (peer-model/download-peers)
+    (add-destination-cleanup add-destination-frame call-back)))
+
+(defn add-action [add-destination-frame e call-back]
+  (controller-utils/disable-widget add-destination-frame)
+  (add-destination add-destination-frame call-back (.getText (find-destination-text add-destination-frame))))
 
 (defn attach-add-action [add-destination-frame call-back]
-  (actions-utils/attach-listener add-destination-frame "#add-button"
-    (fn [e] (add-action add-destination-frame call-back))))
+  (actions-utils/attach-frame-listener add-destination-frame "#add-button"
+    #(add-action %1 %2 call-back)))
 
 (defn attach [add-destination-frame call-back]
   (attach-add-action (attach-cancel-action add-destination-frame) call-back))

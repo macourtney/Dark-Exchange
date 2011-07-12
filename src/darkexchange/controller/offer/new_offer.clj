@@ -25,22 +25,21 @@
 (defn wants-offer [new-offer-view]
   (wants-panel/wants-offer new-offer-view))
 
-(defn create-new-offer-setup [e [new-offer-view call-back]]
- [new-offer-view call-back (merge (has-offer new-offer-view) (wants-offer new-offer-view))])
+(defn create-new-offer-cleanup [new-offer-view call-back new-offer-id]
+  (seesaw-core/invoke-later
+    (call-back new-offer-id)
+    (actions-utils/close-window new-offer-view)))
 
-(defn create-new-offer [[new-offer-view call-back new-offer]]
-  [new-offer-view call-back (offer-model/create-new-offer new-offer)])
+(defn create-new-offer [new-offer-view call-back new-offer]
+  (future (create-new-offer-cleanup new-offer-view call-back (offer-model/create-new-offer new-offer))))
 
-(defn create-new-offer-cleanup [[new-offer-view call-back new-offer-id]]
-  (call-back new-offer-id)
-  (actions-utils/close-window new-offer-view))
+(defn create-new-offer-action [new-offer-view e call-back]
+  (controller-utils/disable-widget new-offer-view)
+  (create-new-offer new-offer-view call-back (merge (has-offer new-offer-view) (wants-offer new-offer-view))))
 
 (defn attach-create-offer-action [new-offer-view call-back]
-  (actions-utils/attach-background-listener new-offer-view "#create-offer-button"
-    { :other-params [new-offer-view call-back]
-      :before-background create-new-offer-setup
-      :background create-new-offer
-      :after-background create-new-offer-cleanup }))
+  (actions-utils/attach-frame-listener new-offer-view "#create-offer-button"
+    #(create-new-offer-action %1 %2 call-back)))
 
 (defn attach [new-offer-view call-back]
   (wants-panel/attach (has-panel/attach (attach-create-offer-action (attach-cancel-action new-offer-view) call-back))))

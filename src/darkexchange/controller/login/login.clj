@@ -48,25 +48,30 @@
   (main-frame/show)
   (actions-utils/close-window login-frame))
 
-(defn login-setup [e login-frame]
-  (if-let [user-name (seesaw-core/selection (find-user-name-combobox login-frame))]
-    [login-frame user-name (password login-frame)]
-    (seesaw-core/alert "You must select a user name. If no user exists, please create one.")))
+(defn user-not-selected [login-frame]
+  (seesaw-core/alert "You must select a user name. If no user exists, please create one.")
+  (controller-utils/enable-widget login-frame))
 
-(defn login [[login-frame user-name password]]
-  [login-frame (user-model/login user-name password)])
-
-(defn login-cleanup [[login-frame logged-in?]]
+(defn login-cleanup [login-frame logged-in?]
   (if logged-in?
     (login-success login-frame)
-    (login-fail login-frame)))
+    (login-fail login-frame))
+  (controller-utils/enable-widget login-frame))
+
+(defn login [login-frame user-name password]
+  (future
+    (let [logged-in? (user-model/login user-name password)]
+      (seesaw-core/invoke-later (login-cleanup login-frame logged-in?)))))
+
+(defn login-action [e]
+  (let [login-frame (seesaw-core/to-frame e)]
+    (controller-utils/disable-widget login-frame)
+    (if-let [user-name (seesaw-core/selection (find-user-name-combobox login-frame))]
+      (login login-frame user-name (password login-frame))
+      (user-not-selected login-frame))))
 
 (defn attach-login-action [login-frame]
-  (actions-utils/attach-background-listener login-frame "#login-button"
-    { :other-params login-frame
-      :before-background login-setup
-      :background login
-      :after-background login-cleanup }))
+  (actions-utils/attach-listener login-frame "#login-button" login-action))
 
 (defn attach [login-frame]
   (attach-cancel-action (attach-login-action (attach-new-user-action (attach-user-add-listener login-frame)))))

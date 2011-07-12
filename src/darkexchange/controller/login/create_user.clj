@@ -44,22 +44,24 @@
     password
     (create-user-error create-user-frame "The passwords you entered are not the same. Please enter them again.")))
 
-(defn create-user-setup [e create-user-frame]
-  [create-user-frame (user-name create-user-frame) (password create-user-frame)])
+(defn create-user-cleanup [create-user-frame user-id]
+  (seesaw-core/invoke-later
+    (if user-id
+      (actions-utils/close-window create-user-frame)
+      (controller-utils/enable-widget create-user-frame))))
 
-(defn create-user [[create-user-frame user-name password]]
-  [create-user-frame (when (and user-name password) (user-model/create-user user-name password))])
+(defn create-user [create-user-frame user-name password]
+  (when (and user-name password)
+    (future (create-user-cleanup create-user-frame (user-model/create-user user-name password)))))
 
-(defn create-user-cleanup [[create-user-frame user-id]]
-  (when user-id
-    (actions-utils/close-window create-user-frame)))
+(defn create-user-action [e]
+  (let [create-user-frame (seesaw-core/to-frame e)]
+    (controller-utils/disable-widget create-user-frame)
+    (when-not (create-user create-user-frame (user-name create-user-frame) (password create-user-frame))
+      (controller-utils/enable-widget create-user-frame))))
 
 (defn attach-register-action [create-user-frame]
-  (actions-utils/attach-background-listener create-user-frame "#register-button"
-    { :other-params create-user-frame
-      :before-background create-user-setup
-      :background create-user
-      :after-background create-user-cleanup }))
+  (actions-utils/attach-listener create-user-frame "#register-button" create-user-action))
 
 (defn attach [create-user-frame]
   (attach-register-action (attach-cancel-action create-user-frame)))

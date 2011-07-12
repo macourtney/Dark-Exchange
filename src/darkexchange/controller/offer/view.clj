@@ -10,13 +10,18 @@
 (defn attach-cancel-action [parent-component]
   (actions-utils/attach-window-close-listener parent-component "#cancel-button"))
 
-(defn accept-offer-action [parent-component offer]
-  (accept-offer-call/call offer)
-  (actions-utils/close-window parent-component))
+(defn accept-offer [parent-component offer]
+  (future
+    (accept-offer-call/call offer)
+    (seesaw-core/invoke-later
+      (actions-utils/close-window parent-component))))
+
+(defn accept-offer-action [parent-component e offer]
+  (controller-utils/disable-widget parent-component)
+  (accept-offer parent-component offer))
 
 (defn attach-accept-offer-action [parent-component offer]
-  (actions-utils/attach-listener parent-component "#accept-offer-button"
-    (fn [_] (accept-offer-action parent-component offer))))
+  (actions-utils/attach-frame-listener parent-component "#accept-offer-button" #(accept-offer-action %1 %2 offer)))
 
 (defn attach [parent-component offer]
   (attach-accept-offer-action (attach-cancel-action parent-component) offer))

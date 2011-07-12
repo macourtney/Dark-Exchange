@@ -1,6 +1,7 @@
 (ns darkexchange.controller.main.home.open-offer-panel
   (:require [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.offer.new-offer :as new-offer]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.view.main.home.open-offer-panel :as open-offer-panel]
@@ -37,20 +38,22 @@
     (offer-model/delete-offer (:id (seesaw-table/value-at open-offer-table selected-row-index)))))
 )
 
-(defn delete-selected-offer-setup [e main-frame]
+(defn selected-offer-id [main-frame]
   (let [open-offer-table (find-open-offer-table main-frame)]
     (:id (seesaw-table/value-at open-offer-table (.getSelectedRow open-offer-table)))))
 
-(defn delete-selected-offer [selected-offer-id]
-  (offer-model/delete-offer selected-offer-id))
+(defn delete-selected-offer [main-frame selected-offer-id]
+  (future
+    (offer-model/delete-offer selected-offer-id)
+    (seesaw-core/invoke-later
+      (controller-utils/enable-widget main-frame))))
+
+(defn delete-selected-offer-action [main-frame e]
+  (controller-utils/disable-widget main-frame)
+  (delete-selected-offer main-frame (selected-offer-id main-frame)))
 
 (defn attach-delete-offer-action [main-frame]
-  (action-utils/attach-background-listener main-frame "#delete-open-offer-button"
-    { :other-params main-frame
-      :before-background delete-selected-offer-setup
-      :background delete-selected-offer }
-    ;(fn [_] (delete-selected-offer main-frame))
-    ))
+  (action-utils/attach-frame-listener main-frame "#delete-open-offer-button" delete-selected-offer-action))
 
 (defn find-offer-index [open-offer-table offer]
   (some #(when (= (:id offer) (:id (second %1))) (first %1))

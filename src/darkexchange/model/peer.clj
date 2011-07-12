@@ -201,7 +201,7 @@
   (notify-all-peers))
 
 (defn download-peers []
-  (.start (Thread. download-peers-background)))
+  (future (download-peers-background)))
 
 (defn send-messages [action data call-back]
   (client/send-messages (map :destination (all-foreign-peers)) action data call-back))
