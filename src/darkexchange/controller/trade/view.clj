@@ -208,5 +208,11 @@
       (attach-cancel-action parent-component))))
 
 (defn show [main-frame trade]
-  (when-let [trade (trade-model/as-view-trade (:id trade))]
-    (controller-utils/show (attach (load-data (view-view/create main-frame) trade) trade))))
+  (let [view-trade-frame (view-view/create main-frame)]
+    (controller-utils/disable-widget view-trade-frame)
+    (controller-utils/show view-trade-frame)
+    (future
+      (let [trade (trade-model/as-view-trade (:id trade))]
+        (seesaw-core/invoke-later
+          (attach (load-data view-trade-frame trade) trade)
+          (controller-utils/enable-widget view-trade-frame))))))
