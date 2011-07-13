@@ -29,3 +29,7 @@
 
 (defn attach-window-close-and-exit-listener [parent-component id]
   (attach-frame-listener parent-component id close-window-and-exit))
+
+(defn remove-all-action-listeners [button]
+  (doseq [action-listener (.getActionListeners button)]
+    (.removeActionListener button action-listener)))

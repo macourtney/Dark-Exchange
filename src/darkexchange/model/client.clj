@@ -20,11 +20,15 @@
 (defn create-request-map [destination action data]
   { :destination destination :action action :data data :from (request-map-from) })
 
+(defn- send-request [request-map]
+  (try
+    (i2p-server-model/send-message (:destination request-map) (dissoc request-map :destination))
+    (catch java.net.NoRouteToHostException e
+      (logging/info (str "Could not connect to destination: " (:destination request-map)))
+      nil)))
+
 (defn send-message [destination action data]
-  (client-interceptors/run-interceptors
-    #(i2p-server-model/send-message (:destination %1) (dissoc %1 :destination))
-    (create-request-map destination action data)))
+  (client-interceptors/run-interceptors send-request (create-request-map destination action data)))
 
 (defn send-messages [destinations action data call-back]
-  (doseq [destination destinations]
-    (.start (Thread. #(call-back (send-message destination action data))))))
+  (doall (map #(future (call-back (send-message % action data))) destinations)))

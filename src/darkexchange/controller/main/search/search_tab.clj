@@ -7,15 +7,21 @@
             [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.calls.search-offers :as search-offers-call]
             [darkexchange.model.offer :as offer-model]
+            [darkexchange.model.terms :as terms]
             [darkexchange.view.main.search.search-tab :as search-tab-view]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table]))
+
+(def search-futures (atom nil))
 
 (defn find-search-offer-table [parent-component]
   (seesaw-core/select parent-component ["#search-offer-table"]))
 
 (defn find-view-offer-button [parent-component]
   (seesaw-core/select parent-component ["#view-offer-button"]))
+
+(defn find-search-button [parent-component]
+  (seesaw-core/select parent-component ["#search-button"]))
 
 (defn insert-offer-into-table [parent-component offer]
   (let [search-offer-table (find-search-offer-table parent-component)]
@@ -41,18 +47,52 @@
     (let [converted-offers (map convert-offer found-offers)]
       (load-search-offer-table parent-component converted-offers))))
 
+(declare attach-search-action)
+
+(defn set-search-mode [parent-component]
+  (reset! search-futures nil)
+  (seesaw-core/config! (find-search-button parent-component) :text (terms/search)))
+
+(defn set-cancel-search-mode [parent-component new-search-futures]
+  (reset! search-futures new-search-futures)
+  (seesaw-core/config! (find-search-button parent-component) :text (terms/cancel)))
+
+(defn search-mode? [parent-component]
+  (not @search-futures))
+
+(defn run-cancel [parent-component]
+  (doseq [search-future @search-futures]
+    (when (and (not (future-done? search-future)) (not (future-cancelled? search-future)))
+      (future-cancel search-future)))
+  (set-search-mode parent-component))
+
+(defn search-done [parent-component]
+  (future
+    (doseq [search-future @search-futures]
+      @search-future)
+    (seesaw-core/invoke-later
+      (set-search-mode parent-component))))
+
 (defn run-search [parent-component]
   (seesaw-table/clear! (find-search-offer-table parent-component))
-  (search-offers-call/call
-    (offer-has-panel/i-have-currency parent-component)
-    (offer-has-panel/i-have-payment-type parent-component)
-    (offer-wants-panel/i-want-currency parent-component)
-    (offer-wants-panel/i-want-payment-type parent-component)
-    #(search-call-back parent-component %)))
+  (let [search-futures (search-offers-call/call
+                          (offer-has-panel/i-have-currency parent-component)
+                          (offer-has-panel/i-have-payment-type parent-component)
+                          (offer-wants-panel/i-want-currency parent-component)
+                          (offer-wants-panel/i-want-payment-type parent-component)
+                          #(search-call-back parent-component %))]
+    (set-cancel-search-mode parent-component search-futures)
+    (search-done parent-component)))
+
+(defn run-search-button-action [parent-component]
+  (let [search-button (find-search-button parent-component)]
+    (if (search-mode? parent-component)
+      (run-search parent-component)
+      (run-cancel parent-component))))
 
 (defn attach-search-action [parent-component]
-  (action-utils/attach-listener parent-component "#search-button"
-    (fn [e] (run-search parent-component))))
+  (let [search-button (find-search-button parent-component)]
+    (seesaw-core/listen search-button :action (fn [e] (run-search-button-action parent-component)))))
 
 (defn view-offer-listener [parent-component]
   (let [search-offer-table (find-search-offer-table parent-component)
