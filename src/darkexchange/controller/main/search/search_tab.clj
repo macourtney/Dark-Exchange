@@ -50,12 +50,18 @@
 (declare attach-search-action)
 
 (defn set-search-mode [parent-component]
-  (reset! search-futures nil)
-  (seesaw-core/config! (find-search-button parent-component) :text (terms/search)))
+  (seesaw-core/config! (find-search-button parent-component) :text (terms/search))
+  (reset! search-futures nil))
 
-(defn set-cancel-search-mode [parent-component new-search-futures]
-  (reset! search-futures new-search-futures)
-  (seesaw-core/config! (find-search-button parent-component) :text (terms/cancel)))
+(defn set-cancel-search-mode [parent-component]
+  (seesaw-core/config! (find-search-button parent-component) :text (terms/cancel))
+  (reset! search-futures
+    (search-offers-call/call
+      (offer-has-panel/i-have-currency parent-component)
+      (offer-has-panel/i-have-payment-type parent-component)
+      (offer-wants-panel/i-want-currency parent-component)
+      (offer-wants-panel/i-want-payment-type parent-component)
+      #(search-call-back parent-component %))))
 
 (defn search-mode? [parent-component]
   (not @search-futures))
@@ -75,14 +81,8 @@
 
 (defn run-search [parent-component]
   (seesaw-table/clear! (find-search-offer-table parent-component))
-  (let [search-futures (search-offers-call/call
-                          (offer-has-panel/i-have-currency parent-component)
-                          (offer-has-panel/i-have-payment-type parent-component)
-                          (offer-wants-panel/i-want-currency parent-component)
-                          (offer-wants-panel/i-want-payment-type parent-component)
-                          #(search-call-back parent-component %))]
-    (set-cancel-search-mode parent-component search-futures)
-    (search-done parent-component)))
+  (set-cancel-search-mode parent-component)
+  (search-done parent-component))
 
 (defn run-search-button-action [parent-component]
   (let [search-button (find-search-button parent-component)]
