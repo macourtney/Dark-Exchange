@@ -13,6 +13,9 @@
 (defn find-i-have-payment-type-combobox [parent-component]
   (seesaw-core/select parent-component ["#i-have-payment-type"]))
 
+(defn find-has-panel [parent-component]
+  (seesaw-core/select parent-component ["#has-panel"]))
+
 (defn i-have-amount [parent-component]
   (BigDecimal. (seesaw-core/text (find-i-have-amount parent-component))))
 

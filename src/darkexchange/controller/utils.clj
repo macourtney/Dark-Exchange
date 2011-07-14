@@ -43,7 +43,8 @@
   (instance? JComponent component))
 
 (defn enableable-widgets [parent-component]
-  (filter enableable-widget? (seesaw-core/select parent-component [:*])))
+  (when parent-component
+    (filter enableable-widget? (seesaw-core/select parent-component [:*]))))
 
 (defn enable-subwidgets [parent-component enable?]
   (seesaw-core/config! (enableable-widgets parent-component) :enabled? enable?))

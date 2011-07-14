@@ -4,6 +4,7 @@
             [darkexchange.controller.offer.has-panel :as offer-has-panel]
             [darkexchange.controller.offer.wants-panel :as offer-wants-panel]
             [darkexchange.controller.offer.view :as offer-view-controller]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.calls.search-offers :as search-offers-call]
             [darkexchange.model.offer :as offer-model]
@@ -50,11 +51,15 @@
 (declare attach-search-action)
 
 (defn set-search-mode [parent-component]
+  (reset! search-futures nil)
   (seesaw-core/config! (find-search-button parent-component) :text (terms/search))
-  (reset! search-futures nil))
+  (controller-utils/enable-widget (offer-has-panel/find-has-panel parent-component))
+  (controller-utils/enable-widget (offer-wants-panel/find-wants-panel parent-component)))
 
 (defn set-cancel-search-mode [parent-component]
   (seesaw-core/config! (find-search-button parent-component) :text (terms/cancel))
+  (controller-utils/disable-widget (offer-has-panel/find-has-panel parent-component))
+  (controller-utils/disable-widget (offer-wants-panel/find-wants-panel parent-component))
   (reset! search-futures
     (search-offers-call/call
       (offer-has-panel/i-have-currency parent-component)
