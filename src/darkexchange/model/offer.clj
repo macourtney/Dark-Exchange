@@ -134,3 +134,9 @@
 
 (defn reopen-offer [offer]
   (update { :id (:id offer) :closed 0 }))
+
+(defn calculate-has-div-wants [offer]
+  (/ (:has_amount offer) (:wants_amount offer)))
+
+(defn calculate-wants-div-has [offer]
+  (/ (:wants_amount offer) (:has_amount offer)))

@@ -13,7 +13,9 @@
                      { :key :wants :text (terms/wants) }
                      { :key :to_receive_by :text (terms/to-receive-by) }
                      { :key :has :text (terms/has) }
-                     { :key :to_send_by :text (terms/to-send-by) } ])
+                     { :key :to_send_by :text (terms/to-send-by) }
+                     { :key :has_div_wants :text (terms/has-div-wants) }
+                     { :key :wants_div_has :text (terms/wants-div-has) }])
 
 (defn create-criteria-panel []
   (seesaw-core/horizontal-panel

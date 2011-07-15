@@ -41,12 +41,13 @@
     :has (offer-model/has-amount-str offer)
     :to_send_by (offer-model/has-payment-type-str offer)
     :wants (offer-model/wants-amount-str offer)
-    :to_receive_by (offer-model/wants-payment-type-str offer) })
+    :to_receive_by (offer-model/wants-payment-type-str offer)
+    :has_div_wants (offer-model/calculate-has-div-wants offer)
+    :wants_div_has (offer-model/calculate-wants-div-has offer) })
 
 (defn search-call-back [parent-component found-offers]
   (when found-offers
-    (let [converted-offers (map convert-offer found-offers)]
-      (load-search-offer-table parent-component converted-offers))))
+    (load-search-offer-table parent-component (map convert-offer found-offers))))
 
 (declare attach-search-action)
 
