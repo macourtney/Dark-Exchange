@@ -31,13 +31,6 @@
   (action-utils/attach-listener main-frame "#new-open-offer-button"
     (fn [e] (new-offer/show main-frame (create-add-offer-call-back main-frame)))))
 
-(comment
-(defn delete-selected-offer [main-frame]
-  (let [open-offer-table (find-open-offer-table main-frame)
-        selected-row-index (.getSelectedRow open-offer-table)]
-    (offer-model/delete-offer (:id (seesaw-table/value-at open-offer-table selected-row-index)))))
-)
-
 (defn selected-offer-id [main-frame]
   (let [open-offer-table (find-open-offer-table main-frame)]
     (:id (seesaw-table/value-at open-offer-table (.getSelectedRow open-offer-table)))))

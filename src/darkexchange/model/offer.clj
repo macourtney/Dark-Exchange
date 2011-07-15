@@ -108,16 +108,6 @@
 (defn wants-payment-type-str [offer]
   (payment-type-str offer :wants_payment_type))
 
-(defn convert-to-table-offer [offer]
-  { :id (:id offer)
-    :i-have-amount (has-amount-str offer)
-    :i-want-to-send-by (has-payment-type-str offer)
-    :i-want-amount (wants-amount-str offer)
-    :i-want-to-receive-by (wants-payment-type-str offer) })
-
-(defn table-open-offers []
-  (map convert-to-table-offer (open-offers)))
-
 (defn delete-offer [offer-id]
   (destroy-record { :id offer-id }))
 
@@ -140,3 +130,15 @@
 
 (defn calculate-wants-div-has [offer]
   (/ (:wants_amount offer) (:has_amount offer)))
+
+(defn convert-to-table-offer [offer]
+  { :id (:id offer)
+    :i-have-amount (has-amount-str offer)
+    :i-want-to-send-by (has-payment-type-str offer)
+    :i-want-amount (wants-amount-str offer)
+    :i-want-to-receive-by (wants-payment-type-str offer)
+    :has-div-wants (calculate-has-div-wants offer)
+    :wants-div-has (calculate-wants-div-has offer) })
+
+(defn table-open-offers []
+  (map convert-to-table-offer (open-offers)))

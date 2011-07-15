@@ -6,7 +6,9 @@
                                 { :key :i-have-amount :text (terms/i-have-amount) }
                                 { :key :i-want-to-send-by :text (terms/i-want-to-send-by) }
                                 { :key :i-want-amount :text (terms/i-want-amount) }
-                                { :key :i-want-to-receive-by :text (terms/i-want-to-receive-by) } ])
+                                { :key :i-want-to-receive-by :text (terms/i-want-to-receive-by) }
+                                { :key :has-div-wants :text (terms/has-div-wants) }
+                                { :key :wants-div-has :text (terms/wants-div-has) } ])
 
 (defn create-table-header-text []
   (terms/open-offers))
