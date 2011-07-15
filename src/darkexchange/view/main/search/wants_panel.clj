@@ -4,6 +4,6 @@
             [seesaw.core :as seesaw-core]))
 
 (defn create []
-  (seesaw-core/horizontal-panel :items
+  (seesaw-core/horizontal-panel :id :wants-panel :items
     [(terms/i-want) [:fill-h 3] (offer-widgets/create-currency-combobox :i-want-currency) [:fill-h 3] (terms/sent-by)
      [:fill-h 3] (offer-widgets/create-payment-type-combobox :i-want-payment-type)]))
