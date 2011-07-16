@@ -6,7 +6,8 @@
             [darkexchange.model.payment-type :as payment-type]
             [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
-  (:import [java.util Date]))
+  (:import [java.math RoundingMode]
+           [java.util Date]))
 
 (def offer-add-listeners (atom []))
 (def delete-offer-listeners (atom []))
@@ -125,11 +126,14 @@
 (defn reopen-offer [offer]
   (update { :id (:id offer) :closed 0 }))
 
+(defn big-decimal-divide [numerator denominator]
+  (.divide (bigdec numerator) denominator 8 RoundingMode/HALF_UP))
+
 (defn calculate-has-div-wants [offer]
-  (/ (:has_amount offer) (:wants_amount offer)))
+  (big-decimal-divide (:has_amount offer) (:wants_amount offer)))
 
 (defn calculate-wants-div-has [offer]
-  (/ (:wants_amount offer) (:has_amount offer)))
+  (big-decimal-divide (:wants_amount offer) (:has_amount offer)))
 
 (defn convert-to-table-offer [offer]
   { :id (:id offer)
