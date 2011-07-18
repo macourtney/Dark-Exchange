@@ -9,7 +9,7 @@
                               { :key :public_key :text (terms/public-key) }
                               { :key :public_key_algorithm :text (terms/algorithm) }
                               { :key :destination :text (terms/destination) }
-                              { :key :is-online :text (terms/is-online) }])
+                              { :key :is_online :text (terms/is-online) }])
 
 (defn create-title-panel []
   (seesaw-core/border-panel

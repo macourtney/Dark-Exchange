@@ -44,7 +44,8 @@
 
 (defn add-identity [user-name public-key public-key-algorithm destination]
   (when-let [peer (peer/find-peer destination)]
-    (insert { :name user-name :public_key public-key :public_key_algorithm public-key-algorithm :peer_id (:id peer) })))
+    (insert { :name user-name :public_key public-key :public_key_algorithm public-key-algorithm :peer_id (:id peer)
+              :is_online 1 })))
 
 (defn update-identity-name [current-identity user-name]
   (when (not (= user-name (:name current-identity)))
@@ -55,18 +56,33 @@
     (when (not (= (:id peer) (:peer_id current-identity)))
       (update { :id (:id current-identity) :peer_id (:id peer) }))))
 
+(defn update-identity-is-online [current-identity is-online]
+  (when current-identity
+    (update { :id (:id current-identity) :is_online (if is-online 1 0) })))
+
 (defn update-identity [current-identity user-name destination]
   (update-identity-name current-identity user-name)
   (update-identity-peer current-identity destination)
+  (update-identity-is-online current-identity true)
   (:id current-identity))
-
-(defn add-or-update-identity [user-name public-key public-key-algorithm destination]
-  (if-let [current-identity (find-record { :public_key public-key })]
-    (update-identity current-identity user-name destination)
-    (add-identity user-name public-key public-key-algorithm destination)))
 
 (defn find-identity [user-name public-key public-key-algorithm]
   (find-record { :name user-name :public_key public-key :public_key_algorithm public-key-algorithm }))
+
+(defn find-identity-by-peer [peer]
+  (when peer
+    (find-record { :peer_id (:id peer) })))
+
+(defn find-identity-by-destination [destination]
+  (find-identity-by-peer (peer/find-peer destination)))
+
+(defn add-or-update-identity [user-name public-key public-key-algorithm destination]
+  (if-let [current-identity (find-identity user-name public-key public-key-algorithm)]
+    (update-identity current-identity user-name destination)
+    (add-identity user-name public-key public-key-algorithm destination)))
+
+(defn identity-not-online [destination]
+  (update-identity-is-online (find-identity-by-destination destination) false))
 
 (defn find-or-create-identity [user-name public-key public-key-algorithm destination]
   (when (and user-name public-key destination)
