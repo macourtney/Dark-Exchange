@@ -9,6 +9,7 @@
             [darkexchange.model.peer :as peers-model]
             [darkexchange.model.property :as property]
             [darkexchange.model.server :as server]
+            [darkexchange.model.terms :as terms]
             [darkexchange.view.main.peer-tab :as peer-tab-view]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table])
@@ -34,8 +35,12 @@
 (defn find-peer-table [main-frame]
   (seesaw-core/select main-frame ["#peer-table"]))
 
+(defn convert-to-table-peer [peer]
+  (when peer
+    (assoc peer :notified (when (peers-model/notified? peer) (terms/yes)))))
+
 (defn reload-table-data [main-frame]
-  (when-let [peers (peers-model/all-peers)]
+  (when-let [peers (map convert-to-table-peer (peers-model/all-peers))]
     (seesaw-core/config! (find-peer-table main-frame)
       :model [:columns peer-tab-view/peer-table-columns
               :rows peers])))
