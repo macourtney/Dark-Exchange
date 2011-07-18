@@ -94,12 +94,12 @@ any keyword into a string, and replaces dashes with underscores."}
       (sql/with-connection (flavor-protocol/db-map flavor)
         (sql/with-query-results rows sql-vector
           (doall (map clean-row rows))))))
-  
-  (execute-update [flavor sql-vector]
+
+  (execute-commands [flavor sql-strings]
     (do
-      (logging/debug (str "Executing update: " sql-vector))
+      (logging/debug (str "Executing update: " (seq sql-strings)))
       (sql/with-connection (flavor-protocol/db-map flavor)
-        (apply sql/do-prepared sql-vector))))
+        (apply sql/do-commands sql-strings))))
   
   (update [flavor table where-params record]
     (do

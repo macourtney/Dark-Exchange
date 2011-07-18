@@ -7,7 +7,7 @@
 
   (db-map [flavor] "Returns a map for use in db-config.")
   (execute-query [flavor sql-vector] "Executes an sql string and returns the results as a sequence of maps.")
-  (execute-update [flavor sql-vector] "Executes an sql string without returning results.")
+  (execute-commands [flavor sql-strings] "Executes an sql string without returning results.")
   (update [flavor table where-params record]
     "Runs an update given the table, where-params and a record.
 

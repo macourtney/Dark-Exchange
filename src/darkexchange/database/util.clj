@@ -30,8 +30,8 @@ database flavor function with the current db spec and any arguments"}
 (defn execute-query [sql-vector]
   (flavor-protocol/execute-query @conjure-flavor sql-vector))
 
-(defn execute-update [sql-vector]
-  (flavor-protocol/execute-update @conjure-flavor sql-vector))
+(defn execute-commands [& sql-strings]
+  (flavor-protocol/execute-commands @conjure-flavor sql-strings))
 
 (defn create-table [table & specs]
   (flavor-protocol/create-table @conjure-flavor table specs))
