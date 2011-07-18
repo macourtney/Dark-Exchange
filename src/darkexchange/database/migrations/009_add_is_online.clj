@@ -2,9 +2,6 @@
   (:require [clojure.contrib.logging :as logging])
   (:use darkexchange.database.util))
 
-(defn describe-identities-table []
-  (seq (map #(select-keys % [:field]) (describe-table :identities))))
-
 (defn
 #^{:doc "Migrates the database up to version 9."}
   up []

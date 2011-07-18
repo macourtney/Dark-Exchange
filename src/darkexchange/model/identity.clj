@@ -4,6 +4,7 @@
             [darkexchange.model.client :as client]
             [darkexchange.model.peer :as peer]
             [darkexchange.model.security :as security]
+            [darkexchange.model.terms :as terms]
             [darkexchange.model.user :as user])
   (:use darkexchange.model.base)
   (:import [org.apache.commons.codec.binary Base64]))
@@ -112,11 +113,15 @@
 (defn identity-text [identity]
   (str (:name identity) " (" (shortened-public-key identity) ")"))
 
+(defn is-online? [identity]
+  (as-boolean (:is_online identity)))
+
 (defn table-identity [identity]
   (let [destination (destination-for identity)]
     (merge (select-keys identity [:id :name :public_key_algorithm]) 
       { :destination destination
-        :public_key (shortened-public-key identity) })))
+        :public_key (shortened-public-key identity)
+        :is_online (when (is-online? identity) (terms/yes)) })))
 
 (defn table-identities []
   (map table-identity (find-records [true])))
