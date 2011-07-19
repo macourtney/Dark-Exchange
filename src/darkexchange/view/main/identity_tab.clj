@@ -20,9 +20,23 @@
     (seesaw-core/table :id :identity-table :preferred-size [600 :by 300]
       :model [ :columns identity-table-columns ])))
 
-(defn create []
+(defn create-identity-table-panel []
   (seesaw-core/border-panel
     :border 5
     :vgap 5
     :north (create-title-panel)
     :center (create-identity-table)))
+
+(defn create-my-identity-panel []
+  (seesaw-core/horizontal-panel
+    :items [ (seesaw-core/border-panel :size [67 :by 15] :east (seesaw-core/label :text (terms/my-identity)))
+             [:fill-h 3]
+             (seesaw-core/border-panel :size [300 :by 20]
+               :west (seesaw-core/text :id :my-identity :text "data" :editable? false))]))
+
+(defn create []
+  (seesaw-core/border-panel
+    :border 5
+    :vgap 5
+    :north (create-my-identity-panel)
+    :center (create-identity-table-panel)))

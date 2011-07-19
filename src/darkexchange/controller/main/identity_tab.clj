@@ -18,6 +18,14 @@
   (reload-table-data main-frame)
   main-frame)
 
+(defn find-my-identity-label [main-frame]
+  (seesaw-core/select main-frame ["#my-identity"]))
+
+(defn load-my-identity [main-frame]
+  (when-let [my-identity (identity-model/current-user-identity)]
+    (.setText (find-my-identity-label main-frame) (identity-model/identity-text my-identity)))
+  main-frame)
+
 (defn delete-identity-from-table [main-frame identity]
   (controller-utils/delete-record-from-table (find-identity-table main-frame) (:id identity)))
 
@@ -39,7 +47,7 @@
   main-frame)
 
 (defn load-data [main-frame]
-  (load-identity-table main-frame))
+  (load-my-identity (load-identity-table main-frame)))
 
 (defn attach [main-frame]
   (attach-identity-listener main-frame))
