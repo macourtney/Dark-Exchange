@@ -139,8 +139,13 @@
         :public_key (shortened-public-key identity)
         :is_online (when (is-online? identity) (terms/yes)) })))
 
+(defn non-user-identities []
+  (if-let [user-identity (current-user-identity)]
+    (find-records ["id != ?" (:id user-identity)])
+    (find-records [true])))
+
 (defn table-identities []
-  (map table-identity (find-records [true])))
+  (map table-identity (non-user-identities)))
 
 (defn get-table-identity [id]
   (table-identity (get-record id)))
