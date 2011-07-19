@@ -11,9 +11,14 @@
                               { :key :destination :text (terms/destination) }
                               { :key :is_online :text (terms/is-online) }])
 
+(defn create-identity-table-buttons []
+  (seesaw-core/horizontal-panel :items 
+    [ (seesaw-core/button :id :view-identity-button :text (terms/view) :enabled? false) ]))
+
 (defn create-title-panel []
   (seesaw-core/border-panel
-    :west (terms/identities)))
+    :west (terms/identities)
+    :east (create-identity-table-buttons)))
 
 (defn create-identity-table []
   (seesaw-core/scrollable

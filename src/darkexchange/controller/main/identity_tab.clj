@@ -1,9 +1,13 @@
 (ns darkexchange.controller.main.identity-tab
   (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.actions.utils :as action-utils]
+            [darkexchange.controller.identity.view :as identity-view]
             [darkexchange.controller.utils :as controller-utils]
+            [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.identity :as identity-model]
             [darkexchange.view.main.identity-tab :as identity-tab-view]
-            [seesaw.core :as seesaw-core]))
+            [seesaw.core :as seesaw-core]
+            [seesaw.table :as seesaw-table]))
 
 (defn find-identity-table [main-frame]
   (seesaw-core/select main-frame ["#identity-table"]))
@@ -46,11 +50,40 @@
     (fn [identity] (seesaw-core/invoke-later (delete-identity-from-table main-frame identity))))
   main-frame)
 
+(defn find-identity-view-button [main-frame]
+  (seesaw-core/select main-frame ["#view-identity-button"]))
+
+(defn attach-view-identity-enable-listener [main-frame]
+  (widgets-utils/single-select-table-button (find-identity-view-button main-frame) (find-identity-table main-frame))
+  main-frame)
+
+(defn selected-identity-id [main-frame]
+  (let [identity-table (find-identity-table main-frame)]
+    (:id (seesaw-table/value-at identity-table (.getSelectedRow identity-table)))))
+
+(defn view-identity-action [main-frame e]
+  (when-let [identity-id (selected-identity-id main-frame)]
+    (identity-view/show main-frame (identity-model/get-record identity-id))))
+
+(defn attach-view-identity-listener [main-frame]
+  (action-utils/attach-frame-listener main-frame "#view-identity-button" view-identity-action))
+
+(defn view-identity-if-enabled [main-frame]
+  (widgets-utils/do-click-if-enabled (find-identity-view-button main-frame)))
+
+(defn attach-view-identity-table-action [main-frame]
+  (widgets-utils/add-table-action (find-identity-table main-frame)
+    #(view-identity-if-enabled main-frame))
+  main-frame)
+
 (defn load-data [main-frame]
   (load-my-identity (load-identity-table main-frame)))
 
 (defn attach [main-frame]
-  (attach-identity-listener main-frame))
+  (attach-view-identity-table-action
+    (attach-view-identity-enable-listener
+      (attach-view-identity-listener
+        (attach-identity-listener main-frame)))))
 
 (defn init [main-frame]
   (attach (load-data main-frame)))

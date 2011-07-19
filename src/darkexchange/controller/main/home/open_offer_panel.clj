@@ -75,9 +75,6 @@
   (offer-model/add-update-offer-listener #(seesaw-core/invoke-later (update-offer-listener main-frame %)))
   main-frame)
 
-(defn delete-open-offer-if-enabled [main-frame]
-  (widgets-utils/do-click-if-enabled (find-delete-open-offer-button main-frame)))
-
 (defn attach-delete-open-offer-enable-listener [main-frame]
   (widgets-utils/single-select-table-button (find-delete-open-offer-button main-frame)
     (find-open-offer-table main-frame))
