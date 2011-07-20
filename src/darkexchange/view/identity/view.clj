@@ -1,5 +1,6 @@
 (ns darkexchange.view.identity.view
   (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.offer.open-offer-table :as open-offer-table-view]
             [darkexchange.view.utils :as view-utils]
             [seesaw.core :as seesaw-core]))
 
@@ -22,15 +23,41 @@
 (defn create-is-online-panel []
   (create-label-value-pair-panel (terms/is-online) :is-online-label))
 
-(defn create-center-panel []
+(defn create-data-panel []
   (seesaw-core/vertical-panel
-      :items [ (create-name-panel)
-               [:fill-v 3]
-               (create-public-key-panel)
-               [:fill-v 3]
-               (create-algorithm-panel)
-               [:fill-v 3]
-               (create-is-online-panel)]))
+    :items [ (create-name-panel)
+             [:fill-v 3]
+             (create-public-key-panel)
+             [:fill-v 3]
+             (create-algorithm-panel)
+             [:fill-v 3]
+             (create-is-online-panel)]))
+
+(defn create-offer-table-title []
+  (seesaw-core/horizontal-panel
+    :items [ (terms/offers)
+             [:fill-v 3]
+             (seesaw-core/label :id :offer-table-status-label :text (terms/status-parens (terms/loading)))]))
+
+(defn create-offer-table-header []
+  (seesaw-core/border-panel
+      :border 5
+      :hgap 5
+      :west (create-offer-table-title)))
+
+(defn create-offer-table-panel []
+  (seesaw-core/border-panel
+      :border 5
+      :hgap 5
+      :north (create-offer-table-header)
+      :center (open-offer-table-view/create { :id :open-offer-table })))
+
+(defn create-center-panel []
+  (seesaw-core/border-panel
+      :border 5
+      :hgap 5
+      :north (seesaw-core/border-panel :border 0 :west (create-data-panel))
+      :center (create-offer-table-panel)))
 
 (defn create-button-panel []
   (seesaw-core/border-panel

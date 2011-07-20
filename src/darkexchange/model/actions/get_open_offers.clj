@@ -4,5 +4,8 @@
 
 (def action-key action-keys/get-open-offers-action-key)
 
+(defn get-open-offers []
+  (map #(dissoc % :created_at) (offer-model/open-offers)))
+
 (defn action [request-map]
-  { :data (offer-model/open-offers) })
+  { :data (get-open-offers) })

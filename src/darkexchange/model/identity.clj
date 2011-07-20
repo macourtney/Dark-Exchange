@@ -144,6 +144,15 @@
     (find-records ["id != ?" (:id user-identity)])
     (find-records [true])))
 
+(defn is-user-identity? [identity]
+  (if (and (:name identity) (:public_key identity) (:public_key_algorithm identity))
+    (let [user (user/current-user)]
+      (and
+        (= (:name identity) (:name user))
+        (= (:public_key identity) (:public_key user))
+        (= (:public_key_algorithm identity) (:public_key_algorithm user))))
+    (= (:id identity) (:id (current-user-identity)))))
+
 (defn table-identities []
   (map table-identity (non-user-identities)))
 

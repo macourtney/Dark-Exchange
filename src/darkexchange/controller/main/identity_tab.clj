@@ -34,12 +34,14 @@
   (controller-utils/delete-record-from-table (find-identity-table main-frame) (:id identity)))
 
 (defn add-identity-to-table [main-frame identity]
-  (controller-utils/add-record-to-table (find-identity-table main-frame)
-    (identity-model/get-table-identity (:id identity))))
+  (when-not (identity-model/is-user-identity? identity)
+    (controller-utils/add-record-to-table (find-identity-table main-frame)
+      (identity-model/get-table-identity (:id identity)))))
 
 (defn update-identity-id-table [main-frame identity]
-  (controller-utils/update-record-in-table (find-identity-table main-frame)
-    (identity-model/get-table-identity (:id identity))))
+  (when-not (identity-model/is-user-identity? identity)
+    (controller-utils/update-record-in-table (find-identity-table main-frame)
+      (identity-model/get-table-identity (:id identity)))))
 
 (defn attach-identity-listener [main-frame]
   (identity-model/add-identity-add-listener

@@ -1,14 +1,7 @@
 (ns darkexchange.view.main.home.open-offer-panel
   (:require [darkexchange.model.terms :as terms]
+            [darkexchange.view.offer.open-offer-table :as open-offer-table-view]
             [seesaw.core :as seesaw-core]))
-
-(def open-offer-table-columns [ { :key :id :text (terms/id) }
-                                { :key :i-have-amount :text (terms/i-have-amount) }
-                                { :key :i-want-to-send-by :text (terms/i-want-to-send-by) }
-                                { :key :i-want-amount :text (terms/i-want-amount) }
-                                { :key :i-want-to-receive-by :text (terms/i-want-to-receive-by) }
-                                { :key :has-div-wants :text (terms/has-div-wants) }
-                                { :key :wants-div-has :text (terms/wants-div-has) } ])
 
 (defn create-table-header-text []
   (terms/open-offers))
@@ -26,15 +19,9 @@
       :west (create-table-header-text)
       :east (create-table-header-buttons)))
 
-(defn create-table []
-  (seesaw-core/scrollable
-    (seesaw-core/table :id :open-offer-table
-      :model [ :columns open-offer-table-columns ])
-    :preferred-size [600 :by 300]))
-
 (defn create []
   (seesaw-core/border-panel
       :border 5
       :vgap 5
       :north (create-table-header)
-      :center (create-table)))
+      :center (open-offer-table-view/create { :id :open-offer-table })))

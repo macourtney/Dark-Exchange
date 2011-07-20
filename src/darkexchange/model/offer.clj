@@ -127,7 +127,7 @@
   (update { :id (:id offer) :closed 0 }))
 
 (defn big-decimal-divide [numerator denominator]
-  (.divide (bigdec numerator) denominator 8 RoundingMode/HALF_UP))
+  (.divide (bigdec numerator) (bigdec denominator) 8 RoundingMode/HALF_UP))
 
 (defn calculate-has-div-wants [offer]
   (big-decimal-divide (:has_amount offer) (:wants_amount offer)))
