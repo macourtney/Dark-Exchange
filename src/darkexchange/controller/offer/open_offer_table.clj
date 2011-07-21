@@ -1,5 +1,6 @@
 (ns darkexchange.controller.offer.open-offer-table
-  (:require [darkexchange.model.offer :as offer-model]
+  (:require [darkexchange.controller.widgets.utils :as widgets-utils]
+            [darkexchange.model.offer :as offer-model]
             [darkexchange.view.offer.open-offer-table :as open-offer-table-view]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table]))
@@ -46,3 +47,11 @@
   (let [open-offer-table (find-open-offer-table parent-component)]
     (when-let [offer-index (find-offer-index open-offer-table offer)]
       (replace-offer-at open-offer-table offer offer-index))))
+
+(defn attach-single-select-button-enable-listener [parent-component button]
+  (widgets-utils/single-select-table-button button (find-open-offer-table parent-component))
+  parent-component)
+
+(defn attach-table-action [parent-component action-fn]
+  (widgets-utils/add-table-action (find-open-offer-table parent-component) action-fn)
+  parent-component)

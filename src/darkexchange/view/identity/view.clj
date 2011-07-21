@@ -36,14 +36,19 @@
 (defn create-offer-table-title []
   (seesaw-core/horizontal-panel
     :items [ (terms/offers)
-             [:fill-v 3]
+             [:fill-h 3]
              (seesaw-core/label :id :offer-table-status-label :text (terms/status-parens (terms/loading)))]))
+
+(defn create-offer-table-button-panel []
+  (seesaw-core/horizontal-panel
+    :items [ (seesaw-core/button :id :view-offer-button :text (terms/view) :enabled? false) ]))
 
 (defn create-offer-table-header []
   (seesaw-core/border-panel
       :border 5
       :hgap 5
-      :west (create-offer-table-title)))
+      :west (create-offer-table-title)
+      :east (create-offer-table-button-panel)))
 
 (defn create-offer-table-panel []
   (seesaw-core/border-panel

@@ -17,9 +17,10 @@
 (defn update-trade [initial-trade response-map]
   (if-let [foreign-trade-id (:trade-id (:data response-map))]
     (when-let [other-identity (interchange-map-util/from-identity response-map)]
-      (when-let [offer (find-offer initial-trade response-map)]
-        (trade-model/set-foreign-trade-id (:id initial-trade) foreign-trade-id)))
-    (trade-model/destroy-record { :id (:id initial-trade) })))
+      (if-let [offer (find-offer initial-trade response-map)]
+        (trade-model/set-foreign-trade-id (:id initial-trade) foreign-trade-id)
+        (trade-model/destroy-record initial-trade)))
+    (trade-model/destroy-record initial-trade)))
 
 (defn find-identity 
   ([offer] (find-identity (:name offer) (:public-key offer) (:public-key-algorithm offer)))

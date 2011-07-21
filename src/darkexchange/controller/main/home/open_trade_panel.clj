@@ -1,5 +1,6 @@
 (ns darkexchange.controller.main.home.open-trade-panel
-  (:require [darkexchange.controller.actions.utils :as action-utils]
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.trade.view :as view-trade]
             [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.trade :as trade-model]

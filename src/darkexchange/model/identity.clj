@@ -121,7 +121,8 @@
     (find-identity (:name user) (:public_key user) (:public_key_algorithm user))))
 
 (defn shortened-public-key-str [public-key]
-  (str ".." (.substring public-key 40 60) ".."))
+  (when public-key
+    (str ".." (.substring public-key 40 60) "..")))
 
 (defn shortened-public-key [identity]
   (shortened-public-key-str (:public_key identity)))

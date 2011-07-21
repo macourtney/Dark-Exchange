@@ -142,7 +142,8 @@
     :i-want-amount (wants-amount-str offer)
     :i-want-to-receive-by (wants-payment-type-str offer)
     :has-div-wants (calculate-has-div-wants offer)
-    :wants-div-has (calculate-wants-div-has offer) })
+    :wants-div-has (calculate-wants-div-has offer)
+    :original-offer offer })
 
 (defn table-open-offers []
   (map convert-to-table-offer (open-offers)))
