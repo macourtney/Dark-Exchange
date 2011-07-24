@@ -63,8 +63,14 @@
 (defn attach-register-action [create-user-frame]
   (actions-utils/attach-listener create-user-frame "#register-button" create-user-action))
 
+(defn find-register-button [create-user-frame]
+  (seesaw-core/select create-user-frame ["#register-button"]))
+
+(defn attach-default-button [create-user-frame]
+  (actions-utils/set-default-button create-user-frame (find-register-button create-user-frame)))
+
 (defn attach [create-user-frame]
-  (attach-register-action (attach-cancel-action create-user-frame)))
+  (attach-default-button (attach-register-action (attach-cancel-action create-user-frame))))
 
 (defn show [login-frame]
   (controller-utils/show (attach (create-user-view/create login-frame))))

@@ -73,8 +73,18 @@
 (defn attach-login-action [login-frame]
   (actions-utils/attach-listener login-frame "#login-button" login-action))
 
+(defn find-login-button [login-frame]
+  (seesaw-core/select login-frame ["#login-button"]))
+
+(defn attach-default-button [login-frame]
+  (actions-utils/set-default-button login-frame (find-login-button login-frame)))
+
 (defn attach [login-frame]
-  (attach-cancel-action (attach-login-action (attach-new-user-action (attach-user-add-listener login-frame)))))
+  (attach-default-button
+    (attach-cancel-action
+      (attach-login-action
+        (attach-new-user-action
+          (attach-user-add-listener login-frame))))))
 
 (defn show []
   (controller-utils/show (attach (load-data (login-view/create)))))

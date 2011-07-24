@@ -33,3 +33,7 @@
 (defn remove-all-action-listeners [button]
   (doseq [action-listener (.getActionListeners button)]
     (.removeActionListener button action-listener)))
+
+(defn set-default-button [parent-frame button]
+  (.setDefaultButton (.getRootPane parent-frame) button)
+  parent-frame)

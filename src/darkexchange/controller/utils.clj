@@ -9,7 +9,9 @@
   (seesaw-core/select parent-component [id]))
 
 (defn show [frame]
-  (seesaw-core/show! frame))
+  (if frame
+    (seesaw-core/show! frame)
+    (logging/warn "Show was given a nil frame.")))
 
 (defn create-item-listener [item-listener-fn]
   (reify ItemListener
