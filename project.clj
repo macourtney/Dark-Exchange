@@ -1,4 +1,4 @@
-(defproject darkexchange "1.1.0"
+(defproject darkexchange "1.1.1"
   :description "Dark Exchange is a distributed p2p exchange for bitcoin."
   :dependencies [[clojure-tools "1.0.0"]
                  [com.h2database/h2 "1.3.157"]
@@ -11,7 +11,7 @@
                  [org.clojars.macourtney/streaming "0.8.7-0"]
                  [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
-                 [seesaw "1.0.9"]]
+                 [seesaw "1.0.10"]]
   :dev-dependencies [[drift "1.2.1"]
                      [lein-tar "1.0.6"]]
 
