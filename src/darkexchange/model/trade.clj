@@ -181,7 +181,8 @@
       :im-sending-by (offer/has-payment-type-str offer)
       :im-receiving-amount (offer/wants-amount-str offer)
       :im-receiving-by (offer/wants-payment-type-str offer)
-      :waiting-for (next-step-text trade) }))
+      :waiting-for (next-step-text trade)
+      :original-trade trade }))
 
 (defn table-open-trades []
   (map convert-to-table-trade (open-trades)))
@@ -281,6 +282,10 @@
 
 (defn contains-unconfirmed-message? [trade]
   (seq (unconfirmed-messages trade)))
+
+(defn requires-action? [trade]
+  (when-let [trade-next-step-key (next-step-key trade)]
+    (trade-next-step-key #{ needs-to-be-confirmed-key send-wants-receipt-key send-has-key })))
 
 (defn trade-updated [trade]
   (update { :id (:id trade) :updated 1 }))

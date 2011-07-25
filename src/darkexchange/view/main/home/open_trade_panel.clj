@@ -2,8 +2,7 @@
   (:require [darkexchange.model.terms :as terms]
             [seesaw.core :as seesaw-core]))
 
-(def open-trade-table-columns [ { :key :id :text (terms/id) }
-                                { :key :im-sending-amount :text (terms/im-sending-amount) }
+(def open-trade-table-columns [ { :key :im-sending-amount :text (terms/im-sending-amount) }
                                 { :key :im-sending-by :text (terms/im-sending-by) }
                                 { :key :im-receiving-amount :text (terms/im-receiving-amount) }
                                 { :key :im-receiving-by :text (terms/im-receiving-by) }

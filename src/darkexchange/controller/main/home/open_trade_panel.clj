@@ -7,7 +7,12 @@
             [darkexchange.model.user :as user-model]
             [darkexchange.view.main.home.open-trade-panel :as open-trade-panel]
             [seesaw.core :as seesaw-core]
-            [seesaw.table :as seesaw-table]))
+            [seesaw.table :as seesaw-table])
+  (:import [java.awt Color Font]
+           [javax.swing JLabel]
+           [javax.swing.table TableCellRenderer]))
+
+(def requires-action-color (Color/YELLOW))
 
 (defn find-open-trade-table [main-frame]
   (seesaw-core/select main-frame ["#open-trade-table"]))
@@ -83,11 +88,31 @@
   (trade-model/add-delete-trade-listener (fn [trade] (trade-delete-listener main-frame trade)))
   main-frame)
 
+(defn set-background [render-component table is-selected row]
+  (if is-selected
+    (.setBackground render-component (.getSelectionBackground table))
+    (let [row-map (seesaw-table/value-at table row)
+          trade (:original-trade row-map)]
+      (when (trade-model/requires-action? trade)
+        (.setBackground render-component requires-action-color)))))
+
+(defn attach-trade-table-cell-renderer [main-frame]
+  (let [open-trade-table (find-open-trade-table main-frame)
+        original-renderer (.getDefaultRenderer open-trade-table Object)]
+    (.setDefaultRenderer open-trade-table Object
+      (reify TableCellRenderer
+        (getTableCellRendererComponent [this table value is-selected has-focus row column]
+          (let [render-component (.getTableCellRendererComponent original-renderer table value is-selected has-focus row column)]
+            (set-background render-component table is-selected row)
+            render-component)))))
+  main-frame)
+
 (defn attach-trade-listeners [main-frame]
-  (attach-open-trade-actions
-    (attach-new-trade-listener
-      (attach-trade-update-listener
-        (attach-trade-delete-listener main-frame)))))
+  (attach-trade-table-cell-renderer
+    (attach-open-trade-actions
+      (attach-new-trade-listener
+        (attach-trade-update-listener
+          (attach-trade-delete-listener main-frame))))))
 
 (defn load-data [main-frame]
   (load-open-trade-table main-frame))
