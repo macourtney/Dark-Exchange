@@ -29,6 +29,8 @@
   (create-table [flavor table specs]
     "Creates a new table with the given name and with columns based on the given specs.")
   (drop-table [flavor table] "Deletes the table with the given name.")
+  (add-column [flavor table spec] "Adds a column described by spec to the given table.")
+  (drop-column [flavor table column] "Removes the given column from the given table.")
   (describe-table [flavor table] "Shows the columns of the given table.")
   (delete [flavor table where] "Deletes rows from the table with the given name.")
   (integer [flavor column] [flavor column mods] 

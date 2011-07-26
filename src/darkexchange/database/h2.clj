@@ -4,6 +4,7 @@
             [clojure.contrib.sql :as sql]
             [clojure.tools.loading-utils :as conjure-loading-utils]
             [clojure.tools.string-utils :as conjure-string-utils]
+            [clojure.string :as clojure-str]
             [darkexchange.database.protocol :as flavor-protocol])
   (:import [darkexchange.database.protocol Flavor]
            [java.text SimpleDateFormat]
@@ -141,6 +142,14 @@ any keyword into a string, and replaces dashes with underscores."}
       (when (some #(= (.toUpperCase (table-name table)) %) (map :table_name (flavor-protocol/execute-query flavor ["SHOW TABLES"])))
         (sql/with-connection (flavor-protocol/db-map flavor)
           (sql/drop-table (table-name table))))))
+  
+  (add-column [flavor table spec]
+    (flavor-protocol/execute-commands flavor
+      [(str "ALTER TABLE " (table-name table) " ADD IF NOT EXISTS " (clojure-str/join " " spec))]))
+
+  (drop-column [flavor table column]
+    (flavor-protocol/execute-commands flavor
+      [(str "ALTER TABLE " (table-name table) " DROP COLUMN IF EXISTS " (column-name column))]))
 
   (describe-table [flavor table]
     (do

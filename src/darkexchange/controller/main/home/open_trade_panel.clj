@@ -13,6 +13,7 @@
            [javax.swing.table TableCellRenderer]))
 
 (def requires-action-color (Color/YELLOW))
+(def unseen-message-color (Color/CYAN))
 
 (defn find-open-trade-table [main-frame]
   (seesaw-core/select main-frame ["#open-trade-table"]))
@@ -88,13 +89,23 @@
   (trade-model/add-delete-trade-listener (fn [trade] (trade-delete-listener main-frame trade)))
   main-frame)
 
+(defn set-requires-action-background [render-component table row]
+  (let [row-map (seesaw-table/value-at table row)
+        trade (:original-trade row-map)]
+    (when (trade-model/requires-action? trade)
+      (.setBackground render-component requires-action-color)
+      true)))
+
+(defn set-unseen-message-background [render-component table row]
+  (let [row-map (seesaw-table/value-at table row)]
+    (when (:unseen-message? row-map)
+      (.setBackground render-component unseen-message-color))))
+
 (defn set-background [render-component table is-selected row]
   (if is-selected
     (.setBackground render-component (.getSelectionBackground table))
-    (let [row-map (seesaw-table/value-at table row)
-          trade (:original-trade row-map)]
-      (when (trade-model/requires-action? trade)
-        (.setBackground render-component requires-action-color)))))
+    (when-not (set-requires-action-background render-component table row)
+      (set-unseen-message-background render-component table row))))
 
 (defn attach-trade-table-cell-renderer [main-frame]
   (let [open-trade-table (find-open-trade-table main-frame)

@@ -37,7 +37,8 @@
   (update { :id message-id :foreign_message_id foreign-message-id }))
 
 (defn as-table-trade-message [trade-message]
-  { :id (:id trade-message) :from (:name (find-identity trade-message)) :date-received (:created_at trade-message) })
+  { :id (:id trade-message) :from (:name (find-identity trade-message)) :date-received (:created_at trade-message)
+   :seen (:seen trade-message) })
 
 (defn update-or-create-message [trade-id message from-identity]
   (if-let [foreign-message-id (:foreign_message_id message)]
@@ -47,3 +48,13 @@
 
 (defn find-matching-messages [messages]
   (map #(find-record { :foreign_message_id (:id %1)}) messages))
+
+(defn seen? [trade-message]
+  (as-boolean (:seen trade-message)))
+
+(defn has-unseen-message? [trade-id]
+  (find-record ["trade_id = ? AND (seen IS NULL OR seen = 0) LIMIT 1" trade-id]))
+
+(defn mark-as-seen [trade-messages]
+  (doseq [trade-message trade-messages]
+    (when-not (seen? trade-message) (update { :id (:id trade-message) :seen 1 }))))

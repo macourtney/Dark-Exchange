@@ -73,7 +73,8 @@
   (when-let [trade-messages (trade-model/table-trade-messages trade)]
     (seesaw-core/config! (find-trade-messages-table parent-component)
       :model [:columns view-view/trade-messages-table-columns
-              :rows trade-messages]))
+              :rows trade-messages])
+    (future (trade-message-model/mark-as-seen trade-messages)))
   parent-component)
 
 (defn load-data [parent-component trade]

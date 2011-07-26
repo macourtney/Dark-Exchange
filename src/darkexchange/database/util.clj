@@ -42,6 +42,10 @@ database flavor function with the current db spec and any arguments"}
 
 (def-db-fn :drop-table)
 
+(def-db-fn :add-column)
+
+(def-db-fn :drop-column)
+
 (defn insert-into [table & records]
   (flavor-protocol/insert-into @conjure-flavor table records))
 

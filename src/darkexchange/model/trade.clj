@@ -174,6 +174,9 @@
 (defn next-step-text [trade]
   (waiting-for-key-to-text (next-step-key trade)))
 
+(defn has-unseen-message? [trade]
+  (trade-message/has-unseen-message? (:id trade)))
+
 (defn convert-to-table-trade [trade]
   (let [offer (find-offer trade)]
     { :id (:id trade)
@@ -182,7 +185,8 @@
       :im-receiving-amount (offer/wants-amount-str offer)
       :im-receiving-by (offer/wants-payment-type-str offer)
       :waiting-for (next-step-text trade)
-      :original-trade trade }))
+      :original-trade trade
+      :unseen-message? (if (has-unseen-message? trade) true false) }))
 
 (defn table-open-trades []
   (map convert-to-table-trade (open-trades)))
@@ -296,3 +300,4 @@
 
 (defn trade-partner-text [trade]
   (identity-model/identity-text (:identity trade)))
+
