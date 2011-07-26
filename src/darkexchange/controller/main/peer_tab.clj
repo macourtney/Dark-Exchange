@@ -46,7 +46,8 @@
               :rows peers])))
 
 (defn update-peer-id-table [main-frame peer]
-  (controller-utils/update-record-in-table (find-peer-table main-frame) (peers-model/get-record (:id peer))))
+  (controller-utils/update-record-in-table (find-peer-table main-frame)
+    (convert-to-table-peer (peers-model/get-record (:id peer)))))
 
 (defn delete-peer-from-table [main-frame peer]
   (controller-utils/delete-record-from-table (find-peer-table main-frame) (:id peer)))
