@@ -4,6 +4,7 @@
             [darkexchange.controller.trade.view :as view-trade]
             [darkexchange.controller.widgets.utils :as widgets-utils]
             [darkexchange.model.trade :as trade-model]
+            [darkexchange.model.trade-message :as trade-message-model]
             [darkexchange.model.user :as user-model]
             [darkexchange.view.main.home.open-trade-panel :as open-trade-panel]
             [seesaw.core :as seesaw-core]
@@ -60,6 +61,8 @@
   (trade-model/add-trade-add-listener #(seesaw-core/invoke-later (new-trade-listener main-frame %)))
   main-frame)
 
+
+
 (defn find-trade-index [open-trade-table trade]
   (some #(when (= (:id trade) (:id (second %1))) (first %1))
     (map #(list %1 (seesaw-table/value-at open-trade-table %1)) (range (seesaw-table/row-count open-trade-table)))))
@@ -77,6 +80,14 @@
 
 (defn attach-trade-update-listener [main-frame]
   (trade-model/add-update-trade-listener (fn [trade] (trade-update-listener main-frame trade)))
+  main-frame)
+
+(defn new-trade-message-listener [main-frame trade-message]
+  (when-let [trade (trade-model/find-record { :id (:trade_id trade-message) })]
+    (trade-update-listener main-frame trade)))
+
+(defn attach-new-trade-message-listener [main-frame]
+  (trade-message-model/add-message-add-listener #(seesaw-core/invoke-later (new-trade-message-listener main-frame %)))
   main-frame)
 
 (defn trade-delete-listener [main-frame trade]
@@ -99,13 +110,14 @@
 (defn set-unseen-message-background [render-component table row]
   (let [row-map (seesaw-table/value-at table row)]
     (when (:unseen-message? row-map)
-      (.setBackground render-component unseen-message-color))))
+      (.setBackground render-component unseen-message-color)
+      true)))
 
 (defn set-background [render-component table is-selected row]
   (if is-selected
     (.setBackground render-component (.getSelectionBackground table))
-    (when-not (set-requires-action-background render-component table row)
-      (set-unseen-message-background render-component table row))))
+    (when-not (set-unseen-message-background render-component table row)
+      (set-requires-action-background render-component table row))))
 
 (defn attach-trade-table-cell-renderer [main-frame]
   (let [open-trade-table (find-open-trade-table main-frame)
@@ -121,9 +133,10 @@
 (defn attach-trade-listeners [main-frame]
   (attach-trade-table-cell-renderer
     (attach-open-trade-actions
-      (attach-new-trade-listener
-        (attach-trade-update-listener
-          (attach-trade-delete-listener main-frame))))))
+      (attach-new-trade-message-listener
+        (attach-new-trade-listener
+          (attach-trade-update-listener
+            (attach-trade-delete-listener main-frame)))))))
 
 (defn load-data [main-frame]
   (load-open-trade-table main-frame))
