@@ -6,7 +6,7 @@
             [darkexchange.model.trade-message :as trade-message-model]))
 
 (defn create-message [trade message-body]
-  (trade-message-model/create-new-message message-body trade))
+  (trade-message-model/create-message-to-send message-body trade))
 
 (defn create-trade-data [message-id]
   (let [message (trade-message-model/get-record message-id)]

@@ -33,6 +33,10 @@
       (insert { :created_at (new Date) :body body :trade_id (:id trade)  :foreign_message_id foreign-message-id
                 :identity_id (:id from-identity) }))))
 
+(defn create-message-to-send [body trade]
+  (when-let [trade-message-id (create-new-message body trade)]
+    (update { :id trade-message-id :seen 1 :viewed 1})))
+
 (defn update-foreign-message-id [message-id foreign-message-id]
   (update { :id message-id :foreign_message_id foreign-message-id }))
 
