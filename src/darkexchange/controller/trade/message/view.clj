@@ -10,6 +10,9 @@
 
 (defn load-data [message parent-component]
   (.setText (find-message-body-text parent-component) (:body message))
+  (future
+    (trade-message-model/mark-as-viewed message)
+    (trade-message-model/mark-as-seen message))
   parent-component)
 
 (defn attach-cancel-action [parent-component]

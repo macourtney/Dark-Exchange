@@ -13,8 +13,8 @@
            [javax.swing JLabel]
            [javax.swing.table TableCellRenderer]))
 
-(def requires-action-color (Color/YELLOW))
-(def unseen-message-color (Color/CYAN))
+(def requires-action-color Color/YELLOW)
+(def unseen-message-color Color/CYAN)
 
 (defn find-open-trade-table [main-frame]
   (seesaw-core/select main-frame ["#open-trade-table"]))

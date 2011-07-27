@@ -32,14 +32,16 @@
 
 (defn delete-record-from-table [table record-id]
   (when-let [record-index (first (find-table-record-pair table record-id))]
-    (seesaw-table/remove-at! table record-index)))
+    (seesaw-table/remove-at! table record-index)
+    record-index))
 
-(defn add-record-to-table [table record]
-  (seesaw-table/insert-at! table 0 record))
+(defn add-record-to-table 
+  ([table record] (add-record-to-table table record 0))
+  ([table record index]
+    (seesaw-table/insert-at! table (or index 0) record)))
 
 (defn update-record-in-table [table record]
-  (delete-record-from-table table (:id record))
-  (add-record-to-table table record))
+  (add-record-to-table table record (delete-record-from-table table (:id record))))
 
 (defn enableable-widget? [component]
   (instance? JComponent component))

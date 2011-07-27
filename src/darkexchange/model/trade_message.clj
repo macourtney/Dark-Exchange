@@ -6,6 +6,7 @@
   (:import [java.util Date]))
 
 (def message-add-listeners (atom []))
+(def message-update-listeners (atom []))
 
 (defn add-message-add-listener [listener]
   (swap! message-add-listeners conj listener))
@@ -17,6 +18,16 @@
   (doseq [listener @message-add-listeners]
     (listener trade-message)))
 
+(defn add-message-update-listener [listener]
+  (swap! message-update-listeners conj listener))
+
+(defn remove-message-update-listener [listener]
+  (swap! message-update-listeners remove-listener listener))
+
+(defn message-updated [trade-message]
+  (doseq [listener @message-update-listeners]
+    (listener trade-message)))
+
 (defn trade-message-clean-up [trade-message]
   (clean-clob-key trade-message :body))
 
@@ -24,7 +35,8 @@
   (:associations (belongs-to trade)
                  (belongs-to identity))
   (:callbacks (:after-insert message-added)
-              (:after-load trade-message-clean-up)))
+              (:after-load trade-message-clean-up)
+              (:after-update message-updated)))
 
 (defn create-new-message
   ([body trade] (create-new-message body trade nil (identity/current-user-identity)))
@@ -40,9 +52,12 @@
 (defn update-foreign-message-id [message-id foreign-message-id]
   (update { :id message-id :foreign_message_id foreign-message-id }))
 
+(defn from-identity [message]
+  (identity/get-record (:identity_id message)))
+
 (defn as-table-trade-message [trade-message]
   { :id (:id trade-message) :from (:name (find-identity trade-message)) :date-received (:created_at trade-message)
-   :seen (:seen trade-message) })
+    :seen (:seen trade-message) :original-message (assoc trade-message :identity (from-identity trade-message)) })
 
 (defn update-or-create-message [trade-id message from-identity]
   (if-let [foreign-message-id (:foreign_message_id message)]
@@ -56,9 +71,15 @@
 (defn seen? [trade-message]
   (as-boolean (:seen trade-message)))
 
+(defn viewed? [trade-message]
+  (as-boolean (:viewed trade-message)))
+
 (defn has-unseen-message? [trade-id]
   (find-record ["trade_id = ? AND (seen IS NULL OR seen = 0) LIMIT 1" trade-id]))
 
 (defn mark-as-seen [trade-messages]
   (doseq [trade-message trade-messages]
     (when-not (seen? trade-message) (update { :id (:id trade-message) :seen 1 }))))
+
+(defn mark-as-viewed [trade-message]
+  (when-not (viewed? trade-message) (update { :id (:id trade-message) :viewed 1 })))

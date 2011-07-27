@@ -9,6 +9,7 @@
             [darkexchange.model.calls.payment-received :as payment-received-call]
             [darkexchange.model.calls.payment-sent :as payment-sent-call]
             [darkexchange.model.calls.reject-trade :as reject-trade-call]
+            [darkexchange.model.identity :as identity-model]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.terms :as terms]
             [darkexchange.model.trade :as trade-model]
@@ -16,7 +17,12 @@
             [darkexchange.view.trade.view :as view-view]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table])
-  (:import [java.awt.event WindowListener]))
+  (:import [java.awt Color]
+           [java.awt.event WindowListener]
+           [javax.swing.table TableCellRenderer]))
+
+(def my-message-color Color/LIGHT_GRAY)
+(def unviewed-message-color Color/CYAN)
 
 (defn load-data-label 
   ([trade parent-component trade-key label-key] (load-data-label (trade-key trade) parent-component label-key))
@@ -155,21 +161,42 @@
       (seesaw-table/insert-at! trade-messages-table (seesaw-table/row-count trade-messages-table)
         (trade-message-model/as-table-trade-message trade-message)))))
 
-(defn remove-message-listener-window-listener [trade-message-listener]
+(defn add-window-listener [parent-component listener]
+  (.addWindowListener (seesaw-core/to-frame parent-component) listener))
+
+(defn create-on-window-closed-listener [listener]
   (reify WindowListener
     (windowActivated [_ _])
-    (windowClosed [_ _] (trade-message-model/remove-message-add-listener trade-message-listener))
+    (windowClosed [_ _] (listener))
     (windowClosing [_ _])
     (windowDeactivated [_ _])
     (windowDeiconified [_ _])
     (windowIconified [_ _])
     (windowOpened [_ _])))
 
+(defn remove-add-message-listener-window-listener [trade-message-listener]
+  (create-on-window-closed-listener #(trade-message-model/remove-message-add-listener trade-message-listener)))
+
 (defn attach-new-message-listener [trade parent-component]
   (let [trade-message-listener #(new-message-listener % trade parent-component)]
     (trade-message-model/add-message-add-listener trade-message-listener)
-    (.addWindowListener (seesaw-core/to-frame parent-component)
-      (remove-message-listener-window-listener trade-message-listener)))
+    (add-window-listener parent-component (remove-add-message-listener-window-listener trade-message-listener)))
+  parent-component)
+
+(defn update-message-listener [trade-message trade parent-component]
+  (when-let [trade-message (trade-message-model/find-record { :id (:id trade-message) })]
+    (when (= (:trade_id trade-message) (:id trade))
+      (let [trade-messages-table (find-trade-messages-table parent-component)]
+        (controller-utils/update-record-in-table trade-messages-table
+          (trade-message-model/as-table-trade-message trade-message))))))
+
+(defn remove-update-message-listener-window-listener [trade-message-listener]
+  (create-on-window-closed-listener #(trade-message-model/remove-message-update-listener trade-message-listener)))
+
+(defn attach-update-message-listener [trade parent-component]
+  (let [trade-message-listener #(update-message-listener % trade parent-component)]
+    (trade-message-model/add-message-update-listener trade-message-listener)
+    (add-window-listener parent-component (remove-update-message-listener-window-listener trade-message-listener)))
   parent-component)
 
 (defn view-message-action [parent-component e]
@@ -196,12 +223,44 @@
     (find-trade-messages-table parent-component))
   parent-component)
 
+(defn set-my-message-background [render-component table row]
+  (let [row-map (seesaw-table/value-at table row)]
+    (when (identity-model/is-user-identity? (:identity (:original-message row-map)))
+      (.setBackground render-component my-message-color)
+      true)))
+
+(defn set-unviewed-message-background [render-component table row]
+  (let [row-map (seesaw-table/value-at table row)]
+    (when-not (trade-message-model/viewed? (:original-message row-map))
+      (.setBackground render-component unviewed-message-color)
+      true)))
+
+(defn set-background [render-component table is-selected row]
+  (if is-selected
+    (.setBackground render-component (.getSelectionBackground table))
+    (when-not (or (set-my-message-background render-component table row)
+                (set-unviewed-message-background render-component table row))
+      (.setBackground render-component Color/WHITE))))
+
+(defn attach-message-table-cell-renderer [parent-component]
+  (let [trade-messages-table (find-trade-messages-table parent-component)
+        original-renderer (.getDefaultRenderer trade-messages-table Object)]
+    (.setDefaultRenderer trade-messages-table Object
+      (reify TableCellRenderer
+        (getTableCellRendererComponent [this table value is-selected has-focus row column]
+          (let [render-component (.getTableCellRendererComponent original-renderer table value is-selected has-focus row column)]
+            (set-background render-component table is-selected row)
+            render-component)))))
+  parent-component)
+
 (defn attach-message-actions [trade parent-component]
-  (attach-view-message-table-action
-    (attach-view-message-enable-listener
-      (attach-view-message-action
-        (attach-new-message-listener trade
-          (attach-send-message-action trade parent-component))))))
+  (attach-message-table-cell-renderer
+    (attach-view-message-table-action
+      (attach-view-message-enable-listener
+        (attach-view-message-action
+          (attach-new-message-listener trade
+            (attach-update-message-listener trade
+              (attach-send-message-action trade parent-component))))))))
 
 (defn attach [parent-component trade]
   (attach-message-actions trade
