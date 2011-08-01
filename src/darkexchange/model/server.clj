@@ -39,9 +39,11 @@
 
 (defn client-handler [server-socket]
   (while true
-    (let [socket (.accept server-socket)]
-      (when socket
-        (perform-action socket)))))
+    (try
+      (when-let [socket (.accept server-socket)]
+        (perform-action socket))
+      (catch Throwable t
+        (logging/error "An error occured while handling a connection." t)))))
 
 (defn init []
   (logging/info "Initializing server.")

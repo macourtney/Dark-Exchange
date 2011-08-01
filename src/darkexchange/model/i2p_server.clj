@@ -90,7 +90,11 @@
     (.flush writer)))
 
 (defn read-json [socket]
-  (json/read-json (java-io/reader (.getInputStream socket))))
+  (try
+    (json/read-json (java-io/reader (.getInputStream socket)))
+    (catch Exception e
+      ; Ignore errors
+      nil)))
 
 (defn write-json [socket json-data]
   (let [socket-writer (PrintWriter. (.getOutputStream socket))]
