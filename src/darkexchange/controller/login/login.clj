@@ -79,12 +79,17 @@
 (defn attach-default-button [login-frame]
   (actions-utils/set-default-button login-frame (find-login-button login-frame)))
 
+(defn set-focus [login-frame]
+  (.requestFocusInWindow (find-password-field login-frame))
+  login-frame)
+
 (defn attach [login-frame]
-  (attach-default-button
-    (attach-cancel-action
-      (attach-login-action
-        (attach-new-user-action
-          (attach-user-add-listener login-frame))))))
+  (set-focus
+    (attach-default-button
+      (attach-cancel-action
+        (attach-login-action
+          (attach-new-user-action
+            (attach-user-add-listener login-frame)))))))
 
 (defn show []
   (controller-utils/show (attach (load-data (login-view/create)))))
