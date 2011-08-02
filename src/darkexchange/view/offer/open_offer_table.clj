@@ -2,8 +2,7 @@
   (:require [darkexchange.model.terms :as terms]
             [seesaw.core :as seesaw-core]))
 
-(def table-columns [ { :key :id :text (terms/id) }
-                     { :key :i-have-amount :text (terms/i-have-amount) }
+(def table-columns [ { :key :i-have-amount :text (terms/i-have-amount) }
                      { :key :i-want-to-send-by :text (terms/i-want-to-send-by) }
                      { :key :i-want-amount :text (terms/i-want-amount) }
                      { :key :i-want-to-receive-by :text (terms/i-want-to-receive-by) }

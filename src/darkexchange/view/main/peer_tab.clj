@@ -6,8 +6,7 @@
 
 (def tab-name (terms/peer))
 
-(def peer-table-columns [ { :key :id :text (terms/id) }
-                          { :key :destination :text (terms/destination) }
+(def peer-table-columns [ { :key :destination :text (terms/destination) }
                           { :key :created_at :text (terms/created-on) }
                           { :key :updated_at :text (terms/last-updated-at) }
                           { :key :notified :text (terms/notified) }])

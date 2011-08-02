@@ -4,8 +4,7 @@
 
 (def tab-name (terms/identity))
 
-(def identity-table-columns [ { :key :id :text (terms/id) }
-                              { :key :name :text (terms/name) }
+(def identity-table-columns [ { :key :name :text (terms/name) }
                               { :key :public_key :text (terms/public-key) }
                               { :key :public_key_algorithm :text (terms/algorithm) }
                               { :key :destination :text (terms/destination) }
