@@ -3,6 +3,7 @@
             [darkexchange.controller.actions.utils :as action-utils]
             [darkexchange.controller.trade.view :as view-trade]
             [darkexchange.controller.widgets.utils :as widgets-utils]
+            [darkexchange.controller.utils :as controller-utils]
             [darkexchange.model.trade :as trade-model]
             [darkexchange.model.trade-message :as trade-message-model]
             [darkexchange.model.user :as user-model]
@@ -13,8 +14,8 @@
            [javax.swing JLabel]
            [javax.swing.table TableCellRenderer]))
 
-(def requires-action-color Color/YELLOW)
-(def unseen-message-color Color/CYAN)
+(def requires-action-color controller-utils/yellow-highlight)
+(def unseen-message-color controller-utils/turquoise-highlight)
 
 (defn find-open-trade-table [main-frame]
   (seesaw-core/select main-frame ["#open-trade-table"]))

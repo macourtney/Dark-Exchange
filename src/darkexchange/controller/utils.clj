@@ -2,8 +2,13 @@
   (:require [clojure.contrib.logging :as logging]
             [seesaw.core :as seesaw-core]
             [seesaw.table :as seesaw-table])
-  (:import [java.awt.event ItemListener]
+  (:import [java.awt Color]
+           [java.awt.event ItemListener]
            [javax.swing JComponent]))
+
+(def yellow-highlight (Color. (float 1) (float 1) (float 0.6)))
+(def turquoise-highlight (Color. (float 0.7) (float 1) (float 1)))
+(def gray-highlight (Color. (float 0.92) (float 0.92) (float 0.92)))
 
 (defn find-component [parent-component id]
   (seesaw-core/select parent-component [id]))

@@ -21,8 +21,8 @@
            [java.awt.event WindowListener]
            [javax.swing.table TableCellRenderer]))
 
-(def my-message-color Color/LIGHT_GRAY)
-(def unviewed-message-color Color/CYAN)
+(def my-message-color controller-utils/gray-highlight)
+(def unviewed-message-color controller-utils/turquoise-highlight)
 
 (defn load-data-label 
   ([trade parent-component trade-key label-key] (load-data-label (trade-key trade) parent-component label-key))
