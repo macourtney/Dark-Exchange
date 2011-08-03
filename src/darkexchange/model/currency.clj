@@ -163,6 +163,7 @@
                     { :code "XAF"     :name (terms/communaute-financiere-africaine-beac-francs) }
                     { :code "XAG"     :name (terms/silver-ounces) }
                     { :code "XAU"     :name (terms/gold-ounces) }
+                    { :code "XAUG"     :name (terms/gold-grams) }
                     { :code "XCD"     :name (terms/east-caribbean-dollars) }
                     { :code "XOF"     :name (terms/communaute-financiere-africaine-bceao-francs) }
                     { :code "XPD"     :name (terms/palladium-ounces) }

@@ -19,7 +19,14 @@
 (def payment-types [{ :code "BITCOIN" :name (terms/bitcoin-transfer) :currency-types ["BITCOIN"] }
                     { :code "CAM" :name (terms/cash-by-mail) :currency-types mailable-currencies }
                     { :code "CHM" :name (terms/check-or-money-order-by-mail) :currency-types checkable-currencies }
-                    { :code "DWOLLA" :name (terms/dwolla) :currency-types ["USD"] }])
+                    { :code "DWOLLA" :name (terms/dwolla) :currency-types ["USD"] }
+                    { :code "LR" :name (terms/liberty-reserve) :currency-types ["USD" "EUR" "XAUG"] }
+                    { :code "PAXUM" :name (terms/paxum) :currency-types ["USD"] }
+                    { :code "PAYPAL" :name (terms/paypal) :currency-types ["AUD" "BRL" "CAD" "CHF" "CZK" "DKK" "EUR"
+                                                                           "GBP" "HKD" "HUF" "ILS" "JPY" "MYR" "MXN"
+                                                                           "NOK" "NZD" "PHP" "PLN" "SEK" "SGD" "THB"
+                                                                           "TRY" "TWD" "USD"] }
+                    { :code "PECUNIX" :name (terms/pecunix) :currency-types ["XAUG"] }])
 
 (def payment-type-map (reduce #(assoc %1 (:code %2) %2) {} payment-types))
 
