@@ -7,6 +7,7 @@
             [darkexchange.model.interceptors.identity-interceptor :as identity-interceptor]
             [darkexchange.model.interceptors.server-interceptors :as server-interceptors]
             [darkexchange.model.interceptors.signature-interceptor :as signature-interceptor]
+            [darkexchange.model.listeners.identity-pinger :as identity-pinger-listener]
             [darkexchange.model.listeners.peer :as peer-listeners]
             [darkexchange.model.listeners.self-identity-listener :as self-identity-listener]
             [darkexchange.model.listeners.trade :as trade-listener]
@@ -23,10 +24,14 @@
   (server-interceptors/add-interceptor header-reply-interceptor/interceptor)
   (server-interceptors/add-interceptor signature-interceptor/server-interceptor))
 
-(defn init []
-  (logging/info "Adding listeners.")
+(defn destination-init []
   (i2p-server-model/add-destination-listener peer-listeners/destination-listener)
   (i2p-server-model/add-destination-listener self-identity-listener/destination-listener)
   (i2p-server-model/add-destination-listener trade-listener/destination-listener)
+  (i2p-server-model/add-destination-listener identity-pinger-listener/destination-listener))
+
+(defn init []
+  (logging/info "Adding listeners.")
+  (destination-init)
   (client-init)
   (server-init))
