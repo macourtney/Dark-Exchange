@@ -4,10 +4,9 @@
             [darkexchange.model.peer :as peer-model])
   (:import [java.util Timer TimerTask]))
 
-(def hour-in-milliseconds (long 600000)) ;(long 3600000))
+(def hour-in-milliseconds (long 3600000))
 
 (defn notify-all-peers []
-  (logging/info "Notifying peers with pinger.")
   (doseq [peer (peer-model/all-notified-peers)]
     (future (peer-model/notify-destination (:destination peer)))))
 
