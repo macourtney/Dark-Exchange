@@ -10,13 +10,23 @@
                               { :key :destination :text (terms/destination) }
                               { :key :is_online :text (terms/is-online) }])
 
+(defn create-show-only-online-identities-checkbox []
+  (seesaw-core/checkbox :id :show-only-online-identites-checkbox :text (terms/show-only-online-identities)
+    :selected? true))
+
+(defn create-identities-table-title []
+  (seesaw-core/horizontal-panel
+    :items [ (terms/identities)
+             [:fill-h 3]
+             (create-show-only-online-identities-checkbox)]))
+
 (defn create-identity-table-buttons []
   (seesaw-core/horizontal-panel :items 
     [ (seesaw-core/button :id :view-identity-button :text (terms/view) :enabled? false) ]))
 
 (defn create-title-panel []
   (seesaw-core/border-panel
-    :west (terms/identities)
+    :west (create-identities-table-title)
     :east (create-identity-table-buttons)))
 
 (defn create-identity-table []

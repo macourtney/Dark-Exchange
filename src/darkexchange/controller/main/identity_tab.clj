@@ -12,8 +12,18 @@
 (defn find-identity-table [main-frame]
   (seesaw-core/select main-frame ["#identity-table"]))
 
+(defn find-show-only-online-identites-checkbox [main-frame]
+  (seesaw-core/select main-frame ["#show-only-online-identites-checkbox"]))
+
+(defn show-only-online-identities? [main-frame]
+  (.isSelected (find-show-only-online-identites-checkbox main-frame)))
+
+(defn show-identity? [main-frame identity]
+  (and (not (identity-model/is-user-identity? identity))
+    (or (not (show-only-online-identities? main-frame)) (identity-model/is-online? identity))))
+
 (defn reload-table-data [main-frame]
-  (when-let [identities (identity-model/table-identities)]
+  (when-let [identities (identity-model/table-identities (show-only-online-identities? main-frame))]
     (seesaw-core/config! (find-identity-table main-frame)
       :model [:columns identity-tab-view/identity-table-columns
               :rows identities])))
@@ -34,14 +44,15 @@
   (controller-utils/delete-record-from-table (find-identity-table main-frame) (:id identity)))
 
 (defn add-identity-to-table [main-frame identity]
-  (when-not (identity-model/is-user-identity? identity)
+  (when (show-identity? main-frame identity)
     (controller-utils/add-record-to-table (find-identity-table main-frame)
       (identity-model/get-table-identity (:id identity)))))
 
 (defn update-identity-id-table [main-frame identity]
-  (when-not (identity-model/is-user-identity? identity)
+  (if (show-identity? main-frame identity)
     (controller-utils/update-record-in-table (find-identity-table main-frame)
-      (identity-model/get-table-identity (:id identity)))))
+      (identity-model/get-table-identity (:id identity)))
+    (delete-identity-from-table main-frame identity)))
 
 (defn attach-identity-listener [main-frame]
   (identity-model/add-identity-add-listener
@@ -78,14 +89,22 @@
     #(view-identity-if-enabled main-frame))
   main-frame)
 
+(defn show-only-online-identities-action [main-frame e]
+  (seesaw-core/invoke-later (reload-table-data main-frame)))
+
+(defn attach-show-only-online-identities-action [main-frame]
+  (action-utils/attach-frame-listener main-frame "#show-only-online-identites-checkbox"
+    show-only-online-identities-action))
+
 (defn load-data [main-frame]
   (load-my-identity (load-identity-table main-frame)))
 
 (defn attach [main-frame]
-  (attach-view-identity-table-action
-    (attach-view-identity-enable-listener
-      (attach-view-identity-listener
-        (attach-identity-listener main-frame)))))
+  (attach-show-only-online-identities-action
+    (attach-view-identity-table-action
+      (attach-view-identity-enable-listener
+        (attach-view-identity-listener
+          (attach-identity-listener main-frame))))))
 
 (defn init [main-frame]
   (attach (load-data main-frame)))

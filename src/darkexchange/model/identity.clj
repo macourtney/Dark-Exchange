@@ -140,10 +140,22 @@
         :public_key (shortened-public-key identity)
         :is_online (when (is-online? identity) (terms/yes)) })))
 
-(defn non-user-identities []
-  (if-let [user-identity (current-user-identity)]
-    (find-records ["id != ?" (:id user-identity)])
-    (find-records [true])))
+(defn all-online-identities []
+  (find-records ["is_online = 1"]))
+
+(defn all-identities
+  ([] (all-identities false))
+  ([only-online-identities]
+    (if only-online-identities
+      (all-online-identities)
+      (find-records [true]))))
+
+(defn non-user-identities
+  ([] (non-user-identities false))
+  ([only-online-identities]
+    (if-let [user-identity (current-user-identity)]
+      (filter #(not (= (:id user-identity) (:id %))) (all-identities only-online-identities))
+      (all-identities only-online-identities))))
 
 (defn is-user-identity? [identity]
   (if (and (:name identity) (:public_key identity) (:public_key_algorithm identity))
@@ -154,8 +166,8 @@
         (= (:public_key_algorithm identity) (:public_key_algorithm user))))
     (= (:id identity) (:id (current-user-identity)))))
 
-(defn table-identities []
-  (map table-identity (non-user-identities)))
+(defn table-identities [only-online-identities]
+  (map table-identity (non-user-identities only-online-identities)))
 
 (defn get-table-identity [id]
   (table-identity (get-record id)))
