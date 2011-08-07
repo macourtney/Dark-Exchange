@@ -21,6 +21,7 @@
                     { :code "CHM" :name (terms/check-or-money-order-by-mail) :currency-types checkable-currencies }
                     { :code "DWOLLA" :name (terms/dwolla) :currency-types ["USD"] }
                     { :code "LR" :name (terms/liberty-reserve) :currency-types ["USD" "EUR" "XAUG"] }
+                    { :code "NAMECOIN" :name (terms/namecoin-transfer) :currency-types ["NAMECOIN"] }
                     { :code "PAXUM" :name (terms/paxum) :currency-types ["USD"] }
                     { :code "PAYPAL" :name (terms/paypal) :currency-types ["AUD" "BRL" "CAD" "CHF" "CZK" "DKK" "EUR"
                                                                            "GBP" "HKD" "HUF" "ILS" "JPY" "MYR" "MXN"
