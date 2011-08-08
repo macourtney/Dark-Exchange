@@ -1,4 +1,4 @@
-(defproject darkexchange "1.2.0-SNAPSHOT"
+(defproject darkexchange "1.2.0"
   :description "Dark Exchange is a distributed p2p exchange for bitcoin."
   :dependencies [[clojure-tools "1.0.0"]
                  [com.h2database/h2 "1.3.157"]
@@ -20,4 +20,4 @@
   :resources-path "pkg/resources"
 
   :run-aliases { :development darkexchange.development-main
-                 :dev darkexchange.development-main} )
+                 :dev darkexchange.development-main } )
