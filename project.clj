@@ -3,7 +3,7 @@
   :dependencies [[clojure-tools "1.0.0"]
                  [com.h2database/h2 "1.3.157"]
                  [commons-codec/commons-codec "1.5"]
-                 [drift "1.2.1"]
+                 [drift "1.2.2"]
                  [log4j/log4j "1.2.16"]
                  [org.clojars.macourtney/clj-record "1.0.1"]
                  [org.clojars.macourtney/i2p "0.8.7-0"]
@@ -12,7 +12,7 @@
                  [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [seesaw "1.0.10"]]
-  :dev-dependencies [[drift "1.2.1"]
+  :dev-dependencies [[drift "1.2.2"]
                      [lein-tar "1.0.6"]]
 
   :main darkexchange.main
