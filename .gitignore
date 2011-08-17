@@ -10,4 +10,5 @@ db
 classes
 logs
 private_key.dat
+.lein-failures
 pom.xml

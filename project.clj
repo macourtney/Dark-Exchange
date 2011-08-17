@@ -5,7 +5,7 @@
                  [commons-codec/commons-codec "1.5"]
                  [drift "1.2.2"]
                  [log4j/log4j "1.2.16"]
-                 [org.clojars.macourtney/clj-record "1.0.1"]
+                 [org.clojars.macourtney/clj-record "1.0.2"]
                  [org.clojars.macourtney/i2p "0.8.7-0"]
                  [org.clojars.macourtney/mstreaming "0.8.7-0"]
                  [org.clojars.macourtney/streaming "0.8.7-0"]

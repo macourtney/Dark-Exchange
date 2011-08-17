@@ -37,7 +37,9 @@
     (listener identity)))
 
 (clj-record.core/init-model
-  (:associations (belongs-to peer))
+  (:associations (belongs-to peer)
+                 (has-many scorer_trust_scores :fk target_id)
+                 (has-many target-trust-scores :fk target_id :model trust-score))
   (:callbacks (:after-update identity-update)
               (:after-insert identity-add)
               (:after-destroy identity-delete)))
