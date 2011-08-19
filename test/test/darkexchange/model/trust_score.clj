@@ -36,3 +36,51 @@
     (is (= (:id scorer-identity) (:scorer_id trust-score)))
     (is (= (:id target-identity) (:target_id trust-score)))
     (destroy-record trust-score)))
+
+(defn create-chain
+  ([intermediate-identity target-identity basic-trust-score]
+    (create-chain intermediate-identity target-identity basic-trust-score basic-trust-score))
+  ([intermediate-identity target-identity basic-trust-score1 basic-trust-score2]
+    [ (add-trust-score intermediate-identity basic-trust-score1)
+      (add-trust-score intermediate-identity target-identity basic-trust-score2)]))
+
+(defn destroy-trust-scores [& trust-score-ids]
+  (doseq [trust-score-id trust-score-ids]
+    (destroy-record { :id trust-score-id })))
+
+(deftest test-calculate-single-chain
+  (let [basic-trust-score 0.25
+        target-identity (identity-model/get-record 1)
+        target-identity2 (identity-model/get-record 3)
+        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
+        trust-score2 (when trust-score-id2 (get-record trust-score-id2))
+        single-chain-score (calculate-single-chain trust-score2)]
+    (is single-chain-score)
+    (is (= single-chain-score 0.0625))
+    (destroy-trust-scores trust-score-id trust-score-id2)))
+
+(deftest test-calculate-combined-score
+  (let [basic-trust-score 0.5
+        target-identity (identity-model/get-record 1)
+        target-identity2 (identity-model/get-record 3)
+        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
+        basic-trust-score2 0.25
+        target-identity3 (identity-model/get-record 4)
+        [trust-score-id3 trust-score-id4] (create-chain target-identity3 target-identity2 basic-trust-score2)
+        combined-score (calculate-combined-score target-identity2)]
+    (is (= combined-score 0.3125))
+    (destroy-trust-scores trust-score-id trust-score-id2 trust-score-id3 trust-score-id4)))
+
+(deftest test-update-combined-score
+  (let [basic-trust-score 0.5
+        target-identity (identity-model/get-record 1)
+        target-identity2 (identity-model/get-record 3)
+        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
+        basic-trust-score2 0.25
+        target-identity3 (identity-model/get-record 4)
+        [trust-score-id3 trust-score-id4] (create-chain target-identity3 target-identity2 basic-trust-score2)
+        combined-trust-score-id (update-combined-score target-identity2)
+        combined-trust-score (when combined-trust-score-id (get-record combined-trust-score-id))]
+    (is combined-trust-score)
+    (is (= (:combined combined-trust-score) 0.3125))
+    (destroy-trust-scores combined-trust-score-id trust-score-id trust-score-id2 trust-score-id3 trust-score-id4)))

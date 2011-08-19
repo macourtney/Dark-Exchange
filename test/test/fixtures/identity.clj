@@ -23,6 +23,11 @@
     :name "test-identity3"
     :public_key "blah3"
     :public_key_algorithm "RSA"
+    :peer_id 1 }
+  { :id 5
+    :name "test-identity4"
+    :public_key "blah3"
+    :public_key_algorithm "RSA"
     :peer_id 1 }])
 
 (def fixture-table-name :identities)

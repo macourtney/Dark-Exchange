@@ -8,7 +8,7 @@
     (id)
     (belongs-to :scorer)
     (belongs-to :target)
-    (decimal :basic { :precision 5 :scale 1 })
+    (decimal :basic { :precision 5 :scale 4 })
     (decimal :combined { :precision 15 :scale 10 })))
   
 (defn
