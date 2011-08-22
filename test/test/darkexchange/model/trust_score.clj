@@ -1,12 +1,14 @@
 (ns test.darkexchange.model.trust-score
-  (:require [test.init :as test-init]
+  (:require [clojure.contrib.logging :as logging]
+            [test.init :as test-init]
             [darkexchange.model.identity :as identity-model]
-            [test.fixtures.identity :as identity-fixture]
+            [test.darkexchange.util :as test-util]
+            [test.fixtures.trust-score :as trust-score]
             [test.fixtures.util :as fixtures-util]) 
   (:use clojure.contrib.test-is
         darkexchange.model.trust-score))
 
-(fixtures-util/use-fixture-maps :once identity-fixture/fixture-map)
+(fixtures-util/use-fixture-maps :once trust-score/fixture-map)
 
 (deftest test-add-trust-score
   (let [basic-trust-score 0.5
@@ -49,38 +51,34 @@
     (destroy-record { :id trust-score-id })))
 
 (deftest test-calculate-single-chain
-  (let [basic-trust-score 0.25
-        target-identity (identity-model/get-record 1)
-        target-identity2 (identity-model/get-record 3)
-        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
-        trust-score2 (when trust-score-id2 (get-record trust-score-id2))
-        single-chain-score (calculate-single-chain trust-score2)]
+  (test-util/login)
+  (let [trust-score (get-record 2)
+        single-chain-score (calculate-single-chain trust-score)]
     (is single-chain-score)
-    (is (= single-chain-score 0.0625))
-    (destroy-trust-scores trust-score-id trust-score-id2)))
+    (is (= single-chain-score 0.25)))
+  (test-util/logout))
 
 (deftest test-calculate-combined-score
-  (let [basic-trust-score 0.5
-        target-identity (identity-model/get-record 1)
-        target-identity2 (identity-model/get-record 3)
-        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
-        basic-trust-score2 0.25
-        target-identity3 (identity-model/get-record 4)
-        [trust-score-id3 trust-score-id4] (create-chain target-identity3 target-identity2 basic-trust-score2)
-        combined-score (calculate-combined-score target-identity2)]
-    (is (= combined-score 0.3125))
-    (destroy-trust-scores trust-score-id trust-score-id2 trust-score-id3 trust-score-id4)))
+  (test-util/login)
+  (let [combined-score (calculate-combined-score (identity-model/get-record 3))]
+    (is (= combined-score 0.3125)))
+  (test-util/logout))
 
 (deftest test-update-combined-score
-  (let [basic-trust-score 0.5
-        target-identity (identity-model/get-record 1)
-        target-identity2 (identity-model/get-record 3)
-        [trust-score-id trust-score-id2] (create-chain target-identity target-identity2 basic-trust-score)
-        basic-trust-score2 0.25
-        target-identity3 (identity-model/get-record 4)
-        [trust-score-id3 trust-score-id4] (create-chain target-identity3 target-identity2 basic-trust-score2)
-        combined-trust-score-id (update-combined-score target-identity2)
+  (test-util/login)
+  (let [combined-trust-score-id (update-combined-score (identity-model/get-record 3))
         combined-trust-score (when combined-trust-score-id (get-record combined-trust-score-id))]
     (is combined-trust-score)
+    (is (= (:scorer_id combined-trust-score) (:id (identity-model/current-user-identity))))
+    (is (= (:target_id combined-trust-score) 3))
     (is (= (:combined combined-trust-score) 0.3125))
-    (destroy-trust-scores combined-trust-score-id trust-score-id trust-score-id2 trust-score-id3 trust-score-id4)))
+    (is (= (:basic combined-trust-score) 0.0))
+    (destroy-record combined-trust-score))
+  (test-util/logout))
+
+(deftest test-my-scores
+  (test-util/login)
+  (let [scores (my-scores)]
+    (is scores)
+    (is (= (count scores) 2)))
+  (test-util/logout))

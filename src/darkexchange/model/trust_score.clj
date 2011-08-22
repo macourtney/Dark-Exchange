@@ -44,3 +44,6 @@
   (let [trust-score-id (:id (find-or-create-trust-score target-identity))]
     (update { :id trust-score-id :combined (calculate-combined-score target-identity) })
     trust-score-id))
+
+(defn my-scores []
+  (find-by-sql ["SELECT basic FROM trust_scores WHERE scorer_id = ?" (:id (identity/current-user-identity))]))
