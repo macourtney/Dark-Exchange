@@ -5,5 +5,5 @@
 
 (defn run-interceptors [interceptors function arg]
   (if (empty? interceptors)
-    arg
+    (function arg)
     ((reduce compose-interceptors interceptors) function arg)))

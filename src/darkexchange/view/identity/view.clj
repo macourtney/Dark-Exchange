@@ -23,6 +23,12 @@
 (defn create-is-online-panel []
   (create-label-value-pair-panel (terms/is-online) :is-online-label))
 
+(defn create-my-trust-score-panel []
+  (create-label-value-pair-panel (terms/my-trust-score) :my-trust-score-label))
+
+(defn create-network-trust-score-panel []
+  (create-label-value-pair-panel (terms/network-trust-score) :network-trust-score-label))
+
 (defn create-data-panel []
   (seesaw-core/vertical-panel
     :items [ (create-name-panel)
@@ -31,7 +37,11 @@
              [:fill-v 3]
              (create-algorithm-panel)
              [:fill-v 3]
-             (create-is-online-panel)]))
+             (create-is-online-panel)
+             [:fill-v 3]
+             (create-my-trust-score-panel)
+             [:fill-v 3]
+             (create-network-trust-score-panel)]))
 
 (defn create-offer-table-title []
   (seesaw-core/horizontal-panel

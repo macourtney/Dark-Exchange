@@ -24,7 +24,7 @@
   (try
     (i2p-server-model/send-message (:destination request-map) (dissoc request-map :destination))
     (catch java.net.NoRouteToHostException e
-      (logging/info (str "Could not connect to destination: " (:destination request-map)))
+      (logging/warn (str "Could not connect to destination: " (:destination request-map)))
       nil)))
 
 (defn send-message [destination action data]

@@ -1,5 +1,6 @@
 (ns darkexchange.model.interceptors.client-interceptors
-  (:require [darkexchange.model.interceptors.interceptor-util :as interceptor-util]))
+  (:require [clojure.contrib.logging :as logging]
+            [darkexchange.model.interceptors.interceptor-util :as interceptor-util]))
 
 (def interceptors (atom []))
 

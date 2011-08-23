@@ -124,7 +124,9 @@
 
 (defn shortened-public-key-str [public-key]
   (when public-key
-    (str ".." (.substring public-key 40 60) "..")))
+    (if (> (.length public-key) 60)
+      (str ".." (.substring public-key 40 60) "..")
+      "..")))
 
 (defn shortened-public-key [identity]
   (shortened-public-key-str (:public_key identity)))

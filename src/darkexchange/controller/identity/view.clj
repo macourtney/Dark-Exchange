@@ -9,6 +9,7 @@
             [darkexchange.model.identity :as identity-model]
             [darkexchange.model.offer :as offer-model]
             [darkexchange.model.terms :as terms]
+            [darkexchange.model.trust-score :as trust-score-model]
             [darkexchange.view.identity.view :as identity-view]
             [seesaw.core :as seesaw-core]))
 
@@ -26,6 +27,12 @@
 
 (defn find-status-label [parent-component]
   (controller-utils/find-component parent-component "#offer-table-status-label"))
+
+(defn find-my-trust-score-label [parent-component]
+  (controller-utils/find-component parent-component "#my-trust-score-label"))
+
+(defn find-network-trust-score-label [parent-component]
+  (controller-utils/find-component parent-component "#network-trust-score-label"))
 
 (defn find-view-offer-button [parent-component]
   (seesaw-core/select parent-component ["#view-offer-button"]))
@@ -107,8 +114,23 @@
 
 (defn load-offers [parent-component identity]
   (future
-    (let [open-offers (get-open-offers-call/call (identity-model/get-record (:id identity)))]
+    (when-let [open-offers (get-open-offers-call/call (identity-model/get-record (:id identity)))]
+      (logging/warn (str "(.getClass open-offers): " (.getClass open-offers)))
+      (logging/warn (str "open-offers: " open-offers))
       (seesaw-core/invoke-later (set-offers parent-component (map #(assoc % :identity identity) open-offers))))))
+
+(defn load-my-trust-score [parent-component trust-score]
+  (seesaw-core/config! (find-my-trust-score-label parent-component)
+    :text (:basic trust-score)))
+
+(defn load-network-trust-score [parent-component trust-score]
+  (seesaw-core/config! (find-network-trust-score-label parent-component)
+    :text (:combined trust-score)))
+
+(defn load-trust-scores [parent-component identity]
+  (when-let [trust-score (trust-score-model/find-trust-score identity)]
+    (load-my-trust-score parent-component trust-score)
+    (load-network-trust-score parent-component trust-score)))
 
 (defn load-data [parent-component identity]
   (load-name parent-component identity)
@@ -116,7 +138,11 @@
   (load-algorithm parent-component identity)
   (load-is-online parent-component identity)
   (load-offers parent-component identity)
+  (load-trust-scores parent-component identity)
   parent-component)
 
+(defn create-and-initialize [main-frame identity]
+  (attach (load-data (identity-view/create main-frame) identity) identity))
+
 (defn show [main-frame identity]
-  (controller-utils/show (attach (load-data (identity-view/create main-frame) identity) identity)))
+  (controller-utils/show (create-and-initialize main-frame identity)))
