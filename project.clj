@@ -9,9 +9,9 @@
                  [org.clojars.macourtney/i2p "0.8.7-0"]
                  [org.clojars.macourtney/mstreaming "0.8.7-0"]
                  [org.clojars.macourtney/streaming "0.8.7-0"]
-                 [org.clojure/clojure "1.2.1"]
+                 [org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
-                 [seesaw "1.0.10"]]
+                 [seesaw "1.1.0"]]
   :dev-dependencies [[drift "1.2.2"]
                      [lein-tar "1.0.6"]]
 

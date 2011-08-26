@@ -8,4 +8,5 @@
     [ [mode "The run mode. For example, development, production, or test. The default is development." "development"]
       remaining]
 
-    (apply main/-main "-mode" mode remaining)))
+    (apply main/-main "-mode" mode remaining)
+    @(promise)))
