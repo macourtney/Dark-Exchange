@@ -1,5 +1,6 @@
 (ns darkexchange.model.base
   (:require [clojure.string :as string]
+            [clojure.contrib.logging :as logging]
             [darkexchange.database.util :as database-util])
   (:import [java.sql Clob]))
 
@@ -8,7 +9,10 @@
 (defn clob-string [clob]
   (when clob
     (let [clob-stream (.getCharacterStream clob)]
-      (string/join "\n" (take-while identity (repeatedly #(.readLine clob-stream)))))))
+      (try
+        (string/join "\n" (take-while identity (repeatedly #(.readLine clob-stream))))
+        (catch Exception e
+          (logging/error (str "An error occured while reading a clob: " e)))))))
 
 (defn load-clob [clob]
   (clob-string clob))
