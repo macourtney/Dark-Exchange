@@ -128,7 +128,7 @@
     :text (:combined trust-score)))
 
 (defn load-trust-scores [parent-component identity]
-  (when-let [trust-score (trust-score-model/find-trust-score identity)]
+  (let [trust-score (or (trust-score-model/find-trust-score identity) { :basic 0.0 :combined 0.0 })]
     (load-my-trust-score parent-component trust-score)
     (load-network-trust-score parent-component trust-score)))
 
