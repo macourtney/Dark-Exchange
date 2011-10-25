@@ -6,7 +6,7 @@
 
 (defn create-label-value-pair-panel [text label-key]
   (seesaw-core/horizontal-panel
-      :items [ (seesaw-core/border-panel :size [100 :by 15] :east (seesaw-core/label :text text))
+      :items [ (seesaw-core/border-panel :size [150 :by 15] :east (seesaw-core/label :text text))
                [:fill-h 3]
                (seesaw-core/border-panel :size [200 :by 15]
                  :west (seesaw-core/label :id label-key :text "data" :font { :style :plain }))]))
@@ -29,6 +29,14 @@
 (defn create-network-trust-score-panel []
   (create-label-value-pair-panel (terms/network-trust-score) :network-trust-score-label))
 
+(defn trust-score-slider-panel []
+  (seesaw-core/border-panel
+      :border 5
+      :hgap 5
+      :west (terms/completely-distrust)
+      :center (seesaw-core/slider :id :trust-score-slider :value 0 :min -100 :max 100 :orientation :horizontal)
+      :east (terms/completely-trust)))
+
 (defn create-data-panel []
   (seesaw-core/vertical-panel
     :items [ (create-name-panel)
@@ -41,7 +49,9 @@
              [:fill-v 3]
              (create-my-trust-score-panel)
              [:fill-v 3]
-             (create-network-trust-score-panel)]))
+             (create-network-trust-score-panel)
+             [:fill-v 3]
+             (trust-score-slider-panel)]))
 
 (defn create-offer-table-title []
   (seesaw-core/horizontal-panel
@@ -79,7 +89,7 @@
       :border 5
       :hgap 5
       :east (seesaw-core/horizontal-panel :items 
-              [ (seesaw-core/button :id :cancel-button :text (terms/cancel)) ])))
+              [ (seesaw-core/button :id :cancel-button :text (terms/done)) ])))
 
 (defn create-content []
   (seesaw-core/border-panel

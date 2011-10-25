@@ -13,6 +13,17 @@
             [darkexchange.view.identity.view :as identity-view]
             [seesaw.core :as seesaw-core]))
 
+(def identity-propery-name "darkexchange.identity")
+
+(defn property-widget [parent-component]
+  (.getRootPane (seesaw-core/to-frame parent-component)))
+
+(defn set-identity [parent-component identity]
+  (.putClientProperty (property-widget parent-component) identity-propery-name identity))
+
+(defn get-identity [parent-component]
+  (.getClientProperty (property-widget parent-component) identity-propery-name))
+
 (defn find-name-label [parent-component]
   (controller-utils/find-component parent-component "#name-label"))
 
@@ -36,6 +47,9 @@
 
 (defn find-view-offer-button [parent-component]
   (seesaw-core/select parent-component ["#view-offer-button"]))
+
+(defn find-trust-score-slider [parent-component]
+  (controller-utils/find-component parent-component "#trust-score-slider"))
 
 (defn attach-cancel-action [parent-component]
   (actions-utils/attach-window-close-listener parent-component "#cancel-button"))
@@ -76,13 +90,30 @@
   (open-offer-table-controller/attach-single-select-button-enable-listener parent-component
     (find-view-offer-button parent-component)))
 
+(defn load-my-trust-score [parent-component trust-score]
+  (seesaw-core/config! (find-my-trust-score-label parent-component)
+    :text (trust-score-model/basic-percent-int trust-score)))
+
+(defn trust-score-slider-state-change-listener [e]
+  (let [slider (seesaw-core/to-widget e)
+        parent-component (seesaw-core/to-frame slider)]
+    (when (not (.getValueIsAdjusting slider))
+      (let [trust-score (/ (.getValue slider) 100.0)]
+        (trust-score-model/set-trust-score (get-identity parent-component) trust-score)
+        (load-my-trust-score parent-component { :basic trust-score })))))
+
+(defn attach-trust-score-slider-listener [parent-component]
+  (seesaw-core/listen (find-trust-score-slider parent-component)
+    :state-changed trust-score-slider-state-change-listener)
+  parent-component)
+
 (defn attach-view-offer-actions [parent-component]
   (attach-view-offer-button-enable-listener
     (attach-view-offer-table-action
       (attach-view-offer-action parent-component))))
 
-(defn attach [parent-component offer]
-  (attach-view-offer-actions (attach-cancel-action parent-component)))
+(defn attach [parent-component identity]
+  (attach-trust-score-slider-listener (attach-view-offer-actions (attach-cancel-action parent-component))))
 
 (defn load-name [parent-component identity]
   (seesaw-core/config! (find-name-label parent-component) :text (:name identity)))
@@ -119,20 +150,22 @@
       (logging/warn (str "open-offers: " open-offers))
       (seesaw-core/invoke-later (set-offers parent-component (map #(assoc % :identity identity) open-offers))))))
 
-(defn load-my-trust-score [parent-component trust-score]
-  (seesaw-core/config! (find-my-trust-score-label parent-component)
-    :text (:basic trust-score)))
-
 (defn load-network-trust-score [parent-component trust-score]
   (seesaw-core/config! (find-network-trust-score-label parent-component)
-    :text (:combined trust-score)))
+    :text (trust-score-model/combined-percent-int trust-score)))
+
+(defn load-trust-score-slider [parent-component trust-score]
+  (seesaw-core/config! (find-trust-score-slider parent-component)
+    :value (trust-score-model/basic-percent-int trust-score)))
 
 (defn load-trust-scores [parent-component identity]
   (let [trust-score (or (trust-score-model/find-trust-score identity) { :basic 0.0 :combined 0.0 })]
     (load-my-trust-score parent-component trust-score)
-    (load-network-trust-score parent-component trust-score)))
+    (load-network-trust-score parent-component trust-score)
+    (load-trust-score-slider parent-component trust-score)))
 
 (defn load-data [parent-component identity]
+  (set-identity parent-component identity)
   (load-name parent-component identity)
   (load-public-key parent-component identity)
   (load-algorithm parent-component identity)

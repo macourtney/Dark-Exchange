@@ -30,6 +30,9 @@
     trust-score
     (get-record (add-trust-score target-identity 0.0))))
 
+(defn set-trust-score [target-identity basic-trust-score]
+  (update (assoc (find-or-create-trust-score target-identity) :basic basic-trust-score)))
+
 (defn calculate-single-chain [trust-score]
   (if-let [scorer-score (find-trust-score { :id (:scorer_id trust-score) })]
     (* (:basic scorer-score) (:basic trust-score))
@@ -47,3 +50,20 @@
 
 (defn my-scores []
   (find-by-sql ["SELECT basic FROM trust_scores WHERE scorer_id = ?" (:id (identity/current-user-identity))]))
+
+(defn percent-float [float-num]
+  (if float-num
+    (* float-num 100)
+    0.0))
+
+(defn basic-percent [trust-score]
+  (percent-float (:basic trust-score)))
+
+(defn combined-percent [trust-score]
+  (percent-float (:combined trust-score)))
+
+(defn basic-percent-int [trust-score]
+  (.intValue (basic-percent trust-score)))
+
+(defn combined-percent-int [trust-score]
+  (.intValue (combined-percent trust-score)))
